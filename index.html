@@ -3,120 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-  <link rel="stylesheet" href="style.css">
-  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <video autoplay loop muted plays-inline class="back-vid">
-    <source src="images/galaxy.mp4" type="video/mp4">
-  </video>
-  <section class="main-section">
+  <header class="navbar">
+    <div class="logo">lildan<span class="highlight">lid</span></div>
     <nav>
-      <h1 data-aos="zoom-in" data-aos-duration="1000"><span style="color: #4acfee;">lilda</span>nlid</h1>
-      <ul>
-        <li data-aos="fade-up" data-aos-duration="1000" data-aos-delay="100"><a class="active" href="#">Home </a></li>
-        <li data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200"><a href="#">About</a></li>
-        <li data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300"><a href="#">Projects</a></li>
-        <li data-aos="fade-up" data-aos-duration="1000" data-aos-delay="500"><a href="#">Content</a></li>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Projects</a></li>
+        <li><a href="#">Content</a></li>
       </ul>
     </nav>
-
-    <div class="hero">
-      <div class="hero-info">
-        <h1 data-aos="fade-right" data-aos-duration="1000" data-aos-delay="700">Hi, I'm lildanlid</h1>
-        <h2 data-aos="fade-left" data-aos-duration="1000" data-aos-delay="900">I'm a MC Creator</h2>
-        <p data-aos="flip-down" data-aos-duration="1000" data-aos-delay="1000">I make minecraft bedrock stuff stuch as addons & maps!</p>
-        <div class="Buttons">
-          <button class="btn" data-aos="zoom-in-right" data-aos-duration="1000" data-aos-delay="1100">Hire me</button> 
-          <ul class="ul-icons">
-            <li><a href="" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="1200"><i class='bx bxl-Creator'></i></a></li>
-          </ul>
-        </div>
+  </header>
+  <main class="container">
+    <section class="intro">
+      <div class="text-content">
+        <h1>Hi, I'm lildanlid</h1>
+        <h2><span class="highlight">I'M A MC CREATOR</span></h2>
+        <p>I make minecraft bedrock stuff such as addons & maps!</p>
+        <button class="hire-btn">Hire me</button>
       </div>
-
-      <div class="hero-img" data-aos="zoom-in-left" data-aos-duration="2500">
-        <img src="images/man.png" alt="person-img" >
+      <div class="image-container">
+        <img src="your-image.png" alt="Profile Picture">
       </div>
-    </div>
-
-    <div class="info-sec">
-      <div class="info-card" data-aos="fade-in" data-aos-duration="1000" data-aos-delay="1600">
-        <h1>4+</h1>
-        <p>Years of <br> Experience</p>
+    </section>
+    <section class="stats">
+      <div class="stat-item">
+        <h3>4+</h3>
+        <p>Years of Experience</p>
       </div>
-      <div class="info-card" data-aos="fade-in" data-aos-duration="1000" data-aos-delay="1700">
-        <h1>2</h1>
-        <p>Technical <br> Skills</p>
+      <div class="stat-item">
+        <h3>2</h3>
+        <p>Technical Skills</p>
       </div>
-      <div class="info-card" data-aos="fade-in" data-aos-duration="1000" data-aos-delay="1800">
-        <h1>3+</h1>
-        <p>Projects <br> Completed</p>
+      <div class="stat-item">
+        <h3>3+</h3>
+        <p>Projects Completed</p>
       </div>
-    </div>
-  </section>
-  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-  <script>
-    AOS.init();
-  </script>
+    </section>
+  </main>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dark UI Example</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #1f1f1f;
-      padding: 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    .card {
-      background-color: #1e1e1e;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      margin-bottom: 20px;
-      padding: 20px;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #ff9800;
-    }
-
-    .button {
-      background-color: #ff9800;
-      border: none;
-      border-radius: 4px;
-      color: #ffffff;
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 10px 20px;
-      text-align: center;
-    }
-
-    .button:hover {
-      background-color: #e68900;
-    }
-
