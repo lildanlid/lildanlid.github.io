@@ -22,10 +22,20 @@
       color: #000000;
     }
 
-    #switcher {
-      position: fixed;
+    /* Title Styles */
+    #title {
+      position: absolute;
       top: 10px;
       left: 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* Dark/Light Mode Switcher */
+    #switcher {
+      position: absolute;
+      top: 10px;
+      right: 10px;
       padding: 10px;
       cursor: pointer;
       border: none;
@@ -35,20 +45,16 @@
       border-radius: 5px;
     }
 
-    #title {
-      text-align: center;
-      margin-top: 50px;
-      font-size: 36px;
-    }
-
+    /* Buttons Container */
     .button-container {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 20px;
-      margin-top: 50px;
+      margin-top: 70px;
     }
 
+    /* Button Styles */
     .button {
       width: 500px;
       height: 300px;
@@ -66,11 +72,11 @@
   </style>
 </head>
 <body class="light-mode">
-  <!-- Dark/Light Mode Switcher -->
-  <button id="switcher">Switch to Dark Mode</button>
-
   <!-- Title -->
   <div id="title">SimplexMC</div>
+
+  <!-- Dark/Light Mode Switcher -->
+  <button id="switcher">Switch to Dark Mode</button>
 
   <!-- Buttons -->
   <div class="button-container">
