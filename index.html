@@ -3,98 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Downloads</title>
+    <title>Image Grid</title>
     <style>
         body {
-            background-color: #1b1b1b;
+            background-color: #1a1a1a; /* Dark background */
             color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
             padding: 0;
         }
-        h1 {
-            margin-top: 20px;
-            font-size: 2em;
-        }
-        p {
-            font-size: 1em;
-            margin: 10px 0;
-        }
-        p a {
-            color: #00bfff;
-            text-decoration: none;
-        }
-        p a:hover {
-            text-decoration: underline;
-        }
-        .issues {
-            color: #ff6347;
-            margin-top: 10px;
-        }
         .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         .card {
-            background-color: #2b2b2b;
-            border-radius: 8px;
-            margin: 20px;
-            width: 20px;
+            background-color: #000; /* Black background for cards */
+            border-radius: 10px;
+            overflow: hidden;
             text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .card img {
-            width: 500px;
-            height: 300px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            object-fit: cover;
+            width: 100%;
+            height: auto;
+            display: block;
         }
-        .card p {
+        .card-title {
             padding: 10px;
-            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .card-subtitle {
+            padding: 0 10px 10px;
+            font-size: 14px;
+            color: #ccc;
         }
     </style>
 </head>
 <body>
-    <h1>Downloads</h1>
-    <p>Click on an item to download it.</a>!</p>
-    <p class="issues"> .</p>
-
     <div class="container">
+        <!-- Card 1 -->
         <div class="card">
-            <img src="button1.png" alt="Play Movie Event Button">
-            <p>Play Movie Event Button</p>
+            <img src="https://via.placeholder.com/300x150" alt="Play Movie Event Button">
+            <div class="card-title">Play Movie Event Button</div>
         </div>
+        <!-- Card 2 -->
         <div class="card">
-            <img src="button2.png" alt="A Minecraft Movie Marketplace Button">
-            <p>A Minecraft Movie Marketplace Button</p>
+            <img src="https://via.placeholder.com/300x150" alt="A Minecraft Movie Marketplace Button">
+            <div class="card-title">A Minecraft Movie <span style="font-weight: normal;">Marketplace Button</span></div>
         </div>
+        <!-- Card 3 -->
         <div class="card">
-            <img src="resourcepack.png" alt="AMCM Live Event Resource Pack">
-            <p>AMCM Live Event Resource Pack</p>
+            <img src="https://via.placeholder.com/300x300" alt="AMCM Live Event Resource Pack">
+            <div class="card-title">AMCM Live Event Resource Pack</div>
         </div>
+        <!-- Card 4 -->
         <div class="card">
-            <img src="wilderness.png" alt="Wilderness">
-            <p>Wilderness</p>
+            <img src="https://via.placeholder.com/300x150" alt="Wilderness">
+            <div class="card-title">Wilderness</div>
         </div>
+        <!-- Card 5 -->
         <div class="card">
-            <img src="midport.png" alt="Midport Village">
-            <p>Midport Village</p>
+            <img src="https://via.placeholder.com/300x150" alt="Midport Village">
+            <div class="card-title">Midport Village</div>
         </div>
+        <!-- Card 6 -->
         <div class="card">
-            <img src="mines.png" alt="Mines">
-            <p>Mines</p>
+            <img src="https://via.placeholder.com/300x150" alt="Mines">
+            <div class="card-title">Mines</div>
         </div>
+        <!-- Card 7 -->
         <div class="card">
-            <img src="outerwalls.png" alt="Outer Walls">
-            <p>Outer Walls</p>
+            <img src="https://via.placeholder.com/300x150" alt="Outer Walls">
+            <div class="card-title">Outer Walls</div>
         </div>
+        <!-- Card 8 -->
         <div class="card">
-            <img src="outerwalls2.png" alt="Outer Walls 2">
-            <p>Outer Walls 2<br><small>Updated to include more portals</small></p>
+            <img src="https://via.placeholder.com/300x150" alt="Outer Walls 2">
+            <div class="card-title">Outer Walls 2</div>
+            <div class="card-subtitle">Updated to include more portals</div>
         </div>
     </div>
 </body>
