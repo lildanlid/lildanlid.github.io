@@ -3,89 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Grid</title>
+    <title>Realm Center</title>
     <style>
         body {
-            background-color: #1a1a1a; /* Dark background */
+            background-color: #5c007a; /* Purple background */
             color: white;
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
-        .container {
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #5c007a;
+        }
+
+        .navbar .logo {
+            font-size: 30px;
+            font-weight: bold;
+            color: #ff80ab;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar .menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navbar .menu a.active {
+            color: #ff80ab;
+        }
+
+        .navbar .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar .buttons button {
+            background-color: #ff80ab;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-bar {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .search-bar input {
+            width: 50%;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .card {
-            background-color: #000; /* Black background for cards */
+            background-color: #ec407a; /* Bright pink for cards */
             border-radius: 10px;
             overflow: hidden;
-            text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         .card img {
             width: 100%;
-            height: auto;
-            display: block;
+            height: 150px;
+            object-fit: cover;
         }
+
         .card-title {
             padding: 10px;
             font-size: 18px;
             font-weight: bold;
         }
-        .card-subtitle {
-            padding: 0 10px 10px;
-            font-size: 14px;
-            color: #ccc;
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .tag {
+            background-color: white;
+            color: #ec407a;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .view-button {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .view-button button {
+            background-color: white;
+            color: #ec407a;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="navbar">
+        <div class="logo">REALMCENTER</div>
+        <div class="menu">
+            <a href="#" class="active">HOME</a>
+            <a href="#">DISCOVERY</a>
+            <a href="#">ABOUT</a>
+            <a href="#">DONATE</a>
+        </div>
+        <div class="buttons">
+            <button>Login</button>
+            <button>Sign up</button>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Search Realms">
+    </div>
+
+    <div class="grid">
         <!-- Card 1 -->
         <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Play Movie Event Button">
-            <div class="card-title">Play Movie Event Button</div>
+            <img src="https://via.placeholder.com/300x150" alt="Da Realm">
+            <div class="card-title">Da Realm</div>
+            <div class="tags">
+                <div class="tag">realm</div>
+            </div>
+            <div class="view-button">
+                <button>View</button>
+            </div>
         </div>
         <!-- Card 2 -->
         <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="A Minecraft Movie Marketplace Button">
-            <div class="card-title">A Minecraft Movie <span style="font-weight: normal;">Marketplace Button</span></div>
+            <img src="https://via.placeholder.com/300x150" alt="Reality SMP">
+            <div class="card-title">Reality SMP</div>
+            <div class="tags">
+                <div class="tag">Kill</div>
+                <div class="tag">build</div>
+                <div class="tag">team</div>
+                <div class="tag">enjoy</div>
+            </div>
+            <div class="view-button">
+                <button>View</button>
+            </div>
         </div>
         <!-- Card 3 -->
         <div class="card">
-            <img src="https://via.placeholder.com/300x300" alt="AMCM Live Event Resource Pack">
-            <div class="card-title">AMCM Live Event Resource Pack</div>
+            <img src="https://via.placeholder.com/300x150" alt="RizzyRealm">
+            <div class="card-title">RizzyRealm</div>
+            <div class="tags">
+                <div class="tag">Survival</div>
+            </div>
+            <div class="view-button">
+                <button>View</button>
+            </div>
         </div>
         <!-- Card 4 -->
         <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Wilderness">
-            <div class="card-title">Wilderness</div>
-        </div>
-        <!-- Card 5 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Midport Village">
-            <div class="card-title">Midport Village</div>
-        </div>
-        <!-- Card 6 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Mines">
-            <div class="card-title">Mines</div>
-        </div>
-        <!-- Card 7 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Outer Walls">
-            <div class="card-title">Outer Walls</div>
-        </div>
-        <!-- Card 8 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Outer Walls 2">
-            <div class="card-title">Outer Walls 2</div>
-            <div class="card-subtitle">Updated to include more portals</div>
+            <img src="https://via.placeholder.com/300x150" alt="Mobs drop random loot survival">
+            <div class="card-title">Mobs drop random loot survival</div>
+            <div class="tags">
+                <div class="tag">mods</div>
+                <div class="tag">texturepacks</div>
+                <div class="tag">survival</div>
+            </div>
+            <div class="view-button">
+                <button>View</button>
+            </div>
         </div>
     </div>
 </body>
