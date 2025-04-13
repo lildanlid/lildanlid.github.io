@@ -3,72 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery</title>
+    <title>Minecraft Movie Live Event Archive</title>
     <style>
         body {
+            background-color: #1b1b1b;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
             margin: 0;
             padding: 0;
-            background-color: #111;
-            font-family: Arial, sans-serif;
-            color: white;
         }
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+        h1 {
+            margin-top: 20px;
+            font-size: 2em;
         }
-        .gallery-item {
-            background-color: #222;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            transition: transform 0.2s;
+        p {
+            font-size: 1em;
+            margin: 10px 0;
         }
-        .gallery-item:hover {
-            transform: scale(1.05);
+        p a {
+            color: #00bfff;
+            text-decoration: none;
         }
-        .gallery-item img {
-            max-width: 100%;
-            border-radius: 8px;
+        p a:hover {
+            text-decoration: underline;
         }
-        .gallery-item p {
+        .issues {
+            color: #ff6347;
             margin-top: 10px;
-            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px;
+        }
+        .card {
+            background-color: #2b2b2b;
+            border-radius: 8px;
+            margin: 10px;
+            width: 300px;
+            text-align: center;
+        }
+        .card img {
+            width: 100%;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .card p {
+            padding: 10px;
+            margin: 0;
         }
     </style>
 </head>
 <body>
-    <div class="gallery">
-        <div class="gallery-item">
-            <img src="play_movie_event_button.png" alt="Play Movie Event Button">
+    <h1>A Minecraft Movie Live Event Archive</h1>
+    <p>Click on an item to download it. Have a question? Check out <a href="#">discussions</a> or join the <a href="#">discord</a>!</p>
+    <p class="issues">Issues: Villagers NOT included, worlds don't function like in the event, and may be missing some entities or blocks.</p>
+
+    <div class="container">
+        <div class="card">
+            <img src="button1.png" alt="Play Movie Event Button">
             <p>Play Movie Event Button</p>
         </div>
-        <div class="gallery-item">
-            <img src="minecraft_movie_marketplace_button.png" alt="A Minecraft Movie Marketplace Button">
+        <div class="card">
+            <img src="button2.png" alt="A Minecraft Movie Marketplace Button">
             <p>A Minecraft Movie Marketplace Button</p>
         </div>
-        <div class="gallery-item">
-            <img src="amcm_resource_pack.png" alt="AMCM Live Event Resource Pack">
+        <div class="card">
+            <img src="resourcepack.png" alt="AMCM Live Event Resource Pack">
             <p>AMCM Live Event Resource Pack</p>
         </div>
-        <div class="gallery-item">
+        <div class="card">
             <img src="wilderness.png" alt="Wilderness">
             <p>Wilderness</p>
         </div>
-        <div class="gallery-item">
-            <img src="midport_village.png" alt="Midport Village">
+        <div class="card">
+            <img src="midport.png" alt="Midport Village">
             <p>Midport Village</p>
         </div>
-        <div class="gallery-item">
+        <div class="card">
             <img src="mines.png" alt="Mines">
             <p>Mines</p>
         </div>
-        <div class="gallery-item">
-            <img src="outer_walls_2.png" alt="Outer Walls 2">
-            <p>Outer Walls 2</p>
+        <div class="card">
+            <img src="outerwalls.png" alt="Outer Walls">
+            <p>Outer Walls</p>
+        </div>
+        <div class="card">
+            <img src="outerwalls2.png" alt="Outer Walls 2">
+            <p>Outer Walls 2<br><small>Updated to include more portals</small></p>
         </div>
     </div>
 </body>
