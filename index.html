@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Big Buttons</title>
+  <title>Dark Buttons</title>
   <style>
     body {
       background-color: #121212; /* Dark background */
@@ -24,18 +24,19 @@
 
     .button {
       padding: 20px 40px; /* Big button size */
-      background-color: #1e90ff; /* Button color */
-      border: none;
-      color: #ffffff;
+      background-color: #1c1c1c; /* Dark button background */
+      border: 2px solid #d3d3d3; /* Light grey outline */
+      color: #ffffff; /* Light text color */
       font-size: 18px;
       font-weight: bold;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: background-color 0.3s, border-color 0.3s;
     }
 
     .button:hover {
-      background-color: #4682b4; /* Hover color */
+      background-color: #333333; /* Slightly lighter background on hover */
+      border-color: #ffffff; /* Change outline to white on hover */
     }
   </style>
 </head>
