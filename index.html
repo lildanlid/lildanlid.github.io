@@ -3,205 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realm Center</title>
+    <title>Profile Page</title>
     <style>
         body {
-            background-color: #5c007a; /* Purple background */
+            background-color: #2C2C39; /* Dark gray background */
             color: white;
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .navbar {
+        .top-bar {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            width: 100%;
             padding: 10px 20px;
-            background-color: #5c007a;
+            background-color: #2C2C39;
+            position: fixed;
+            top: 0;
         }
 
-        .navbar .logo {
-            font-size: 30px;
-            font-weight: bold;
-            color: #ff80ab;
+        .top-bar button {
+            background-color: #EDEDED; /* Light gray */
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
-        .navbar .menu {
+        .profile {
+            text-align: center;
+            margin-top: 80px; /* Space for the top bar */
+        }
+
+        .profile img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-bottom: 10px;
+        }
+
+        .profile h1 {
+            font-size: 24px;
+            margin: 5px 0;
+        }
+
+        .profile .username {
+            font-size: 18px;
+            font-weight: lighter;
+            margin: 0;
+        }
+
+        .button-group {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
         }
 
-        .navbar .menu a {
-            color: white;
+        .button-group a {
             text-decoration: none;
+        }
+
+        .button {
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
             font-size: 16px;
-            font-weight: bold;
-        }
-
-        .navbar .menu a.active {
-            color: #ff80ab;
-        }
-
-        .navbar .buttons {
             display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .button img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .subscribe {
+            background-color: #69697D; /* Darker gray */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .subscribe h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .subscribe p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .subscribe form {
+            display: flex;
+            flex-direction: column;
             gap: 10px;
         }
 
-        .navbar .buttons button {
-            background-color: #ff80ab;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 5px 15px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .search-bar {
-            text-align: center;
-            margin: 20px;
-        }
-
-        .search-bar input {
-            width: 50%;
+        .subscribe input {
             padding: 10px;
-            border-radius: 20px;
+            border-radius: 5px;
             border: none;
-            outline: none;
+            font-size: 14px;
+        }
+
+        .subscribe button {
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
             font-size: 16px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background-color: #ec407a; /* Bright pink for cards */
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        .card-title {
-            padding: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            padding: 10px;
-        }
-
-        .tag {
-            background-color: white;
-            color: #ec407a;
-            border-radius: 20px;
-            padding: 5px 10px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .view-button {
-            text-align: center;
-            padding: 10px;
-        }
-
-        .view-button button {
-            background-color: white;
-            color: #ec407a;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
-            font-weight: bold;
             cursor: pointer;
+        }
+
+        .footer-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #2C2C39;
+        }
+
+        .footer-bar button {
+            background-color: #EDEDED;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <div class="logo">REALMCENTER</div>
-        <div class="menu">
-            <a href="#" class="active">HOME</a>
-            <a href="#">DISCOVERY</a>
-            <a href="#">ABOUT</a>
-            <a href="#">DONATE</a>
-        </div>
-        <div class="buttons">
-            <button>Login</button>
-            <button>Sign up</button>
-        </div>
+    <div class="top-bar">
+        <button>Subscribe</button>
+        <button>Share</button>
     </div>
 
-    <div class="search-bar">
-        <input type="text" placeholder="Search Realms">
+    <div class="profile">
+        <img src="https://via.placeholder.com/100" alt="Profile Picture">
+        <h1>minecraftaddons</h1>
+        <p class="username">X</p>
     </div>
 
-    <div class="grid">
-        <!-- Card 1 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Da Realm">
-            <div class="card-title">Da Realm</div>
-            <div class="tags">
-                <div class="tag">realm</div>
+    <div class="button-group">
+        <a href="https://twitter.com" target="_blank">
+            <div class="button">
+                <img src="https://via.placeholder.com/20" alt="Twitter Icon">
+                Twitter
             </div>
-            <div class="view-button">
-                <button>View</button>
+        </a>
+        <a href="https://beacons.ai" target="_blank">
+            <div class="button">
+                <img src="https://via.placeholder.com/20" alt="Beacons Icon">
+                Make your own Beacons page
             </div>
-        </div>
-        <!-- Card 2 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Reality SMP">
-            <div class="card-title">Reality SMP</div>
-            <div class="tags">
-                <div class="tag">Kill</div>
-                <div class="tag">build</div>
-                <div class="tag">team</div>
-                <div class="tag">enjoy</div>
-            </div>
-            <div class="view-button">
-                <button>View</button>
-            </div>
-        </div>
-        <!-- Card 3 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="RizzyRealm">
-            <div class="card-title">RizzyRealm</div>
-            <div class="tags">
-                <div class="tag">Survival</div>
-            </div>
-            <div class="view-button">
-                <button>View</button>
-            </div>
-        </div>
-        <!-- Card 4 -->
-        <div class="card">
-            <img src="https://via.placeholder.com/300x150" alt="Mobs drop random loot survival">
-            <div class="card-title">Mobs drop random loot survival</div>
-            <div class="tags">
-                <div class="tag">mods</div>
-                <div class="tag">texturepacks</div>
-                <div class="tag">survival</div>
-            </div>
-            <div class="view-button">
-                <button>View</button>
-            </div>
-        </div>
+        </a>
+    </div>
+
+    <div class="subscribe">
+        <h2>Subscribe to minecraftaddons</h2>
+        <p>Sign up to get exclusive email updates directly from me.</p>
+        <form>
+            <input type="text" placeholder="First Name" required>
+            <input type="email" placeholder="Email" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </div>
+
+    <div class="footer-bar">
+        <button>Beacons</button>
+        <button>Try for free!</button>
     </div>
 </body>
 </html>
