@@ -70,12 +70,10 @@
 
 <body>
   <div class="content">
-    <h1>AMCM Event Server Download</h1>
-    <p>Choose an option below to download the server or learn more about it.</p>
+    <h1>Addon Download</h1>
+    <p>Choose an option below to download.</p>
     <div class="button-container">
-      <button class="button">Download Server</button>
-      <button class="button">View Documentation</button>
-      <button class="button">Contact Support</button>
+      <button class="button">Downloadr</button>
     </div>
   </div>
 </body>
