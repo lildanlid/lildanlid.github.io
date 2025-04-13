@@ -1,49 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portfolio</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .gallery-item {
+            background-color: #222;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        .gallery-item img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .gallery-item p {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-  <header class="navbar">
-    <div class="logo">lildan<span class="highlight">lid</span></div>
-    <nav>
-      <ul class="nav-links">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Projects</a></li>
-        <li><a href="#">Content</a></li>
-      </ul>
-    </nav>
-  </header>
-  <main class="container">
-    <section class="intro">
-      <div class="text-content">
-        <h1>Hi, I'm lildanlid</h1>
-        <h2><span class="highlight">I'M A MC CREATOR</span></h2>
-        <p>I make minecraft bedrock stuff such as addons & maps!</p>
-        <button class="hire-btn">Hire me</button>
-      </div>
-      <div class="image-container">
-        <img src="your-image.png" alt="Profile Picture">
-      </div>
-    </section>
-    <section class="stats">
-      <div class="stat-item">
-        <h3>4+</h3>
-        <p>Years of Experience</p>
-      </div>
-      <div class="stat-item">
-        <h3>2</h3>
-        <p>Technical Skills</p>
-      </div>
-      <div class="stat-item">
-        <h3>3+</h3>
-        <p>Projects Completed</p>
-      </div>
-    </section>
-  </main>
+    <div class="gallery">
+        <div class="gallery-item">
+            <img src="play_movie_event_button.png" alt="Play Movie Event Button">
+            <p>Play Movie Event Button</p>
+        </div>
+        <div class="gallery-item">
+            <img src="minecraft_movie_marketplace_button.png" alt="A Minecraft Movie Marketplace Button">
+            <p>A Minecraft Movie Marketplace Button</p>
+        </div>
+        <div class="gallery-item">
+            <img src="amcm_resource_pack.png" alt="AMCM Live Event Resource Pack">
+            <p>AMCM Live Event Resource Pack</p>
+        </div>
+        <div class="gallery-item">
+            <img src="wilderness.png" alt="Wilderness">
+            <p>Wilderness</p>
+        </div>
+        <div class="gallery-item">
+            <img src="midport_village.png" alt="Midport Village">
+            <p>Midport Village</p>
+        </div>
+        <div class="gallery-item">
+            <img src="mines.png" alt="Mines">
+            <p>Mines</p>
+        </div>
+        <div class="gallery-item">
+            <img src="outer_walls_2.png" alt="Outer Walls 2">
+            <p>Outer Walls 2</p>
+        </div>
+    </div>
 </body>
 </html>
