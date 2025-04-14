@@ -4,123 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile Card</title>
-  <style>
-    /* General styles */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #0a0a0a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* Background pattern */
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('https://i.imgur.com/3Tfk7dX.png'); /* Replace with your background pattern */
-      background-size: cover;
-      opacity: 0.2;
-      z-index: -1;
-    }
-
-    .card {
-      background: #181818;
-      border-radius: 15px;
-      padding: 20px;
-      max-width: 400px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    .card img {
-      border-radius: 50%;
-      width: 100px;
-      height: 100px;
-      display: block;
-      margin: 0 auto;
-    }
-
-    .card h1 {
-      font-size: 1.5rem;
-      text-align: center;
-      margin: 10px 0 5px;
-    }
-
-    .card p {
-      font-size: 0.9rem;
-      text-align: center;
-      color: #b3b3b3;
-    }
-
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .button {
-      padding: 10px 20px;
-      border-radius: 25px;
-      font-size: 0.9rem;
-      font-weight: bold;
-      text-align: center;
-      text-decoration: none;
-      color: white;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .button.green {
-      background-color: #32cd32;
-    }
-
-    .button.blue {
-      background-color: #00aaff;
-    }
-
-    .button svg {
-      margin-left: 5px;
-    }
-
-    .footer {
-      font-size: 0.8rem;
-      text-align: center;
-      color: #b3b3b3;
-      margin-top: 15px;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="card">
-    <img src="https://i.imgur.com/2yAf5vG.png" alt="Profile Picture"> <!-- Replace with your profile picture -->
-    <h1>lildanlid</h1>
-    <p>Hello, I'm lildanlid. I'm a Minecraft bedrock map creator</p>
-    <div class="buttons">
-      <a href="#" class="button green">
-        Linktree
-        <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 96 960 960" width="16" fill="white">
-          <path d="M480 636q-14 0-23-9t-9-23V276q0-14 9-23t23-9q14 0 23 9t9 23v328q0 14-9 23t-23 9Zm0 200q-14 0-23-9t-9-23q0-14 9-23t23-9q14 0 23 9t9 23q0 14-9 23t-23 9ZM480 976q-83 0-156-31.5T200 856q-54-54-85.5-127T83 576q0-83 31.5-156T200 293q54-54 127-85.5T480 176q83 0 156 31.5T760 293q54 54 85.5 127T877 576q0 83-31.5 156T760 856q-54 54-127 85.5T480 976Z"/>
-        </svg>
-      </a>
-      <a href="#" class="button blue">
-        Addons
-        <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 96 960 960" width="16" fill="white">
-          <path d="M499 856q-14 0-23-9t-9-23V542L368 641q-10 10-22.5 10T323 641q-9-9-9-22.5t9-22.5l175-175q9-9 22-9t22 9l175 175q9 9 9 22.5T717 641q-9 9-22 9t-22-9L531 542v282q0 14-9 23t-23 9Zm-19-680v-80h60v80h-60ZM854 515v-60h80v60h-80Zm-789 0v-60h80v60h-80Zm644 359v-60h80v60h-80Zm-509 0v-60h80v60h-80Zm294 222v-80h60v80h-60Z"/>
-        </svg>
-      </a>
+  <div class="container">
+    <div class="card">
+      <div class="profile">
+        <img src="https://via.placeholder.com/100" alt="Profile Picture">
+      </div>
+      <h1>lildanlid</h1>
+      <p>Hello I'm lildanlid. I'm a Minecraft Bedrock map creator</p>
+      <div class="buttons">
+        <a href="#" class="button links">Links <span>🔗</span></a>
+        <a href="#" class="button addons">Addons <span>⬇️</span></a>
+        <a href="#" class="button curseforge">Curseforge <span>⚒️</span></a>
+      </div>
     </div>
-    <div class="footer">( Made with Carrd )</div>
+    <footer>
+      <p>( Made with Carrd )</p>
+    </footer>
   </div>
 </body>
 </html>
