@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profile Card</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Background with Blue Button</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-  <div class="background">
-    <div class="card">
-      <div class="profile">
-        <img src="https://via.placeholder.com/100" alt="Profile Picture">
-      </div>
-      <h1>lildanlid</h1>
-      <p>Hello I'm lildanlid. I'm a Minecraft bedrock map creator</p>
-      <div class="buttons">
-        <a href="#" class="button links">
-          Links <span class="icon">🔗</span>
-        </a>
-        <a href="#" class="button addons">
-          Addons <span class="icon">⬇️</span>
-        </a>
-        <a href="#" class="button curseforge">
-          Curseforge <span class="icon">⚒️</span>
-        </a>
-      </div>
-      <footer>
-        <p>( Made with Carrd )</p>
-      </footer>
-    </div>
-  </div>
+    <a href="https://lildanlid.carrd.co/" class="button">Website</a>
 </body>
 </html>
