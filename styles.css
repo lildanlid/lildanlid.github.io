@@ -1,70 +1,90 @@
-body {
+/* General Reset */
+body, h1, h2, p, a, ul, li {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
     font-family: Arial, sans-serif;
     background-color: #121212;
     color: white;
+    line-height: 1.6;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     min-height: 100vh;
-}
-
-.board {
     text-align: center;
-    max-width: 1000px;
-    padding: 2rem;
-    border: 2px solid #8a2be2; /* Purple border for the board */
-    border-radius: 10px;
-    background-color: #1e1e1e;
 }
 
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+.main-container {
+    padding: 2rem;
+}
+
+header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
 }
 
 .subtext {
     font-size: 1.2rem;
-    margin-bottom: 2rem;
     color: #aaaaaa;
+    margin-bottom: 2rem;
 }
 
-.button-row {
+.buttons {
     display: flex;
-    justify-content: space-between;
     gap: 1rem;
-    flex-wrap: wrap; /* Ensures cards wrap on smaller screens */
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-.button-card {
-    background-color: #2a2a2a;
-    padding: 1.5rem;
-    border-radius: 10px;
-    text-align: center;
-    border: 2px solid #8a2be2; /* Purple border for each card */
-    flex: 1;
-    max-width: 200px;
-    box-sizing: border-box;
+.button {
+    text-decoration: none;
+    background-color: #8a2be2;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+.button:hover {
+    background-color: #6a1bb9;
+    transform: scale(1.05);
 }
 
-.card-description {
-    font-size: 0.9rem;
+section {
+    margin: 3rem 0;
+    padding: 2rem;
+    border-top: 2px solid #8a2be2;
+}
+
+section h2 {
+    font-size: 2rem;
     margin-bottom: 1rem;
+}
+
+section p, section ul {
+    font-size: 1rem;
     color: #cccccc;
 }
 
-.button-link {
-    text-decoration: none;
-    color: #8a2be2; /* Purple color */
-    font-weight: bold;
+ul {
+    list-style: none;
+    padding: 0;
 }
 
-.button-link:hover {
+ul li {
+    margin: 0.5rem 0;
+}
+
+ul li a {
+    color: #8a2be2;
+    text-decoration: none;
+}
+
+ul li a:hover {
     text-decoration: underline;
 }
