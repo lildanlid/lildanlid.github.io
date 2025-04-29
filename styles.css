@@ -8,6 +8,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    text-align: center;
 }
 
 /* Container Styles */
@@ -32,9 +33,9 @@ header .subtext {
     display: flex;
     justify-content: space-between;
     gap: 1.5rem;
-    flex-wrap: wrap;
     max-width: 1200px;
     margin: 0 auto;
+    flex-wrap: wrap; /* Ensures responsiveness on smaller screens */
 }
 
 /* Individual Cards */
