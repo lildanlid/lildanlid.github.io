@@ -154,3 +154,11 @@ footer {
     font-size: 0.9rem;
     text-decoration: none;
 }
+
+/* Download Container (Aligned Text and Button on the Same Line) */
+.download-container {
+    display: flex;
+    justify-content: center; /* Center-aligns the content horizontally */
+    align-items: center; /* Aligns text and link vertically on the same line */
+    gap: 0.5rem; /* Adds space between the text and the link */
+}
