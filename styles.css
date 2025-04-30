@@ -7,8 +7,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    flex-direction: column;
     text-align: center;
+    min-height: 100vh;
 }
 
 /* Container Styles */
@@ -19,32 +20,33 @@ body {
 
 header h1 {
     font-size: 3rem;
-    margin-bottom: 0.3rem; /* Move the header slightly closer to the top */
+    margin-bottom: 0.3rem;
 }
 
 header .subtext {
     font-size: 1.2rem;
     color: #aaaaaa;
-    margin-bottom: 2.5rem; /* Add some spacing between the subtext and cards */
+    margin-bottom: 2.5rem;
 }
 
 /* Card Container */
 .card-container {
     display: flex;
     justify-content: space-between;
-    gap: 2rem; /* Increased spacing between cards */
+    gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
-    flex-wrap: wrap; /* Ensures responsiveness on smaller screens */
+    flex-wrap: wrap;
+    margin-bottom: 3rem; /* Added spacing between card container and footer */
 }
 
 /* Individual Cards */
 .card {
     background-color: #1e1e1e;
-    padding: 2rem; /* Increased padding for larger boxes */
+    padding: 2rem;
     border-radius: 10px;
     flex: 1;
-    max-width: 300px; /* Increased width for larger boxes */
+    max-width: 300px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -58,41 +60,41 @@ header .subtext {
 /* Icon in Cards */
 .card .icon {
     background-color: #333;
-    height: 60px; /* Increased height */
-    width: 60px; /* Increased width */
+    height: 60px;
+    width: 60px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto 1.5rem auto; /* Adjusted spacing */
-    font-size: 1.8rem; /* Increased icon size */
-    color: #8a2be2; /* Purple color for icons */
+    margin: 0 auto 1.5rem auto;
+    font-size: 1.8rem;
+    color: #8a2be2;
 }
 
 /* Card Title */
 .card h2 {
-    font-size: 1.3rem; /* Slightly larger font size */
+    font-size: 1.3rem;
     font-weight: bold;
-    margin-bottom: 0.8rem; /* Adjusted spacing */
+    margin-bottom: 0.8rem;
 }
 
 /* Card Description */
 .card p {
-    font-size: 1rem; /* Increased font size */
+    font-size: 1rem;
     color: #cccccc;
-    margin-bottom: 1.5rem; /* Adjusted spacing */
+    margin-bottom: 1.5rem;
 }
 
 /* Card Link */
 .card .link {
     text-decoration: none;
-    color: #8a2be2; /* Purple color for link */
+    color: #8a2be2;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
 .card .link:hover {
-    color: #a855f7; /* Lighter purple on hover */
+    color: #a855f7;
 }
 
 /* Footer Links */
@@ -104,6 +106,7 @@ footer {
     display: flex;
     justify-content: center;
     gap: 2rem;
+    margin-top: 1rem; /* Added spacing above the footer links */
 }
 
 .footer-links a {
