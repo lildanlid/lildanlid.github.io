@@ -1,19 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Animate the favicon when the tab is loaded
-    const favicon = document.getElementById("favicon");
-    if (favicon) {
-        let bounceInterval = setInterval(() => {
-            favicon.classList.add("animate-favicon");
+    const loadingScreen = document.getElementById("loading-screen");
+    const content = document.getElementById("content");
 
-            // Remove animation after 1 second
-            setTimeout(() => {
-                favicon.classList.remove("animate-favicon");
-            }, 1000);
-        }, 2000);
+    // Simulate loading delay (e.g., for assets to load)
+    setTimeout(() => {
+        // Fade out loading screen
+        loadingScreen.classList.add("hidden");
 
-        // Stop animation after 5 iterations (or adjust to your preference)
-        setTimeout(() => {
-            clearInterval(bounceInterval);
-        }, 10000); // 10 seconds
-    }
+        // Fade in content
+        content.classList.add("loaded");
+    }, 1000); // Adjust delay as needed (1 second here)
 });
