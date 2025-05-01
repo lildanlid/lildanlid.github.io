@@ -162,3 +162,11 @@ footer {
     align-items: center; /* Aligns text and link vertically on the same line */
     gap: 0.5rem; /* Adds space between the text and the link */
 }
+
+/* Loading thing*/
+
+@keyframes favicon-bounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
