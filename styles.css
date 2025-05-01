@@ -182,18 +182,3 @@ footer {
     transition: opacity 0.5s ease; /* Fade-out transition */
 }
 
-/* Hide loading screen when not visible */
-#loading-screen.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* Content fade-in animation */
-#content {
-    opacity: 0; /* Initially hidden */
-    transition: opacity 1s ease; /* Fade-in effect */
-}
-
-#content.loaded {
-    opacity: 1; /* Fully visible */
-}
