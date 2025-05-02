@@ -6,16 +6,26 @@
     <title>lildanlid</title>
     <link rel="stylesheet" href="styles.css">
     <link id="dynamic-favicon" rel="icon" href="https://i.imgur.com/wy7FVK3.png" type="image/x-icon">
+    <style>
+        /* Fade-in effect for the content */
+        #content {
+            opacity: 0; /* Initially invisible */
+            transform: translateY(20px); /* Start slightly below its final position */
+            transition: opacity 1s ease, transform 1s ease; /* Smooth fade-in */
+        }
+
+        #content.loaded {
+            opacity: 1; /* Fully visible */
+            transform: translateY(0); /* Normal position */
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="content">
         <header>
             <h1>Welcome to lildanlid's Page</h1>
-            <p class="subtext">Click below to view Minecraft Addons!</p>
+            <p class="subtext">Here you can find Minecraft Addons created by lildanlid!</p>
         </header>
-        <div class="navigate-container">
-            <a href="page.html" class="navigate-link">Go to Addons Page &rarr;</a>
-        </div>
 
         <!-- Addons Section -->
         <section id="addons">
@@ -67,6 +77,27 @@
                 </div>
             </div>
         </section>
+
+        <!-- Footer Links -->
+        <footer>
+            <div class="footer-links">
+                <a href="https://mcpedl.com/user/llildanlid/" target="_blank">MCPEDL</a>
+                <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank">Curseforge</a>
+                <a href="https://rvlt.gg/6tW12QwB" target="_blank">Group</a>
+            </div>
+            <!-- Old Site Link -->
+            <div class="old-site" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid gray;">
+                <a href="https://example.com/old-site" target="_blank" style="color: gray; font-size: 0.9rem; text-decoration: none;">Old Site</a>
+            </div>
+        </footer>
     </div>
+
+    <script>
+        // Add the "loaded" class to trigger the fade-in effect when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            const content = document.getElementById("content");
+            content.classList.add("loaded");
+        });
+    </script>
 </body>
 </html>
