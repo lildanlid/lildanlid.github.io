@@ -163,3 +163,15 @@ footer {
     gap: 0.5rem; /* Adds space between the text and the link */
 }
 
+/* Fade-in effect for the content */
+#content {
+    opacity: 0; /* Initially invisible */
+    transform: translateY(20px); /* Start slightly below its final position */
+    transition: opacity 1s ease, transform 1s ease; /* Smooth transition */
+}
+
+#content.loaded {
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Back to its normal position */
+}
+
