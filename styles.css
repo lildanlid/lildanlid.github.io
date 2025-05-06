@@ -115,6 +115,21 @@ header .subtext {
     color: #a855f7;
 }
 
+/* Chat Hub Image Styling */
+.card-header {
+    position: relative;
+    height: 150px;
+    background-color: #d8b0ff; /* Fallback background color for the card header */
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 /* Footer Links */
 footer {
     margin-top: 2rem;
@@ -150,6 +165,7 @@ footer {
     font-size: 0.9rem;
     text-decoration: none;
 }
+
 /* Contanier */
 .container {
     text-align: center;
