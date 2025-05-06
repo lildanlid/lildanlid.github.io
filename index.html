@@ -1,52 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>lildanlid</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lildanlid</title>
+    <link rel="stylesheet" href="styles.css">
+    <link id="dynamic-favicon" rel="icon" href="https://i.imgur.com/wy7FVK3.png" type="image/x-icon">
 </head>
 <body>
-  <div class="sidebar">
-    <h3>Welcome</h3>
-    <a href="welcome.html">
-      <i>🏠</i>
-      <span>Welcome</span>
-    </a>
-    <h3>Getting Started</h3>
-    <a href="quickstart.html" class="active">
-      <i>⚡</i>
-      <span>Download</span>
-    </a>
-    <h3>Addons</h3>
-    <a href="rank-managment.html">
-      <i>📜</i>
-      <span>Rank Mangement</span>
-    </a>
-    <a href="rank.html">
-      <i>✍️</i>
-      <span>Rank</span>
-    </a>
-    <a href="sidebar.html">
-      <i>🖼️</i>
-      <span>Sidebar</span>
-    </a>
-    <a href="cps.html">
-      <i>🔌</i>
-      <span>CPS</span>
-    </a>
-    <a href="nothing.html">
-      <i>🔴</i>
-      <span>Nothing</span>
-    </a>
-    <a href="nothing.html">
-      <i>🔴</i>
-      <span>Nothing</span>
-    </a>
-  </div>
-  <div class="main-content">
-    <h1>Main Content Area</h1>
-    <p>This is the homepage content. Use the sidebar to navigate to other pages.</p>
-  </div>
+    <div class="container" id="content">
+        <header>
+            <h1>Welcome to lildanlid's Page</h1>
+            <p class="subtext">Here you can find Minecraft Addons created by lildanlid!</p>
+        </header>
+
+        <!-- Centered Links Section -->
+        <section id="center-links">
+            <a href="https://mcpedl.com/user/llildanlid/" target="_blank" class="center-link">MCPEDL</a>
+            <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank" class="center-link">Curseforge</a>
+            <a href="https://rvlt.gg/6tW12QwB" target="_blank" class="center-link">Group</a>
+        </section>
+
+        <!-- Addons Section -->
+        <section id="addons">
+            <h2>Available Addons</h2>
+            <div class="card-container">
+                <!-- Box 1 -->
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://i.imgur.com/D8L7qSy.png');"></div>
+                    <div class="card-content">
+                        <h2>PERSONAL SIDEBAR</h2>
+                        <p>Alternates the titleraw title command.</p>
+                        <a href="https://www.mediafire.com/file/e8dcvi2bl9kujyx/Personal_Sidebar_V2.mcaddon/file" class="download-button" target="_blank" download>↓ Download</a>
+                    </div>
+                </div>
+                <!-- Box 2 -->
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://i.imgur.com/D8L7qSy.png');"></div>
+                    <div class="card-content">
+                        <h2>CHAT RANKS</h2>
+                        <p>Easy to use chat ranks "rank:Owner".</p>
+                        <a href="https://www.mediafire.com/file/h2crh3plpuw4ids/ChatRanks.mcpack/file" class="download-button" target="_blank" download>↓ Download</a>
+                    </div>
+                </div>
+                <!-- Box 3 -->
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://i.imgur.com/D8L7qSy.png');"></div>
+                    <div class="card-content">
+                        <h2>CPS COUNTER</h2>
+                        <p>Show CPS when hitting an entity.</p>
+                        <a href="https://www.mediafire.com/file/joa9g5ejfy4unhq/CPS.mcaddon/file" class="download-button" target="_blank" download>↓ Download</a>
+                    </div>
+                </div>
+                <!-- Box 4 -->
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://i.imgur.com/gORjtM0.png');"></div>
+                    <div class="card-content">
+                        <h2>SOON</h2>
+                        <p>???</p>
+                        <a href="#" class="download-button disabled" target="_blank">Nothing</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="old-site" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid gray;">
+                <a href="https://example.com/old-site" target="_blank" style="color: gray; font-size: 0.9rem; text-decoration: none;">Old Site</a>
+            </div>
+        </footer>
+    </div>
 </body>
 </html>
