@@ -4,59 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sidebar Navigation</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    .sidebar {
-      height: 100vh;
-      width: 250px;
-      background-color: #1b1f23;
-      color: #fff;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-    }
-
-    .sidebar h3 {
-      margin-top: 20px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      color: #b1b1b1;
-      text-transform: uppercase;
-    }
-
-    .sidebar a {
-      text-decoration: none;
-      color: #fff;
-      padding: 10px 15px;
-      margin: 5px 0;
-      display: flex;
-      align-items: center;
-      border-radius: 5px;
-      transition: background 0.3s;
-    }
-
-    .sidebar a:hover {
-      background-color: #333;
-    }
-
-    .sidebar a.active {
-      background-color: #333;
-    }
-
-    .sidebar a i {
-      margin-right: 10px;
-      font-size: 16px;
-    }
-
-    .sidebar a span {
-      font-size: 14px;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="sidebar">
@@ -99,6 +47,11 @@
       <i>🔌</i>
       <span>Integrations</span>
     </a>
+  </div>
+  <div class="main-content">
+    <h1>Main Content Area</h1>
+    <p>This is where the main content of the page will go. It matches the dark theme of the sidebar for a cohesive look.</p>
+    <p>Click on the links in the sidebar to navigate to other sections.</p>
   </div>
   <script>
     // Add click handlers for navigation if needed
