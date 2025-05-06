@@ -1,35 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Docs Website</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Navigation</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      background-color: #1b1f23;
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+    }
+
+    .sidebar h3 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #b1b1b1;
+      text-transform: uppercase;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #fff;
+      padding: 10px 15px;
+      margin: 5px 0;
+      display: flex;
+      align-items: center;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #333;
+    }
+
+    .sidebar a.active {
+      background-color: #333;
+    }
+
+    .sidebar a i {
+      margin-right: 10px;
+      font-size: 16px;
+    }
+
+    .sidebar a span {
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-    <nav class="sidebar">
-        <h2>Menu</h2>
-        <ul>
-            <li><a href="#welcome">Welcome</a></li>
-            <li><a href="#quickstart">Quickstart</a></li>
-            <li><a href="#publish">Publish your docs</a></li>
-            <li><a href="#editor">Editor</a></li>
-            <li><a href="#markdown">Markdown</a></li>
-            <li><a href="#images">Images & Media</a></li>
-            <li><a href="#interactive">Interactive Blocks</a></li>
-            <li><a href="#openapi">OpenAPI</a></li>
-            <li><a href="#integrations">Integrations</a></li>
-        </ul>
-    </nav>
-    <main>
-        <h1>Documentation Site</h1>
-        <div class="buttons">
-            <button>Button 1</button>
-            <button>Button 2</button>
-            <button>Button 3</button>
-            <button>Button 4</button>
-            <button disabled>Soon</button>
-        </div>
-    </main>
+  <div class="sidebar">
+    <h3>Welcome</h3>
+    <a href="#welcome">
+      <i>🏠</i>
+      <span>Welcome</span>
+    </a>
+    <h3>Getting Started</h3>
+    <a href="#quickstart" class="active">
+      <i>⚡</i>
+      <span>Quickstart</span>
+    </a>
+    <a href="#publish-docs">
+      <i>📄</i>
+      <span>Publish your docs</span>
+    </a>
+    <h3>Basics</h3>
+    <a href="#editor">
+      <i>✍️</i>
+      <span>Editor</span>
+    </a>
+    <a href="#markdown">
+      <i>📜</i>
+      <span>Markdown</span>
+    </a>
+    <a href="#images-media">
+      <i>🖼️</i>
+      <span>Images & media</span>
+    </a>
+    <a href="#interactive-blocks">
+      <i>🔗</i>
+      <span>Interactive blocks</span>
+    </a>
+    <a href="#openapi">
+      <i>📘</i>
+      <span>OpenAPI</span>
+    </a>
+    <a href="#integrations">
+      <i>🔌</i>
+      <span>Integrations</span>
+    </a>
+  </div>
+  <script>
+    // Add click handlers for navigation if needed
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', function() {
+        document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+        this.classList.add('active');
+        // Replace with functionality to navigate to specific pages
+      });
+    });
+  </script>
 </body>
 </html>
