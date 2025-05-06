@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="sidebar">
+    <h3>Welcome</h3>
+    <a href="welcome.html" class="active">
+      <i>🏠</i>
+      <span>Welcome</span>
+    </a>
+    <h3>Getting Started</h3>
+    <a href="quickstart.html">
+      <i>⚡</i>
+      <span>Quickstart</span>
+    </a>
+    <a href="publish-docs.html">
+      <i>📄</i>
+      <span>Publish your docs</span>
+    </a>
+    <h3>Basics</h3>
+    <a href="editor.html">
+      <i>✍️</i>
+      <span>Editor</span>
+    </a>
+    <a href="markdown.html">
+      <i>📜</i>
+      <span>Markdown</span>
+    </a>
+    <a href="images-media.html">
+      <i>🖼️</i>
+      <span>Images & media</span>
+    </a>
+    <a href="interactive-blocks.html">
+      <i>🔗</i>
+      <span>Interactive blocks</span>
+    </a>
+    <a href="openapi.html">
+      <i>📘</i>
+      <span>OpenAPI</span>
+    </a>
+    <a href="integrations.html">
+      <i>🔌</i>
+      <span>Integrations</span>
+    </a>
+  </div>
+  <div class="main-content">
+    <h1>Welcome</h1>
+    <p>This is the Welcome page content.</p>
+    <button class="download-button" onclick="downloadFile()">Download</button>
+  </div>
+  <script>
+    function downloadFile() {
+      // Replace with actual file URL
+      const fileUrl = 'files/welcome-file.pdf'; // Example file path
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = 'welcome-file.pdf'; // Example file name
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
