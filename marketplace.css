@@ -71,13 +71,17 @@ header h1 {
 .tag-free {
     position: absolute;
     top: 10px;
-    left: 10px;
-    background-color: green;
     color: white;
     padding: 5px 10px;
     font-size: 0.8rem;
     border-radius: 5px;
     font-weight: bold;
+}
+
+/* Top-Right FREE Tag */
+.tag-free.top-right {
+    right: 10px;
+    background-color: green;
 }
 
 /* Card Content */
@@ -103,9 +107,6 @@ header h1 {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 /* Download Button */
@@ -123,24 +124,4 @@ header h1 {
 
 .download-button:hover {
     background-color: #0056b3;
-}
-
-/* Additional Buttons */
-.preview-button, .info-button {
-    background-color: #555;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.preview-button:hover {
-    background-color: #777;
-}
-
-.info-button:hover {
-    background-color: #777;
 }
