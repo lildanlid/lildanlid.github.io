@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     text-align: center;
     min-height: 100vh;
-    background-color: #1e1e1e; /* Changed to a darker shade */
+    background-color: #171616; /* Changed to a darker shade */
 }
 
 /* Container Styles */
@@ -130,7 +130,7 @@ header h1 {
 .container {
     text-align: center;
     padding: 2rem;
-    background-color: #1e1e1e; /* Change this color to your desired background */
+    background-color: #171616; /* Change this color to your desired background */
     border-radius: 10px; /* Keeps rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); /* Adjust shadow for a better look */
     max-width: 1200px;
