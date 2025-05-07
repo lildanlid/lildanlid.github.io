@@ -67,23 +67,6 @@ header h1 {
     object-fit: cover;
 }
 
-/* FREE Tag */
-.tag-free {
-    position: absolute;
-    color: white;
-    padding: 5px 10px;
-    font-size: 0.8rem;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-/* Bottom-Right FREE Tag */
-.tag-free.bottom-right {
-    background-color: green;
-    bottom: 10px;
-    right: 10px;
-}
-
 /* Card Content */
 .card-content {
     padding: 1rem;
@@ -127,4 +110,15 @@ header h1 {
 
 .download-button:hover {
     background-color: #0056b3;
+}
+
+/* FREE Tag */
+.tag-free {
+    background-color: green;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    font-weight: bold;
+    align-self: flex-end; /* Align the FREE tag at the bottom-right */
 }
