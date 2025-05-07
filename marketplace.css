@@ -90,7 +90,7 @@ header h1 {
     position: absolute;
     bottom: 10px;
     width: 100%; /* Ensure the actions span the card's width */
-    display: flex; /* Use Flexbox to align the button and text */
+    display: flex; /* Use Flexbox to align the buttons and text */
     justify-content: space-between; /* Space the elements apart */
     padding: 0 10px; /* Add padding to the left and right */
 }
@@ -120,5 +120,7 @@ header h1 {
     font-size: 0.8rem;
     border-radius: 5px;
     font-weight: bold;
-    align-self: flex-end; /* Align the FREE tag at the bottom-right */
+    position: absolute;
+    bottom: 10px;
+    right: 10px; /* Align the FREE text to the bottom-right corner */
 }
