@@ -136,6 +136,6 @@ header h1 {
     border-radius: 5px;
     font-weight: bold;
     position: absolute;
-    bottom: 5px; /* Lowered the FREE tag closer to the edge */
-    right: 5px;  /* Aligned to the absolute bottom-right corner */
+    bottom: 6px; /* Lowered the FREE tag closer to the edge */
+    right: 4px;  /* Aligned to the absolute bottom-right corner */
 }
