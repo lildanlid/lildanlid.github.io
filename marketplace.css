@@ -106,7 +106,10 @@ header h1 {
 .card-actions {
     position: absolute;
     bottom: 10px;
-    left: 10px;
+    width: 100%; /* Ensure the actions span the card's width */
+    display: flex; /* Use Flexbox to align the button and text */
+    justify-content: space-between; /* Space the elements apart */
+    padding: 0 10px; /* Add padding to the left and right */
 }
 
 /* Download Button */
