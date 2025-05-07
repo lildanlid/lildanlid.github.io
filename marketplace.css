@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     text-align: center;
     min-height: 100vh;
-    background-color: #1e1e2f;
+    background-color: #1e1e1e;
 }
 
 /* Container Styles */
@@ -136,7 +136,7 @@ header h1 {
     border-radius: 5px;
     font-weight: bold;
     position: absolute;
-    bottom: 1px; /* Lowered the FREE tag even closer to the bottom */
-    right: 4px;  /* Aligned closer to the absolute bottom-right corner */
+    bottom: 0px; /* Lowered the FREE tag even closer to the bottom */
+    right: 7px;  /* Aligned closer to the absolute bottom-right corner */
     letter-spacing: 0.3px; /* Added 0.3px letter spacing for more spacing between characters */
 }
