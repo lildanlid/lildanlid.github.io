@@ -121,6 +121,6 @@ header h1 {
     border-radius: 5px;
     font-weight: bold;
     position: absolute;
-    bottom: 10px;
-    right: 10px; /* Align the FREE text to the bottom-right corner */
+    bottom: 15px;
+    right: 9px; /* Align the FREE text to the bottom-right corner */
 }
