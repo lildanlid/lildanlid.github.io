@@ -45,6 +45,7 @@ header h1 {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     width: 351px; /* Width matches the image size */
     height: 348px; /* Height matches the image size */
+    position: relative; /* For positioning child elements like buttons or tags */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -57,6 +58,7 @@ header h1 {
 .card-header {
     height: 150px;
     background-color: #d8b0ff;
+    position: relative;
 }
 
 .card-image {
@@ -65,10 +67,24 @@ header h1 {
     object-fit: cover;
 }
 
+/* FREE Tag */
+.tag-free {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: green;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
 /* Card Content */
 .card-content {
-    padding: 1.5rem;
+    padding: 1rem;
     color: white;
+    text-align: left;
 }
 
 .card-content h2 {
@@ -80,6 +96,16 @@ header h1 {
     font-size: 1rem;
     margin-bottom: 1rem;
     color: #b0b0b0;
+}
+
+/* Card Actions */
+.card-actions {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* Download Button */
@@ -97,4 +123,24 @@ header h1 {
 
 .download-button:hover {
     background-color: #0056b3;
+}
+
+/* Additional Buttons */
+.preview-button, .info-button {
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.preview-button:hover {
+    background-color: #777;
+}
+
+.info-button:hover {
+    background-color: #777;
 }
