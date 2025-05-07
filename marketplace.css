@@ -70,7 +70,6 @@ header h1 {
 /* FREE Tag */
 .tag-free {
     position: absolute;
-    top: 10px;
     color: white;
     padding: 5px 10px;
     font-size: 0.8rem;
@@ -78,10 +77,11 @@ header h1 {
     font-weight: bold;
 }
 
-/* Top-Right FREE Tag */
-.tag-free.top-right {
-    right: 10px;
+/* Bottom-Right FREE Tag */
+.tag-free.bottom-right {
     background-color: green;
+    bottom: 10px;
+    right: 10px;
 }
 
 /* Card Content */
@@ -106,7 +106,7 @@ header h1 {
 .card-actions {
     position: absolute;
     bottom: 10px;
-    right: 10px;
+    left: 10px;
 }
 
 /* Download Button */
