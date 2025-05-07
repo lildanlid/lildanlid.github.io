@@ -88,11 +88,11 @@ header h1 {
 /* Card Actions */
 .card-actions {
     position: absolute;
-    bottom: 10px;
+    bottom: 0;
     width: 100%; /* Ensure the actions span the card's width */
     display: flex; /* Use Flexbox to align the buttons and text */
     justify-content: space-between; /* Space the elements apart */
-    padding: 0 10px; /* Add padding to the left and right */
+    padding: 10px; /* Add padding */
 }
 
 /* Download Button */
@@ -116,11 +116,11 @@ header h1 {
 .tag-free {
     background-color: green;
     color: white;
-    padding: 5px 10px;
+    padding: 5px 15px;
     font-size: 0.8rem;
     border-radius: 5px;
     font-weight: bold;
     position: absolute;
-    bottom: 15px;
-    right: 9px; /* Align the FREE text to the bottom-right corner */
+    bottom: 10px;
+    right: 10px; /* Align the FREE text to the absolute bottom-right corner */
 }
