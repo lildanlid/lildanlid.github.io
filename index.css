@@ -57,13 +57,12 @@ button {
 button:hover {
     background-color: #0056b3;
 }
-/* Container Styles */
 .container {
     text-align: center;
     padding: 2rem;
-    background-color: rgba(0, 0, 0, 0.9); /* Slightly darker background for the container */
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    background-color: #171616; /* Change this to your desired background color */
+    border-radius: 10px; /* Keeps rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); /* Adjust shadow for a better look */
     max-width: 1200px;
     margin: 2rem auto;
 }
