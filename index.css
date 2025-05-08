@@ -118,7 +118,7 @@ header h1 {
     width: 351px; /* Width matches the image size */
     height: 348px; /* Height matches the image size */
     position: relative; /* For positioning child elements like buttons or tags */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.6s ease, box-shadow 0.6s ease; /* Increased duration to 0.6s */
 }
 
 .card:hover {
