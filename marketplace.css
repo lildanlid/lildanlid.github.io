@@ -169,17 +169,3 @@ header h1 {
     right: 7px;  /* Aligned closer to the absolute bottom-right corner */
     letter-spacing: 0.3px; /* Added 0.3px letter spacing for more spacing between characters */
 }
-
-/* SOON Tag */
-.tag-soon {
-    background-color: gray; 
-    color: white;
-    padding: 5px 15px;
-    font-size: 0.8rem;
-    border-radius: 5px;
-    font-weight: bold;
-    position: absolute;
-    bottom: 0px; /* Lowered the FREE tag even closer to the bottom */
-    right: 7px;  /* Aligned closer to the absolute bottom-right corner */
-    letter-spacing: 0.3px; /* Added 0.3px letter spacing for more spacing between characters */
-}
