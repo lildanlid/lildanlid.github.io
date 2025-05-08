@@ -1,40 +1,111 @@
-/*=============== CARD STYLING ===============*/
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #6200ea;
+    color: white;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    background-color: #3700b3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background: #f2f2f2;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
 .card {
-   background-color: var(--body-color);
-   box-shadow: 0 4px 12px var(--shadow-color);
-   border-radius: 0.75rem;
-   padding: 1.5rem;
-   margin-top: 2rem;
-   text-align: center;
+    background: inherit;
+    border: 2px solid currentColor;
+    border-radius: 10px;
+    padding: 15px;
+    max-width: 300px;
+    text-align: center;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
-.card__title {
-   font-size: 1.5rem;
-   font-weight: var(--font-semi-bold);
-   color: var(--title-color);
-   margin-bottom: 0.5rem;
+.card img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
 }
 
-.card__description {
-   font-size: var(--normal-font-size);
-   color: var(--text-color);
-   margin-bottom: 1rem;
+.card h3 {
+    margin: 10px 0;
 }
 
-.card__button {
-   display: inline-flex;
-   align-items: center;
-   justify-content: center;
-   gap: 0.5rem;
-   padding: 0.75rem 1.5rem;
-   background-color: var(--first-color);
-   color: #fff;
-   border-radius: 0.5rem;
-   font-size: var(--normal-font-size);
-   font-weight: var(--font-semi-bold);
-   transition: background-color 0.3s;
+.card p {
+    font-size: 14px;
+    color: inherit;
 }
 
-.card__button:hover {
-   background-color: hsl(228, 75%, 53%);
+.download-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.download-btn:hover {
+    background: #0056b3;
 }
