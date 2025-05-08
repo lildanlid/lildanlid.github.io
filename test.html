@@ -1,62 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stylized Button Cards</title>
-  <link rel="stylesheet" href="test.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Service</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="header">
-    <h1>Welcome to My Website</h1>
-  </div>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">CreeperCloud Deploy</h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#login" class="btn">Login</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-  <div class="content">
-    <div class="fade-in">
-      <p>Scroll down to see the fade effect!</p>
-    </div>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h2>Deploy Your Applications Seamlessly</h2>
+                <p>Experience the power of automated, reliable, and fast deployments with CreeperCloud.</p>
+                <a href="#features" class="btn btn-primary">Learn More</a>
+            </div>
+        </section>
 
-    <div class="card-container fade-in">
-      <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Placeholder Image">
-        <h3>Card Title 1</h3>
-        <p>Short description for Card 1.</p>
-        <button>Download</button>
-      </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Placeholder Image">
-        <h3>Card Title 2</h3>
-        <p>Short description for Card 2.</p>
-        <button>Download</button>
-      </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Placeholder Image">
-        <h3>Card Title 3</h3>
-        <p>Short description for Card 3.</p>
-        <button>Download</button>
-      </div>
-    </div>
+        <section id="features" class="features">
+            <div class="container">
+                <h2>Features</h2>
+                <div class="features-grid">
+                    <div class="feature">
+                        <h3>Fast Deployments</h3>
+                        <p>Deploy your applications in seconds with our optimized infrastructure.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Secure Environment</h3>
+                        <p>We prioritize security to ensure your applications are always safe.</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Scalable Solutions</h3>
+                        <p>Easily scale your applications as your business grows.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <div class="card-container fade-in">
-      <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Placeholder Image">
-        <h3>Card Title 4</h3>
-        <p>Short description for Card 4.</p>
-        <button>Download</button>
-      </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Placeholder Image">
-        <h3>Card Title 5</h3>
-        <p>Short description for Card 5.</p>
-        <button>Download</button>
-      </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/150" alt="Placeholder Image">
-        <h3>Card Title 6</h3>
-        <p>Short description for Card 6.</p>
-        <button>Download</button>
-      </div>
-    </div>
-  </div>
+        <section id="pricing" class="pricing">
+            <div class="container">
+                <h2>Pricing</h2>
+                <p>Choose the plan that works for you.</p>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h3>Basic</h3>
+                        <p>$10/month</p>
+                        <ul>
+                            <li>1 Deployment per Day</li>
+                            <li>Basic Support</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>Pro</h3>
+                        <p>$30/month</p>
+                        <ul>
+                            <li>Unlimited Deployments</li>
+                            <li>Priority Support</li>
+                        </ul>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>Enterprise</h3>
+                        <p>Contact Us</p>
+                        <ul>
+                            <li>Custom Deployments</li>
+                            <li>Dedicated Support</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <form>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" required></textarea>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 CreeperCloud. All Rights Reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
