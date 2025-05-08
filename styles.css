@@ -183,3 +183,25 @@ header h1 {
     right: 7px;  /* Aligned closer to the absolute bottom-right corner */
     letter-spacing: 0.3px; /* Added 0.3px letter spacing for more spacing between characters */
 }
+
+/* General Box Styling */
+.box {
+    background-color: black; /* Black background for the text */
+    color: white; /* Ensure the text is readable on the black background */
+    padding: 10px 15px; /* Add padding inside the box */
+    border-radius: 5px; /* Optional: Rounded corners for the box */
+    display: inline-block; /* Ensure the box size is only as wide as the text */
+    margin-top: 0.5rem; /* Add spacing between the boxes */
+}
+
+/* Subtitle Styling */
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+/* Version Styling */
+.version {
+    font-size: 1rem;
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for the code text */
+}
