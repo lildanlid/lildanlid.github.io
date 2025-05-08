@@ -3,106 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deployment Service</title>
-    <link rel="stylesheet" href="test.css"> 
+    <title>CreeperCloud</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <h1 class="logo">CreeperCloud Deploy</h1>
-            <nav class="nav">
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li><a href="#login" class="btn">Login</a></li>
-                </ul>
-            </nav>
+    <div class="sidebar">
+        <div class="logo-section">
+            <img src="creeper-logo.png" alt="CreeperCloud Logo" class="logo">
+            <h2 class="brand-name">CreeperCloud</h2>
         </div>
-    </header>
-
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h2>Deploy Your Applications Seamlessly</h2>
-                <p>Experience the power of automated, reliable, and fast deployments with CreeperCloud.</p>
-                <a href="#features" class="btn btn-primary">Learn More</a>
-            </div>
-        </section>
-
-        <section id="features" class="features">
-            <div class="container">
-                <h2>Features</h2>
-                <div class="features-grid">
-                    <div class="feature">
-                        <h3>Fast Deployments</h3>
-                        <p>Deploy your applications in seconds with our optimized infrastructure.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>Secure Environment</h3>
-                        <p>We prioritize security to ensure your applications are always safe.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>Scalable Solutions</h3>
-                        <p>Easily scale your applications as your business grows.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="pricing" class="pricing">
-            <div class="container">
-                <h2>Pricing</h2>
-                <p>Choose the plan that works for you.</p>
-                <div class="pricing-grid">
-                    <div class="pricing-card">
-                        <h3>Basic</h3>
-                        <p>$10/month</p>
-                        <ul>
-                            <li>1 Deployment per Day</li>
-                            <li>Basic Support</li>
-                        </ul>
-                    </div>
-                    <div class="pricing-card">
-                        <h3>Pro</h3>
-                        <p>$30/month</p>
-                        <ul>
-                            <li>Unlimited Deployments</li>
-                            <li>Priority Support</li>
-                        </ul>
-                    </div>
-                    <div class="pricing-card">
-                        <h3>Enterprise</h3>
-                        <p>Contact Us</p>
-                        <ul>
-                            <li>Custom Deployments</li>
-                            <li>Dedicated Support</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2>Contact Us</h2>
-                <form>
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" required>
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                    <label for="message">Message:</label>
-                    <textarea id="message" name="message" required></textarea>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 CreeperCloud. All Rights Reserved.</p>
+        <div class="user-info">
+            <img src="user-avatar.png" alt="User Avatar" class="avatar">
+            <p class="username">lildanlid</p>
+            <p class="coins">0.00 coins</p>
         </div>
-    </footer>
+        <button class="create-server-btn">+ Create a server</button>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">Shop</a></li>
+                <li><a href="#">Articles</a></li>
+                <li><a href="#">Control panel</a></li>
+                <li><a href="#">Referrals</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="main-content">
+        <h1>Welcome to CreeperCloud!</h1>
+        <div class="sale-banner">
+            <p class="sale-header">SALE ENDS TOMORROW – ACT FAST!</p>
+            <p class="sale-title">🎉 MAY DAY MEGA SALE</p>
+            <p class="sale-discount">50% OFF ALL PLANS</p>
+            <p class="use-code">USE CODE: <span>MAYDAY50</span></p>
+            <div class="sale-details">
+                <p>💳 One-Time Payment &nbsp; 🌍 Global Locations &nbsp; 🕒 24/7 Support</p>
+                <p>⚡ Low Latency &nbsp; 🎮 Gaming-Ready Servers</p>
+            </div>
+            <div class="sale-links">
+                <button class="cta-btn">CREEPERCLOUD</button>
+                <a href="#" class="browse-plans">Browse Plans</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
