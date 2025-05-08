@@ -11,6 +11,34 @@ body {
     min-height: 100vh;
     background-color: #171616; /* Changed to a darker shade */
 }
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #171616; /* Dark background */
+    color: white;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Fade-in Effect */
+.fade-in {
+    opacity: 0; /* Initially hidden */
+    transform: translateY(20px); /* Slightly move content down */
+    animation: fadeIn 1.5s ease-out forwards; /* Fade-in animation */
+}
+
+/* Define Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 /* Container Styles */
 .container {
