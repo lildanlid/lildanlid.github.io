@@ -1,128 +1,178 @@
-/* General styles */
+/* General reset */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
-    line-height: 1.6;
-    color: #333;
-}
-
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Header */
-.header {
-    background: #333;
+    font-family: 'Arial', sans-serif;
+    background-color: #202020;
     color: #fff;
-    padding: 1rem 0;
+    display: flex;
 }
 
-.header .logo {
+/* Sidebar styles */
+.sidebar {
+    width: 250px;
+    background-color: #2a2a2a;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-section {
+    text-align: center;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+}
+
+.brand-name {
     font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.user-info {
+    text-align: center;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.username {
+    font-size: 1.2rem;
     font-weight: bold;
 }
 
-.header .nav ul {
+.coins {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.create-server-btn {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.nav-menu ul {
     list-style: none;
-    display: flex;
-    gap: 1rem;
-    margin: 0;
     padding: 0;
-}
-
-.header .nav a {
-    color: #fff;
-    text-decoration: none;
-}
-
-.header .nav .btn {
-    background: #ff6600;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    text-decoration: none;
-}
-
-/* Hero section */
-.hero {
-    background: #f4f4f4;
-    text-align: center;
-    padding: 2rem 0;
-}
-
-.hero .btn-primary {
-    background: #007bff;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    text-decoration: none;
-}
-
-/* Features section */
-.features {
-    background: #fff;
-    padding: 2rem 0;
-}
-
-.features-grid {
-    display: flex;
-    gap: 2rem;
-    justify-content: space-between;
-}
-
-.feature {
-    background: #f9f9f9;
-    padding: 1rem;
-    border-radius: 5px;
-    text-align: center;
-}
-
-/* Pricing section */
-.pricing {
-    background: #f4f4f4;
-    padding: 2rem 0;
-}
-
-.pricing-grid {
-    display: flex;
-    gap: 2rem;
-    justify-content: space-between;
-}
-
-.pricing-card {
-    background: #fff;
-    padding: 1rem;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Contact section */
-.contact {
-    background: #fff;
-    padding: 2rem 0;
-}
-
-.contact form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.contact input, .contact textarea {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
+}
+
+.nav-menu li a {
+    text-decoration: none;
+    color: #ccc;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.nav-menu li a.active,
+.nav-menu li a:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    background: url('background-pattern.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Sale banner */
+.sale-banner {
+    background-color: #111;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sale-header {
+    background-color: #ffc107;
+    color: #000;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.sale-title {
+    font-size: 1.8rem;
+    margin: 10px 0;
+}
+
+.sale-discount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.use-code {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+.use-code span {
+    font-weight: bold;
+    background-color: #ffc107;
+    color: #000;
+    padding: 5px 10px;
     border-radius: 5px;
 }
 
-/* Footer */
-.footer {
-    background: #333;
+.sale-details {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin: 20px 0;
+}
+
+.sale-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cta-btn {
+    background-color: #28a745;
     color: #fff;
-    text-align: center;
-    padding: 1rem 0;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.browse-plans {
+    color: #00bcd4;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.browse-plans:hover {
+    text-decoration: underline;
 }
