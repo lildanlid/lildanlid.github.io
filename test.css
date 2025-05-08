@@ -1,48 +1,81 @@
-/* Download Button */
-.download-button {
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    border-radius: 5px;
-    display: inline-block;
-    cursor: pointer;
-    position: relative; /* For sparkle positioning */
-    overflow: hidden; /* Keep sparkles inside the button */
-    transition: background-color 0.3s;
+/* General Reset */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
-.download-button:hover {
-    background-color: #0056b3;
+.header {
+  text-align: center;
+  padding: 20px;
+  background-color: #6200ea;
+  color: #fff;
 }
 
-/* Sparkle Effect */
-.download-button:hover::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150%;
-    height: 150%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 70%);
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    animation: sparkle 0.8s ease-out;
-    pointer-events: none;
+.content {
+  margin: 20px;
 }
 
-@keyframes sparkle {
-    0% {
-        transform: translate(-50%, -50%) scale(0.5);
-        opacity: 1;
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0.5;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-    }
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 250px;
+  text-align: center;
+  padding: 20px;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.card h3 {
+  margin: 15px 0 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.card p {
+  font-size: 14px;
+  color: #666;
+}
+
+.card button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #6200ea;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.card button:hover {
+  background-color: #3700b3;
 }
