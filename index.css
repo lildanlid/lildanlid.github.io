@@ -58,13 +58,22 @@ button:hover {
     background-color: #0056b3;
 }
 .container {
-    text-align: center;
+    background-color: #171616; /* Change to your desired color */
+    background-image: url('your-image-path.jpg'); /* Optional background image */
+    background-size: cover; /* Ensure the image covers the container */
+    background-position: center;
     padding: 2rem;
-    background-color: #171616; /* Change this to your desired background color */
-    border-radius: 10px; /* Keeps rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); /* Adjust shadow for a better look */
-    max-width: 1200px;
-    margin: 2rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); /* Keep or adjust shadow for better look */
+}
+
+body {
+    background-color: #171616; /* Change this to your desired color */
+    background-image: url('your-image-path.jpg'); /* Optional: Add a background image */
+    background-size: cover; /* Ensure the image covers the entire page */
+    background-position: center; /* Center the background image */
+    margin: 0;
+    font-family: 'Arial', sans-serif;
 }
 
 header h1 {
