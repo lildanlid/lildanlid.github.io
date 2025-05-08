@@ -28,12 +28,14 @@ body {
   transform: translateY(0);
 }
 
-.card-row {
+/* Card Container */
+.card-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   margin: 20px 0;
 }
 
+/* Card Design */
 .card {
   background-color: #fff;
   border-radius: 8px;
