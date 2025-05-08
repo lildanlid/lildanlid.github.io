@@ -1,184 +1,101 @@
-/* General reset */
 body {
+    font-family: Arial, sans-serif;
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #202020;
-    color: #fff;
-    display: flex;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Sidebar styles */
+.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
 .sidebar {
     width: 250px;
-    background-color: #2a2a2a;
+    height: 100%;
+    background-color: #333;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 20px;
-    height: 100vh;
-}
-
-.logo-section {
-    text-align: center;
-}
-
-.logo {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 10px;
-}
-
-.brand-name {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .user-info {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .avatar {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    margin-bottom: 10px;
 }
 
 .username {
-    font-size: 1.2rem;
+    font-size: 16px;
     font-weight: bold;
 }
 
-.coins {
-    font-size: 0.9rem;
-    color: #ccc;
-}
-
-.create-server-btn {
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-}
-
-.nav-menu ul {
+.menu {
     list-style: none;
     padding: 0;
-    width: 100%;
-}
-
-.nav-menu li a {
-    text-decoration: none;
-    color: #ccc;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 1rem;
-}
-
-.nav-menu li a.active,
-.nav-menu li a:hover {
-    background-color: #444;
-    color: #fff;
-}
-
-/* Main content */
-.main-content {
+    margin: 0;
     flex: 1;
-    padding: 40px;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('background-pattern.png') no-repeat center center fixed;
-    background-size: cover;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+.menu li {
+    margin: 10px 0;
 }
 
-/* Sale banner */
-.sale-banner {
-    background-color: #111;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
+.menu a,
+.theme-toggle {
+    color: #fff;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px;
+    text-align: left;
     width: 100%;
+    display: block;
 }
 
-.sale-header {
-    background-color: #ffc107;
-    color: #000;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-block;
-    margin-bottom: 10px;
+.menu a:hover,
+.theme-toggle:hover {
+    background-color: #444;
 }
 
-.sale-title {
-    font-size: 1.8rem;
-    margin: 10px 0;
+.close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    align-self: flex-end;
 }
 
-.sale-discount {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-.use-code {
-    font-size: 1.2rem;
-    margin: 10px 0;
-}
-
-.use-code span {
-    font-weight: bold;
-    background-color: #ffc107;
-    color: #000;
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-.sale-details {
-    font-size: 0.9rem;
-    color: #ccc;
-    margin: 20px 0;
-}
-
-.sale-links {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.cta-btn {
-    background-color: #28a745;
+.open-sidebar-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: #333;
     color: #fff;
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
+    font-size: 18px;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
+    display: none;
 }
 
-.browse-plans {
-    color: #00bcd4;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.browse-plans:hover {
-    text-decoration: underline;
+@media screen and (max-width: 768px) {
+    .open-sidebar-btn {
+        display: block;
+    }
 }
