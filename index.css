@@ -10,7 +10,6 @@ body {
     text-align: center;
     min-height: 100vh;
     background-color: #171616; /* Changed to a darker shade */
-    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Fade-in Effect */
@@ -32,31 +31,6 @@ body {
     }
 }
 
-/* Styling for Content */
-header {
-    text-align: center;
-    margin: 2rem 0;
-}
-
-section {
-    text-align: center;
-    margin-top: 2rem;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
 /* Container Styles */
 .container {
     text-align: center;
@@ -84,7 +58,7 @@ header h1 {
 
 /* Individual Cards */
 .card {
-    background-color: #171616; /* Dark card background */
+    background-color: #1e1e1e; /* Dark card background */
     border-radius: 10px;
     overflow: hidden;
     text-align: center;
@@ -165,8 +139,6 @@ header h1 {
     border-radius: 5px;
     display: inline-block;
     cursor: pointer;
-    position: relative; /* For sparkle positioning */
-    overflow: hidden; /* Keep sparkles inside the button */
     transition: background-color 0.3s;
 }
 
@@ -174,34 +146,14 @@ header h1 {
     background-color: #0056b3;
 }
 
-/* Sparkle Effect */
-.download-button:hover::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150%;
-    height: 150%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 70%);
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    animation: sparkle 0.8s ease-out;
-    pointer-events: none;
-}
-
-@keyframes sparkle {
-    0% {
-        transform: translate(-50%, -50%) scale(0.5);
-        opacity: 1;
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0.5;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-    }
+.container {
+    text-align: center;
+    padding: 2rem;
+    background-color: #171616; /* Change this color to your desired background */
+    border-radius: 10px; /* Keeps rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); /* Adjust shadow for a better look */
+    max-width: 1200px;
+    margin: 2rem auto;
 }
 
 /* FREE Tag */
