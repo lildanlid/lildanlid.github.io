@@ -59,7 +59,6 @@ button:hover {
 }
 .container {
     background-color: #171616; /* Change to your desired color */
-    background-image: url('your-image-path.jpg'); /* Optional background image */
     background-size: cover; /* Ensure the image covers the container */
     background-position: center;
     padding: 2rem;
