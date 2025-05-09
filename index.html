@@ -243,6 +243,15 @@
             background-color: #357ABD;
         }
     </style>
+    <script>
+        // Track visits to the Home page
+        const trackVisit = () => {
+            const homeVisits = parseInt(localStorage.getItem('homeVisits') || '0', 10);
+            localStorage.setItem('homeVisits', homeVisits + 1);
+        };
+
+        document.addEventListener('DOMContentLoaded', trackVisit);
+    </script>
 </head>
 <body>
     <div class="side-menu">
