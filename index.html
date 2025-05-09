@@ -40,8 +40,12 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
             padding-bottom: 50px;
-            transition: background-color 0.3s, color 0.3s, transform 0.3s ease;
-            transform: translateX(0);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.light-mode .side-menu {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
         }
 
         .side-menu ul {
@@ -69,6 +73,14 @@
             background-color: var(--hover-bg-dark);
         }
 
+        body.light-mode .side-menu ul li a {
+            color: var(--text-color-light);
+        }
+
+        body.light-mode .side-menu ul li a:hover {
+            background-color: var(--hover-bg-light);
+        }
+
         .side-menu ul li a i {
             margin-right: 15px;
             font-size: 18px;
@@ -77,6 +89,18 @@
         .side-menu ul li a.selected {
             border: 2px solid var(--accent-color);
             box-shadow: 0 0 8px var(--accent-color);
+        }
+
+        .side-menu ul li a.donate {
+            background-color: var(--purple-color);
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .side-menu ul li a.donate:hover {
+            background-color: #520c9b;
         }
 
         .theme-switch-box {
@@ -129,41 +153,22 @@
             left: 21px;
         }
 
-        body.light-mode {
-            background-color: var(--bg-color-light);
-            color: var(--text-color-light);
-        }
-
-        .side-menu.light-mode {
-            background-color: var(--bg-color-light);
-            color: var(--text-color-light);
-        }
-
-        .theme-switch-box.light-mode {
+        body.light-mode .theme-switch-box {
             background-color: var(--hover-bg-light);
             color: var(--text-color-light);
         }
 
-        .theme-switch-box.light-mode label {
+        body.light-mode .theme-switch-box label {
             color: var(--text-color-light);
         }
 
-        .theme-switch-box input.light-mode::before {
+        body.light-mode .theme-switch-box input::before {
             background: var(--text-color-light);
         }
 
         .content {
             margin-left: 270px;
             padding: 20px;
-        }
-
-        .purple-box {
-            background-color: var(--purple-color);
-            color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .projects-container {
@@ -338,6 +343,16 @@
                                 </a>
                             </div>
                         </div>
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="Project 2">
+                            <div class="project-content">
+                                <div class="project-title">Project Two</div>
+                                <div class="project-description">This is a brief description of Project Two.</div>
+                                <a class="download-button" href="https://example.com/project-two" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 `;
             } else if (page === 'apps') {
@@ -350,6 +365,26 @@
                                 <div class="project-title">App One</div>
                                 <div class="project-description">This is a brief description of App One.</div>
                                 <a class="download-button" href="https://example.com/app-one" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 2">
+                            <div class="project-content">
+                                <div class="project-title">App Two</div>
+                                <div class="project-description">This is a brief description of App Two.</div>
+                                <a class="download-button" href="https://example.com/app-two" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 3">
+                            <div class="project-content">
+                                <div class="project-title">App Three</div>
+                                <div class="project-description">This is a brief description of App Three.</div>
+                                <a class="download-button" href="https://example.com/app-three" target="_blank">
                                     Download
                                 </a>
                             </div>
