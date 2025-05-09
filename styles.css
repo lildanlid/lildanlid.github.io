@@ -123,53 +123,6 @@ body {
     color: #007bff; /* Blue text color for active tab */
 }
 
-/* Blue Underline Indicator */
-.navbar-right a::after,
-.navbar-left a::after {
-    content: ""; /* Empty content for the underline */
-    position: absolute;
-    bottom: 0; /* Place underline at the bottom */
-    left: 0;
-    width: 0; /* Initially no underline */
-    height: 2px; /* Thickness of the underline */
-    background-color: #007bff; /* Blue underline */
-    transition: width 0.3s ease; /* Smooth animation */
-}
-
-.navbar-right a:hover::after,
-.navbar-left a:hover::after {
-    width: 100%; /* Expand underline on hover */
-}
-
-/* Blue Underline Indicator */
-.navbar-right a::after,
-.navbar-left a::after {
-    content: ""; /* Empty content for the underline */
-    position: absolute;
-    bottom: 0; /* Place underline at the bottom */
-    left: 0;
-    width: 0; /* Initially no underline */
-    height: 2px; /* Thickness of the underline */
-    background-color: #007bff; /* Blue underline */
-    transition: width 0.3s ease; /* Smooth animation */
-}
-
-.navbar-right a:hover::after,
-.navbar-left a:hover::after {
-    width: 100%; /* Expand underline on hover */
-}
-
-/* Active Tab Styling */
-.navbar-right a.active::after,
-.navbar-left a.active::after {
-    width: 100%; /* Full underline for active tab */
-}
-
-.navbar-right a.active,
-.navbar-left a.active {
-    color: #007bff; /* Blue text color for active tab */
-}
-
 /* Container Styles */
 .container {
     text-align: center;
