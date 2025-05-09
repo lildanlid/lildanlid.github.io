@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Sidebar</title>
+  <style>
+    :root {
+      --bg-color-light: #ffffff;
+      --text-color-light: #000000;
+      --sidebar-bg-light: #f3f3f3;
+      --highlight-color-light: #ff8c00;
+
+      --bg-color-dark: #1e1e1e;
+      --text-color-dark: #ffffff;
+      --sidebar-bg-dark: #2f2f2f;
+      --highlight-color-dark: #ffa500;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.light-mode {
+      background-color: var(--bg-color-light);
+      color: var(--text-color-light);
+    }
+
+    body.dark-mode {
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      height: calc(100% - 20px);
+      width: 250px;
+      background-color: var(--sidebar-bg-dark);
+      color: var(--text-color-dark);
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body.light-mode .sidebar {
+      background-color: var(--sidebar-bg-light);
+      color: var(--text-color-light);
+    }
+
+    .sidebar .menu-item {
+      margin: 15px 0;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      padding: 8px;
+      border-radius: 8px;
+      transition: color 0.3s, border 0.3s;
+    }
+
+    .sidebar .menu-item:hover {
+      color: var(--highlight-color-dark);
+    }
+
+    body.light-mode .sidebar .menu-item:hover {
+      color: var(--highlight-color-light);
+    }
+
+    .sidebar .menu-item.active {
+      color: var(--highlight-color-dark);
+      border: 2px solid var(--highlight-color-dark);
+    }
+
+    body.light-mode .sidebar .menu-item.active {
+      color: var(--highlight-color-light);
+      border: 2px solid var(--highlight-color-light);
+    }
+
+    .sidebar .toggle-box {
+      margin-top: 30px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: center;
+      background-color: var(--sidebar-bg-dark);
+      transition: background-color 0.3s;
+    }
+
+    body.light-mode .sidebar .toggle-box {
+      background-color: var(--sidebar-bg-light);
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-switch input[type="checkbox"] {
+      display: none;
+    }
+
+    .toggle-switch label {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .toggle-switch label::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: #ccc;
+      border-radius: 50px;
+      transition: background-color 0.3s;
+    }
+
+    .toggle-switch label::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background-color: #fff;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .toggle-switch input[type="checkbox"]:checked + label::before {
+      background-color: var(--highlight-color-dark);
+    }
+
+    .toggle-switch input[type="checkbox"]:checked + label::after {
+      transform: translateX(20px);
+    }
+
+    body.light-mode .toggle-switch input[type="checkbox"]:checked + label::before {
+      background-color: var(--highlight-color-light);
+    }
+
+    .content {
+      margin-left: 270px;
+      padding: 20px;
+    }
+
+    .content h1 {
+      font-size: 24px;
+    }
+
+    .content p {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <div class="sidebar">
+    <a href="#" class="menu-item active" data-content="Welcome to the Home Page!">Home</a>
+    <a href="#" class="menu-item" data-content="Here are your Projects">Projects</a>
+    <a href="#" class="menu-item" data-content="Explore our Apps">Apps</a>
+    <a href="#" class="menu-item" data-content="Check out these Links">Links</a>
+    <a href="#" class="menu-item" data-content="Fill out these Forms">Forms</a>
+    <a href="#" class="menu-item" data-content="Support us by Donating">Donate</a>
+
+    <div class="toggle-box">
+      <div class="toggle-switch">
+        <input type="checkbox" id="theme-toggle" />
+        <label for="theme-toggle"></label>
+      </div>
+      <p><strong>Light/Dark Mode</strong></p>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1>Welcome!</h1>
+    <p>Click a menu item to see its content here.</p>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    const body = document.body;
+    const menuItems = document.querySelectorAll('.menu-item');
+    const content = document.querySelector('.content');
+
+    toggle.addEventListener('change', () => {
+      body.classList.toggle('dark-mode');
+      body.classList.toggle('light-mode');
+
+      // Update sidebar background dynamically
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.backgroundColor = body.classList.contains('light-mode')
+        ? getComputedStyle(document.documentElement).getPropertyValue('--sidebar-bg-light')
+        : getComputedStyle(document.documentElement).getPropertyValue('--sidebar-bg-dark');
+    });
+
+    menuItems.forEach(item => {
+      item.addEventListener('click', event => {
+        menuItems.forEach(i => i.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const contentText = event.target.getAttribute('data-content');
+        content.innerHTML = `<h1>${contentText}</h1><p>Content related to "${event.target.innerText}" is displayed here.</p>`;
+      });
+    });
+  </script>
+</body>
+</html>
