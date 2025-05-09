@@ -79,9 +79,91 @@
             box-shadow: 0 0 8px var(--accent-color);
         }
 
+        .theme-switch-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--hover-bg-dark);
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .theme-switch-box label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--text-color-dark);
+        }
+
+        .theme-switch-box input {
+            appearance: none;
+            width: 40px;
+            height: 20px;
+            background: var(--hover-bg-dark);
+            border-radius: 10px;
+            position: relative;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .theme-switch-box input:checked {
+            background: var(--accent-color);
+        }
+
+        .theme-switch-box input::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: var(--text-color-dark);
+            border-radius: 50%;
+            top: 1px;
+            left: 1px;
+            transition: 0.3s;
+        }
+
+        .theme-switch-box input:checked::before {
+            left: 21px;
+        }
+
+        body.light-mode {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+        }
+
+        .side-menu.light-mode {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+        }
+
+        .theme-switch-box.light-mode {
+            background-color: var(--hover-bg-light);
+            color: var(--text-color-light);
+        }
+
+        .theme-switch-box.light-mode label {
+            color: var(--text-color-light);
+        }
+
+        .theme-switch-box input.light-mode::before {
+            background: var(--text-color-light);
+        }
+
         .content {
             margin-left: 270px;
             padding: 20px;
+        }
+
+        .purple-box {
+            background-color: var(--purple-color);
+            color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .projects-container {
@@ -177,6 +259,10 @@
                 <a href="#donate" class="donate"><i class="fas fa-calendar-alt"></i> Donate</a>
             </li>
         </ul>
+        <div class="theme-switch-box">
+            <label for="theme-toggle" id="theme-label">Light Mode</label>
+            <input type="checkbox" id="theme-toggle">
+        </div>
     </div>
 
     <div class="content" id="content">
@@ -185,17 +271,39 @@
     </div>
 
     <script>
-        const sideMenu = document.querySelector('.side-menu');
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeLabel = document.getElementById('theme-label');
         const content = document.getElementById('content');
         const menuLinks = document.querySelectorAll('.side-menu ul li a');
 
         document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
             const savedTab = localStorage.getItem('activeTab') || 'home';
+
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                themeToggle.checked = true;
+                themeLabel.textContent = 'Dark Mode';
+            }
+
             loadPage(savedTab);
 
             menuLinks.forEach(link => link.classList.remove('selected'));
             const activeLink = document.querySelector(`.side-menu ul li a[href="#${savedTab}"]`);
             if (activeLink) activeLink.classList.add('selected');
+        });
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                body.classList.add('light-mode');
+                themeLabel.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light-mode');
+                themeLabel.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
         });
 
         menuLinks.forEach(link => {
@@ -230,16 +338,6 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="Project 2">
-                            <div class="project-content">
-                                <div class="project-title">Project Two</div>
-                                <div class="project-description">This is a brief description of Project Two.</div>
-                                <a class="download-button" href="https://example.com/project-two" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 `;
             } else if (page === 'apps') {
@@ -256,29 +354,17 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 2">
-                            <div class="project-content">
-                                <div class="project-title">App Two</div>
-                                <div class="project-description">This is a brief description of App Two.</div>
-                                <a class="download-button" href="https://example.com/app-two" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 `;
-            } else if (page === 'links') {
-                content.innerHTML = `<h2>Links</h2><p>This is the Links page.</p>`;
-            } else if (page === 'forms') {
-                content.innerHTML = `<h2>Forms</h2><p>This is the Forms page.</p>`;
             } else if (page === 'donate') {
                 content.innerHTML = `
-                    <h2>Donate</h2>
-                    <p>Support our work by donating today.</p>
-                    <a href="https://www.patreon.com/c/lildanlid/membership" target="_blank">
-                        Go to Patreon
-                    </a>
+                    <div class="purple-box">
+                        <h2>Donate</h2>
+                        <p>Support our work by donating today.</p>
+                        <a href="https://www.patreon.com/c/lildanlid/membership" target="_blank" class="download-button">
+                            Go to Patreon
+                        </a>
+                    </div>
                 `;
             }
         }
