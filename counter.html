@@ -6,155 +6,104 @@
     <title>Visitor Counter</title>
     <style>
         :root {
-            /* Dark mode colors */
-            --bg-color-dark: #121212;
-            --text-color-dark: #ffffff;
-            --box-bg-dark: #1c1c1c;
-
-            /* Light mode colors */
-            --bg-color-light: #f5f5f5;
-            --text-color-light: #000000;
-            --box-bg-light: #ffffff;
+            --bg-color: #f5f5f5;
+            --text-color: #000;
+            --box-bg-color: #fff;
         }
 
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: var(--bg-color-dark);
-            color: var(--text-color-dark);
-            transition: background-color 0.3s, color 0.3s;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
-        body.light-mode {
-            background-color: var(--bg-color-light);
-            color: var(--text-color-light);
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
         }
 
         .counter-box {
-            margin: 20px auto;
+            flex: 1;
+            min-width: 260px;
+            max-width: 400px;
             padding: 20px;
             border-radius: 8px;
-            width: 300px;
-            background-color: var(--box-bg-dark);
-            transition: background-color 0.3s, color 0.3s;
+            background-color: var(--box-bg-color);
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        body.light-mode .counter-box {
-            background-color: var(--box-bg-light);
-        }
-
-        h1 {
+        h1, h2 {
             margin-bottom: 10px;
         }
 
         p {
-            font-size: 18px;
-        }
-
-        .theme-switch-box {
-            margin-top: 20px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .theme-switch-box label {
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .theme-switch-box input {
-            appearance: none;
-            width: 40px;
-            height: 20px;
-            background: var(--box-bg-dark);
-            border-radius: 10px;
-            position: relative;
-            outline: none;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        body.light-mode .theme-switch-box input {
-            background: var(--box-bg-light);
-        }
-
-        .theme-switch-box input:checked {
-            background: var(--text-color-dark);
-        }
-
-        .theme-switch-box input::before {
-            content: '';
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            background: var(--text-color-dark);
-            border-radius: 50%;
-            top: 1px;
-            left: 1px;
-            transition: 0.3s;
-        }
-
-        body.light-mode .theme-switch-box input::before {
-            background: var(--text-color-light);
-        }
-
-        .theme-switch-box input:checked::before {
-            left: 21px;
+            font-size: 16px;
         }
     </style>
     <script>
-        const toggleTheme = () => {
-            const body = document.body;
-            const themeLabel = document.getElementById('theme-label');
-            const currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+        const getCounts = (timestamps) => {
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
+            const oneWeek = 7 * oneDay;
 
-            if (currentTheme === 'light') {
-                body.classList.remove('light-mode');
-                themeLabel.textContent = 'Switch to Light Mode';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.add('light-mode');
-                themeLabel.textContent = 'Switch to Dark Mode';
-                localStorage.setItem('theme', 'light');
-            }
+            let yesterdayCount = 0;
+            let lastWeekCount = 0;
+            let totalCount = timestamps.length;
+
+            timestamps.forEach(timestamp => {
+                const timeAgo = now - timestamp;
+
+                if (timeAgo <= oneWeek) {
+                    lastWeekCount++;
+                }
+                if (timeAgo <= oneDay && timeAgo > 0) {
+                    yesterdayCount++;
+                }
+            });
+
+            return { yesterdayCount, lastWeekCount, totalCount };
         };
 
         const displayCounters = () => {
-            const homeVisits = parseInt(localStorage.getItem('homeVisits') || '0', 10);
-            const weatherVisits = parseInt(localStorage.getItem('weatherVisits') || '0', 10);
+            const homeTimestamps = JSON.parse(localStorage.getItem('homeTimestamps') || '[]');
+            const weatherTimestamps = JSON.parse(localStorage.getItem('weatherTimestamps') || '[]');
 
-            document.getElementById('homeCounter').innerText = `Home Page Visits: ${homeVisits}`;
-            document.getElementById('weatherCounter').innerText = `Weather Page Visits: ${weatherVisits}`;
+            const homeCounts = getCounts(homeTimestamps);
+            const weatherCounts = getCounts(weatherTimestamps);
+
+            document.getElementById('homeYesterdayCount').innerText = `Yesterday's Visits: ${homeCounts.yesterdayCount}`;
+            document.getElementById('homeLastWeekCount').innerText = `Last Week's Visits: ${homeCounts.lastWeekCount}`;
+            document.getElementById('homeTotalCount').innerText = `Total Visits: ${homeCounts.totalCount}`;
+
+            document.getElementById('weatherYesterdayCount').innerText = `Yesterday's Visits: ${weatherCounts.yesterdayCount}`;
+            document.getElementById('weatherLastWeekCount').innerText = `Last Week's Visits: ${weatherCounts.lastWeekCount}`;
+            document.getElementById('weatherTotalCount').innerText = `Total Visits: ${weatherCounts.totalCount}`;
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            const body = document.body;
-
-            if (savedTheme === 'light') {
-                body.classList.add('light-mode');
-                document.getElementById('theme-label').textContent = 'Switch to Dark Mode';
-            }
-
-            displayCounters();
-        });
+        document.addEventListener('DOMContentLoaded', displayCounters);
     </script>
 </head>
 <body>
     <h1>Visitor Counter</h1>
+    <div class="container">
+        <div class="counter-box">
+            <h2>Home Page</h2>
+            <p id="homeYesterdayCount">Yesterday's Visits: Loading...</p>
+            <p id="homeLastWeekCount">Last Week's Visits: Loading...</p>
+            <p id="homeTotalCount">Total Visits: Loading...</p>
+        </div>
 
-    <div class="counter-box">
-        <p id="homeCounter">Home Page Visits: Loading...</p>
-    </div>
-
-    <div class="counter-box">
-        <p id="weatherCounter">Weather Page Visits: Loading...</p>
-    </div>
-
-    <div class="theme-switch-box">
-        <label id="theme-label" for="theme-toggle">Switch to Light Mode</label>
-        <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+        <div class="counter-box">
+            <h2>Weather Page</h2>
+            <p id="weatherYesterdayCount">Yesterday's Visits: Loading...</p>
+            <p id="weatherLastWeekCount">Last Week's Visits: Loading...</p>
+            <p id="weatherTotalCount">Total Visits: Loading...</p>
+        </div>
     </div>
 </body>
 </html>
