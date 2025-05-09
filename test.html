@@ -165,7 +165,7 @@
                     <p>Use the menu to navigate to other pages.</p>
                 `;
             } else if (page === 'projects') {
-                content.innerHTML = `
+                content.innerHTML = 
                     <h2>Projects</h2>
                     <div class="projects-container">
                         <div class="project-box">
@@ -194,6 +194,12 @@
                         </div>
                     </div>
                 `;
+                      } else if (page === 'links') {
+                content.innerHTML = `<h2>Links</h2><p>This is the Links page.</p>`;
+            } else if (page === 'forms') {
+                content.innerHTML = `<h2>Forms</h2><p>This is the Forms page.</p>`;
+            } else if (page === 'donate') {
+                content.innerHTML = `<h2>Donate</h2><p>Support our work by donating today.</p>`;
             }
         }
     </script>
