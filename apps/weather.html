@@ -196,6 +196,19 @@
             }
         }
     </style>
+     <script>
+        // Track visits to the Weather page (only count once)
+        const trackVisit = () => {
+            if (!localStorage.getItem('weatherVisited')) {
+                const weatherVisits = parseInt(localStorage.getItem('weatherVisits') || '0', 10);
+                localStorage.setItem('weatherVisits', weatherVisits + 1);
+                localStorage.setItem('weatherVisited', 'true');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', trackVisit);
+    </script>
+</head>
     <title>Weather App</title>
 </head>
 
