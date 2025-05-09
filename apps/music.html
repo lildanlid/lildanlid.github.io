@@ -11,41 +11,6 @@
       padding: 0;
       background-color: #121212;
       color: #fff;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    body.light-mode {
-      background-color: #ffffff;
-      color: #000;
-    }
-
-    .navbar {
-      position: sticky;
-      top: 0;
-      width: 90%;
-      margin: 10px auto;
-      background-color: #1e1e1e;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      z-index: 1000;
-      transition: background-color 0.3s ease;
-    }
-
-    .navbar.light-mode {
-      background-color: #f0f0f0;
-    }
-
-    #theme-switcher {
-      background: none;
-      border: none;
-      color: inherit;
-      font-size: 16px;
-      cursor: pointer;
-      margin-right: 10px;
     }
 
     .music-player {
@@ -54,36 +19,20 @@
       background-color: #1e1e1e;
       border-radius: 16px;
       padding: 20px;
-      box-shadow: 0px 0px 20px 4px rgba(0, 123, 255, 0.8);
       text-align: center;
       margin: 20px auto;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    .music-player.light-mode {
-      background-color: #f9f9f9;
-      color: #000;
     }
 
     #ai-playlist-prompt {
       width: 100%;
-      margin-top: 10px;
+      margin-bottom: 10px;
       padding: 10px;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: #121212;
-      color: #fff;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-    #ai-playlist-prompt.light-mode {
-      background-color: #ffffff;
-      color: #000;
     }
 
     #generate-playlist {
-      margin-top: 10px;
       padding: 10px 20px;
       font-size: 16px;
       color: #fff;
@@ -91,118 +40,111 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
-    #generate-playlist:hover {
-      background-color: #0056b3;
+    #song-count {
+      margin: 10px 0;
+    }
+
+    #playlist-result {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <!-- Sticky Navbar -->
-  <div class="navbar">
-    <button id="theme-switcher" title="Toggle Theme">🌙</button>
-  </div>
-
-  <!-- Music Player Box -->
   <div class="music-player">
     <h1>Music Player</h1>
-
-    <!-- AI Playlist Section -->
-    <div>
-      <h3>AI Playlist Generator</h3>
-      <input type="text" id="ai-playlist-prompt" placeholder="Describe your playlist (e.g., 'chill vibes')">
-      <button id="generate-playlist">Generate Playlist</button>
-      <div id="playlist-result" style="margin-top: 20px;"></div>
+    <input type="text" id="ai-playlist-prompt" placeholder="Describe your playlist (e.g., 'chill vibes')">
+    <div id="song-count">
+      <label for="num-songs">Number of Songs: </label>
+      <input type="number" id="num-songs" min="1" max="20" value="10">
     </div>
+    <button id="generate-playlist">Generate Playlist</button>
+    <div id="playlist-result"></div>
   </div>
 
   <script>
     const generatePlaylistButton = document.getElementById('generate-playlist');
     const aiPromptInput = document.getElementById('ai-playlist-prompt');
+    const numSongsInput = document.getElementById('num-songs');
     const playlistResult = document.getElementById('playlist-result');
 
-    // Generate AI Playlist
     generatePlaylistButton.addEventListener('click', async () => {
       const prompt = aiPromptInput.value.trim();
-      if (!prompt) {
-        playlistResult.innerHTML = '<p style="color: red;">Please enter a description for your playlist.</p>';
+      const numSongs = parseInt(numSongsInput.value);
+
+      if (!prompt || numSongs < 1 || numSongs > 20) {
+        playlistResult.innerHTML = '<p style="color: red;">Please enter a valid description and select a number of songs between 1 and 20.</p>';
         return;
       }
 
       playlistResult.innerHTML = `<p>Generating playlist for "${prompt}"...</p>`;
 
-      // Mock AI-generated playlist
-      const playlist = [
-        { title: "Song 1", artist: "Artist 1" },
-        { title: "Song 2", artist: "Artist 2" },
-        { title: "Song 3", artist: "Artist 3" }
-      ];
-
-      // Display playlist
-      playlistResult.innerHTML = `
-        <p>Playlist for "${prompt}":</p>
-        <ul>${playlist.map(song => `<li>${song.title} by ${song.artist}</li>`).join('')}</ul>
-        <button id="import-spotify" style="margin-top: 10px;">Import to Spotify</button>
-      `;
-
-      // Import playlist to Spotify
-      document.getElementById('import-spotify').addEventListener('click', async () => {
+      try {
+        // Use Spotify search API to fetch real songs
         const token = prompt('Enter your Spotify OAuth Token:');
-        if (!token) {
-          alert('Spotify token is required to import the playlist.');
-          return;
-        }
+        if (!token) throw new Error('Spotify token is required.');
 
-        try {
-          // Create a new Spotify playlist
-          const createPlaylistResponse = await fetch('https://api.spotify.com/v1/me/playlists', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              name: `AI Playlist: ${prompt}`,
-              description: 'Generated by AI',
-              public: false
-            })
+        const songs = [];
+        for (let i = 0; i < numSongs; i++) {
+          const query = `${prompt} song ${i + 1}`;
+          const searchResponse = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`, {
+            headers: { Authorization: `Bearer ${token}` }
           });
-
-          if (!createPlaylistResponse.ok) throw new Error('Failed to create playlist.');
-
-          const playlistData = await createPlaylistResponse.json();
-          const playlistId = playlistData.id;
-
-          // Search for tracks on Spotify
-          const trackUris = [];
-          for (const song of playlist) {
-            const searchResponse = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(song.title)}&type=track&limit=1`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            const searchData = await searchResponse.json();
-            if (searchData.tracks.items.length > 0) {
-              trackUris.push(searchData.tracks.items[0].uri);
-            }
+          const searchData = await searchResponse.json();
+          if (searchData.tracks.items.length > 0) {
+            const track = searchData.tracks.items[0];
+            songs.push({ title: track.name, artist: track.artists[0].name, uri: track.uri });
           }
-
-          // Add tracks to the Spotify playlist
-          await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ uris: trackUris })
-          });
-
-          alert('Playlist imported successfully! Check your Spotify.');
-        } catch (error) {
-          console.error(error);
-          alert('Failed to import playlist. Please try again.');
         }
-      });
+
+        // Display playlist
+        playlistResult.innerHTML = `
+          <p>Playlist for "${prompt}":</p>
+          <ul>${songs.map(song => `<li>${song.title} by ${song.artist}</li>`).join('')}</ul>
+          <button id="import-spotify">Import to Spotify</button>
+        `;
+
+        // Import playlist to Spotify
+        document.getElementById('import-spotify').addEventListener('click', async () => {
+          try {
+            const createPlaylistResponse = await fetch('https://api.spotify.com/v1/me/playlists', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                name: `AI Playlist: ${prompt}`,
+                description: 'Generated by AI',
+                public: false
+              })
+            });
+
+            if (!createPlaylistResponse.ok) throw new Error('Failed to create playlist.');
+
+            const playlistData = await createPlaylistResponse.json();
+            const playlistId = playlistData.id;
+
+            await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ uris: songs.map(song => song.uri) })
+            });
+
+            playlistResult.innerHTML += `<p>Playlist imported successfully! <a href="https://open.spotify.com/playlist/${playlistId}" target="_blank">View on Spotify</a></p>`;
+          } catch (error) {
+            console.error(error);
+            alert('Failed to import playlist. Please try again.');
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        playlistResult.innerHTML = '<p style="color: red;">Failed to generate playlist. Please try again.</p>';
+      }
     });
   </script>
 </body>
