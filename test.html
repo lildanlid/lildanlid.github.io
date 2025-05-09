@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Side Menu with Persistent Theme</title>
+    <title>lildanlid</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -105,19 +105,6 @@
             font-size: 18px;
         }
 
-        .side-menu ul li .dropdown {
-            display: none;
-            margin-left: 30px;
-        }
-
-        .side-menu ul li.open .dropdown {
-            display: block;
-        }
-
-        .side-menu ul li .dropdown li a {
-            font-size: 14px;
-        }
-
         /* Selected button with blue box */
         .side-menu ul li a.selected {
             border: 2px solid var(--accent-color);
@@ -133,6 +120,7 @@
             background-color: var(--hover-bg-dark);
             text-align: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for visual appeal */
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .theme-switch-box label {
@@ -200,6 +188,11 @@
 
         .theme-switch-box.light-mode {
             background-color: var(--hover-bg-light);
+            color: var(--text-color-light);
+        }
+
+        .theme-switch-box.light-mode label {
+            color: var(--text-color-light);
         }
 
         .theme-switch-box input.light-mode::before {
@@ -216,34 +209,23 @@
     <!-- Side Menu -->
     <div class="side-menu">
         <div class="header">
-            <h1>coding2go</h1>
+            <h1>lildanlid</h1>
         </div>
         <ul>
             <li>
                 <a href="#" class="selected"><i class="fas fa-home"></i> Home</a>
             </li>
             <li>
-                <a href="#"><i class="fas fa-th-large"></i> Dashboard</a>
-            </li>
-            <li class="menu-item">
-                <a href="#"><i class="fas fa-folder"></i> Create <i class="fas fa-chevron-down"></i></a>
-                <ul class="dropdown">
-                    <li><a href="#">Option 1</a></li>
-                    <li><a href="#">Option 2</a></li>
-                </ul>
-            </li>
-            <li class="menu-item">
-                <a href="#"><i class="fas fa-tasks"></i> Todo-Lists <i class="fas fa-chevron-down"></i></a>
-                <ul class="dropdown">
-                    <li><a href="#">Todo 1</a></li>
-                    <li><a href="#">Todo 2</a></li>
-                </ul>
+                <a href="#"><i class="fas fa-th-large"></i> Projects</a>
             </li>
             <li>
-                <a href="#"><i class="fas fa-calendar-alt"></i> Calendar</a>
+                <a href="#"><i class="fas fa-folder"></i> Links</a>
             </li>
             <li>
-                <a href="#"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-tasks"></i> Forms</a>
+            </li>
+            <li>
+                <a href="#" class="donate"><i class="fas fa-calendar-alt"></i> Donate</a>
             </li>
         </ul>
         <div class="theme-switch-box">
@@ -258,6 +240,7 @@
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
         const themeLabel = document.getElementById('theme-label');
+        const themeSwitchBox = document.querySelector('.theme-switch-box');
 
         // Apply the saved theme on page load
         document.addEventListener('DOMContentLoaded', () => {
@@ -266,6 +249,7 @@
                 body.classList.add('light-mode');
                 sideMenu.classList.add('light-mode');
                 toggleButton.classList.add('light-mode');
+                themeSwitchBox.classList.add('light-mode');
                 themeToggle.checked = true;
                 themeLabel.textContent = 'Dark Mode';
             } else {
@@ -284,23 +268,17 @@
                 body.classList.add('light-mode');
                 sideMenu.classList.add('light-mode');
                 toggleButton.classList.add('light-mode');
+                themeSwitchBox.classList.add('light-mode');
                 themeLabel.textContent = 'Dark Mode';
                 localStorage.setItem('theme', 'light'); // Save theme to localStorage
             } else {
                 body.classList.remove('light-mode');
                 sideMenu.classList.remove('light-mode');
                 toggleButton.classList.remove('light-mode');
+                themeSwitchBox.classList.remove('light-mode');
                 themeLabel.textContent = 'Light Mode';
                 localStorage.setItem('theme', 'dark'); // Save theme to localStorage
             }
-        });
-
-        // Add event listener for selection effect
-        document.querySelectorAll('.side-menu ul li a').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.side-menu ul li a').forEach(link => link.classList.remove('selected'));
-                this.classList.add('selected');
-            });
         });
     </script>
 </body>
