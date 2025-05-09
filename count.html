@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website with Multi-Counters</title>
+    <style>
+        /* General Reset and Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e; /* Dark background */
+            color: #ffffff; /* Light text */
+        }
+
+        /* Counter Box Styling */
+        .counter-box {
+            text-align: center;
+            background-color: #333333; /* Darker background for the box */
+            padding: 20px 40px;
+            border-radius: 12px; /* Rounded edges */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); /* Subtle shadow */
+            margin: 10px; /* Add spacing between boxes */
+        }
+
+        .counter-box h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .counter-box p {
+            margin: 10px 0 0;
+            font-size: 18px;
+        }
+    </style>
+    <script>
+        const updateCounter = (pageKey) => {
+            // Check if the user has already been counted for the specific page
+            if (!localStorage.getItem(pageKey)) {
+                // Mark the user as visited for this page
+                localStorage.setItem(pageKey, 'true');
+
+                // Simulate a counter increment (frontend-only approach)
+                const currentCount = parseInt(localStorage.getItem(`${pageKey}_count`) || '0', 10);
+                localStorage.setItem(`${pageKey}_count`, currentCount + 1);
+            }
+        };
+
+        const displayCounter = (pageKey, elementId) => {
+            // Get the current visitor count for the specific page
+            const visitorCount = localStorage.getItem(`${pageKey}_count`) || '0';
+            document.getElementById(elementId).innerText = `Total Visitors: ${visitorCount}`;
+        };
+
+        const init = () => {
+            // Update and display counter for the home page
+            updateCounter('uniqueVisitor_home');
+            displayCounter('uniqueVisitor_home', 'visitorCountHome');
+
+            // Update and display counter for the weather page
+            updateCounter('uniqueVisitor_weather');
+            displayCounter('uniqueVisitor_weather', 'visitorCountWeather');
+        };
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</head>
+<body>
+    <!-- Counter for the Home Page -->
+    <div class="counter-box">
+        <h1>Home Page Visitors</h1>
+        <p id="visitorCountHome">Loading visitor count...</p>
+    </div>
+
+    <!-- Counter for the Weather Page -->
+    <div class="counter-box">
+        <h1>Weather Page Visitors</h1>
+        <p id="visitorCountWeather">Loading visitor count...</p>
+    </div>
+</body>
+</html>
