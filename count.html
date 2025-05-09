@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website with Multi-Counters</title>
+    <title>Website with Live Counter and Time Tracking</title>
     <style>
         /* General Reset and Styling */
         body {
@@ -27,6 +27,7 @@
             border-radius: 12px; /* Rounded edges */
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); /* Subtle shadow */
             margin: 10px; /* Add spacing between boxes */
+            width: 300px;
         }
 
         .counter-box h1 {
@@ -35,11 +36,18 @@
         }
 
         .counter-box p {
-            margin: 10px 0 0;
+            margin: 10px 0;
             font-size: 18px;
+        }
+
+        .counter-box .time-spent {
+            font-size: 14px;
+            color: #aaaaaa;
         }
     </style>
     <script>
+        let startTime;
+
         const updateCounter = (pageKey) => {
             // Check if the user has already been counted for the specific page
             if (!localStorage.getItem(pageKey)) {
@@ -58,7 +66,17 @@
             document.getElementById(elementId).innerText = `Total Visitors: ${visitorCount}`;
         };
 
+        const trackTime = (elementId) => {
+            const elapsedTime = Math.floor((performance.now() - startTime) / 1000); // Time in seconds
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            document.getElementById(elementId).innerText = `Time Spent: ${minutes}m ${seconds}s`;
+        };
+
         const init = () => {
+            // Record start time
+            startTime = performance.now();
+
             // Update and display counter for the home page
             updateCounter('uniqueVisitor_home');
             displayCounter('uniqueVisitor_home', 'visitorCountHome');
@@ -66,6 +84,12 @@
             // Update and display counter for the weather page
             updateCounter('uniqueVisitor_weather');
             displayCounter('uniqueVisitor_weather', 'visitorCountWeather');
+
+            // Start time tracking
+            setInterval(() => {
+                trackTime('timeSpentHome');
+                trackTime('timeSpentWeather');
+            }, 1000); // Update every second
         };
 
         document.addEventListener('DOMContentLoaded', init);
@@ -76,12 +100,14 @@
     <div class="counter-box">
         <h1>Home Page Visitors</h1>
         <p id="visitorCountHome">Loading visitor count...</p>
+        <p class="time-spent" id="timeSpentHome">Time Spent: 0m 0s</p>
     </div>
 
     <!-- Counter for the Weather Page -->
     <div class="counter-box">
         <h1>Weather Page Visitors</h1>
         <p id="visitorCountWeather">Loading visitor count...</p>
+        <p class="time-spent" id="timeSpentWeather">Time Spent: 0m 0s</p>
     </div>
 </body>
 </html>
