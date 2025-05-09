@@ -34,17 +34,24 @@ body {
 /* Navbar Styles */
 .navbar {
     background-color: #18141c; /* Navbar background color */
-    padding: 15px 20px; /* Add space inside the navbar */
-    border-radius: 10px; /* Rounded borders */
+    padding: 20px; /* Increase padding for a larger navbar */
+    border-radius: 0; /* No rounded borders for full-width navbar */
+    position: fixed; /* Make the navbar fixed to the top */
+    top: 0; /* Align it to the top of the viewport */
+    left: 0; /* Align it to the left of the viewport */
+    width: 100%; /* Full-width of the screen */
+    z-index: 1000; /* Ensure it stays above other elements */
     display: flex;
     justify-content: space-between; /* Space between left and right sections */
     align-items: center; /* Vertically center items */
-    margin: 20px auto; /* Add spacing above and below the navbar */
-    max-width: 1200px; /* Center the navbar and limit width */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Add a subtle shadow */
 }
 
-/* Navbar Left Section */
+/* Add margin to the body to account for the fixed navbar height */
+body {
+    margin-top: 70px; /* Push content below the fixed navbar */
+}
+
 .navbar-left {
     list-style: none; /* Remove bullet points */
     padding: 0;
@@ -61,14 +68,13 @@ body {
     font-size: 1rem;
     padding: 10px 15px; /* Add padding for clickable area */
     border-radius: 5px; /* Slight rounding for hover effect */
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .navbar-left a:hover {
     background-color: #3a3a3a; /* Darker background on hover */
 }
 
-/* Navbar Right Section */
 .navbar-right {
     list-style: none; /* Remove bullet points */
     padding: 0;
@@ -87,11 +93,41 @@ body {
     font-size: 1rem;
     padding: 10px 15px; /* Add padding for clickable area */
     border-radius: 5px; /* Slight rounding for hover effect */
-    transition: background-color 0.3s ease;
+    position: relative; /* Needed for blue underline */
+    transition: color 0.3s ease;
 }
 
 .navbar-right a:hover {
-    background-color: #3a3a3a; /* Darker background on hover */
+    color: #007bff; /* Blue color on hover */
+}
+
+/* Blue Underline Indicator */
+.navbar-right a::after,
+.navbar-left a::after {
+    content: ""; /* Empty content for the underline */
+    position: absolute;
+    bottom: 0; /* Place underline at the bottom */
+    left: 0;
+    width: 0; /* Initially no underline */
+    height: 2px; /* Thickness of the underline */
+    background-color: #007bff; /* Blue underline */
+    transition: width 0.3s ease; /* Smooth animation */
+}
+
+.navbar-right a:hover::after,
+.navbar-left a:hover::after {
+    width: 100%; /* Expand underline on hover */
+}
+
+/* Active Tab Styling */
+.navbar-right a.active::after,
+.navbar-left a.active::after {
+    width: 100%; /* Full underline for active tab */
+}
+
+.navbar-right a.active,
+.navbar-left a.active {
+    color: #007bff; /* Blue text color for active tab */
 }
 
 /* Container Styles */
