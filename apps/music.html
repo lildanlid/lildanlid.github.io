@@ -3,104 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music Player</title>
+  <title>Spotify Music Player</title>
   <style>
+    /* General Styles */
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: var(--background-color);
-      color: var(--text-color);
       margin: 0;
       padding: 0;
-      transition: background-color 0.5s ease, color 0.5s ease;
+      background-color: #121212;
+      color: #fff;
     }
 
-    :root {
-      --background-color: #121212;
-      --text-color: #fff;
-      --icon-color: #888;
-      --icon-hover-color: #ccc;
-      --button-background: #1e90ff;
-      --button-hover: #1c86ee;
-      --glow-color: rgba(30, 144, 255, 0.6);
+    /* Sticky Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background-color: #1e1e1e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
     }
 
-    .light-mode {
-      --background-color: #f3f4f6;
-      --text-color: #000;
-      --icon-color: #666;
-      --icon-hover-color: #000;
-      --button-background: #4caf50;
-      --button-hover: #45a049;
-      --glow-color: rgba(76, 175, 80, 0.6);
+    .dropdown {
+      position: relative;
+      display: inline-block;
     }
 
-    .music-player {
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      color: var(--text-color);
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 0px 20px var(--glow-color);
-      border-radius: 16px;
-      transition: background 0.5s ease, color 0.5s ease, box-shadow 0.5s ease;
+    .dropdown button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
     }
 
-    .music-player h1 {
-      margin-bottom: 20px;
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #333;
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 8px;
+      z-index: 1;
+      margin-top: 10px;
+    }
+
+    .dropdown-content a {
+      color: #fff;
+      padding: 8px 12px;
+      text-decoration: none;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #444;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
     }
 
     #theme-switcher {
-      position: absolute;
-      top: 20px;
-      right: 20px;
       background: none;
-      color: var(--icon-color);
       border: none;
-      padding: 10px;
-      border-radius: 50%;
+      color: #fff;
+      font-size: 20px;
       cursor: pointer;
-      transition: color 0.3s ease;
     }
 
-    #theme-switcher:hover {
-      color: var(--icon-hover-color);
+    /* Music Player Box */
+    .music-player {
+      width: 90%;
+      max-width: 500px;
+      background-color: #1e1e1e;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin: 80px auto; /* Add margin to account for sticky navbar */
     }
 
-    .search-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
+    .music-player h1 {
+      font-size: 24px;
       margin-bottom: 20px;
     }
 
+    /* Search Bar */
     #search {
-      width: 70%;
+      width: 100%;
       padding: 10px;
+      margin-bottom: 20px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      transition: border 0.3s ease;
       font-size: 16px;
+      background-color: #121212;
+      color: #fff;
     }
 
-    #search:focus {
-      border: 1px solid var(--icon-hover-color);
+    #search::placeholder {
+      color: #bbb;
     }
 
-    #sorting-options {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      transition: border 0.3s ease;
-      font-size: 16px;
-      background-color: var(--background-color);
-      color: var(--text-color);
-    }
-
-    #sorting-options:focus {
-      border: 1px solid var(--icon-hover-color);
-    }
-
+    /* Song List */
     #song-list {
       margin-bottom: 20px;
       max-height: 200px;
@@ -112,129 +121,197 @@
       border-radius: 8px;
       margin: 5px 0;
       cursor: pointer;
+      background-color: #333;
+      color: #fff;
       transition: background 0.3s ease;
     }
 
     #song-list .song:hover {
-      background: var(--icon-hover-color);
-      color: white;
+      background-color: #555;
     }
 
+    /* Spotify Player Iframe */
+    iframe {
+      width: 100%;
+      height: 80px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    /* Controls Section */
     .controls {
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-wrap: wrap;
       gap: 20px;
     }
 
     .controls button {
       background: none;
       border: none;
+      color: #aaa; /* Set default color to gray */
+      font-size: 24px;
       cursor: pointer;
-      color: var(--icon-color);
       transition: color 0.3s ease, transform 0.2s ease;
     }
 
     .controls button:hover {
-      color: var(--icon-hover-color);
-      transform: scale(1.2);
+      color: #fff; /* Change color to white on hover */
+      transform: scale(1.2); /* Add scaling effect */
     }
 
+    /* Volume Control */
     .volume-control {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    input[type="range"] {
+    .volume-control input[type="range"] {
       width: 100px;
     }
 
-    #volume-indicator {
-      font-size: 14px;
-      color: var(--text-color);
-    }
-
-    svg {
-      width: 32px;
-      height: 32px;
+    .volume-control span {
+      cursor: pointer;
+      text-decoration: underline;
     }
   </style>
 </head>
-<body class="dark-mode">
-  <div class="music-player">
-    <h1>Music Player</h1>
-    <button id="theme-switcher" title="Toggle Theme">🌙</button>
-    <div class="search-bar">
-      <input type="text" id="search" placeholder="Search for a song...">
-      <select id="sorting-options">
-        <option value="most_popular">Most Popular</option>
-        <option value="latest">Latest</option>
-      </select>
+<body>
+  <!-- Sticky Navbar -->
+  <div class="navbar">
+    <div class="dropdown">
+      <button>Login</button>
+      <div class="dropdown-content">
+        <a href="#" id="spotify-login">Spotify</a>
+      </div>
     </div>
+    <button id="theme-switcher" title="Toggle Theme">🌙</button>
+  </div>
+
+  <!-- Music Player Box -->
+  <div class="music-player">
+    <h1>Spotify Music Player</h1>
+    <input type="text" id="search" placeholder="Search for a song..." disabled>
     <div id="song-list"></div>
+    <iframe id="player" src="" allow="encrypted-media"></iframe>
+
     <div class="controls">
-      <button id="prev" title="Previous Song">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-      </button>
-      <button id="play-pause" title="Play/Pause">
-        <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-6.586-4.79A1 1 0 007 7.21v9.58a1 1 0 001.166.987l6.586-4.79a1 1 0 000-1.644z" />
-        </svg>
-        <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display: none;">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19H6V5h4m4 0h4v14h-4V5z" />
-        </svg>
-      </button>
-      <button id="next" title="Next Song">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-        </svg>
-      </button>
+      <button id="prev" title="Previous Song">⏮️</button>
+      <button id="play-pause" title="Play/Pause">▶️</button>
+      <button id="next" title="Next Song">⏭️</button>
       <div class="volume-control">
-        <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
-        <span id="volume-indicator">50%</span>
+        <input type="range" id="volume-slider" min="0" max="100" value="50">
+        <span id="volume-label">50%</span>
       </div>
     </div>
   </div>
-  <script>
-    const audio = new Audio();
-    const playPauseBtn = document.getElementById('play-pause');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
-    const volumeSlider = document.getElementById('volume');
-    const volumeIndicator = document.getElementById('volume-indicator');
 
-    // Play/Pause functionality
-    playPauseBtn.onclick = () => {
-      if (audio.paused) {
-        audio.play();
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'inline';
-      } else {
-        audio.pause();
-        playIcon.style.display = 'inline';
-        pauseIcon.style.display = 'none';
+  <script>
+    const clientId = '45b3cdd9806948e4b0158b699cfdcacf'; // Replace with your Spotify Client ID
+    const redirectUri = 'http://localhost:3000/callback'; // Replace with your redirect URI
+    let accessToken = '';
+    let isPlaying = false;
+
+    // Spotify API endpoints
+    const SPOTIFY_AUTHORIZE_URL = 'https://accounts.spotify.com/authorize';
+    const SPOTIFY_API_URL = 'https://api.spotify.com/v1';
+
+    // Save and restore state
+    function saveState(songUri, volume) {
+      localStorage.setItem('lastPlayedSong', songUri);
+      localStorage.setItem('lastVolume', volume);
+    }
+
+    function restoreState() {
+      const lastPlayedSong = localStorage.getItem('lastPlayedSong');
+      const lastVolume = localStorage.getItem('lastVolume');
+      return { lastPlayedSong, lastVolume };
+    }
+
+    // Login to Spotify
+    document.getElementById('spotify-login').addEventListener('click', () => {
+      const scopes = 'user-read-private user-read-email streaming user-modify-playback-state';
+      const authUrl = `${SPOTIFY_AUTHORIZE_URL}?response_type=token&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;
+      window.location.href = authUrl;
+    });
+
+    // Handle redirect and extract access token
+    window.onload = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const params = new URLSearchParams(hash.substring(1));
+        accessToken = params.get('access_token');
+        if (accessToken) {
+          document.getElementById('search').disabled = false;
+        }
+      }
+
+      // Restore state
+      const { lastPlayedSong, lastVolume } = restoreState();
+      if (lastPlayedSong) {
+        playSong(lastPlayedSong, false); // Start paused
+      }
+      if (lastVolume) {
+        volumeSlider.value = lastVolume;
+        volumeLabel.textContent = `${lastVolume}%`;
       }
     };
 
+    // Play a song in the Spotify player
+    function playSong(uri, autoPlay = true) {
+      const player = document.getElementById('player');
+      player.src = `https://open.spotify.com/embed/track/${uri.split(':')[2]}`;
+      saveState(uri, volumeSlider.value);
+      isPlaying = autoPlay;
+    }
+
+    // Playback controls
+    const playPauseButton = document.getElementById('play-pause');
+    playPauseButton.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      const endpoint = isPlaying ? 'play' : 'pause';
+      fetch(`${SPOTIFY_API_URL}/me/player/${endpoint}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }).catch(console.error);
+      playPauseButton.textContent = isPlaying ? '⏸️' : '▶️';
+    });
+
     // Volume control
-    volumeSlider.oninput = () => {
-      audio.volume = volumeSlider.value;
-      volumeIndicator.textContent = `${Math.round(volumeSlider.value * 100)}%`;
-    };
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeLabel = document.getElementById('volume-label');
 
-    // Previous/Next functionality (Placeholder)
-    prevBtn.onclick = () => {
-      console.log('Previous song');
-    };
+    volumeSlider.addEventListener('input', () => {
+      const volume = volumeSlider.value;
+      volumeLabel.textContent = `${volume}%`;
+      saveState(localStorage.getItem('lastPlayedSong'), volume); // Save volume
+      fetch(`${SPOTIFY_API_URL}/me/player/volume?volume_percent=${volume}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }).catch(console.error);
+    });
 
-    nextBtn.onclick = () => {
-      console.log('Next song');
-    };
+    volumeLabel.addEventListener('click', () => {
+      const newVolume = prompt('Set Volume (0-100):', volumeSlider.value);
+      if (newVolume !== null && !isNaN(newVolume) && newVolume >= 0 && newVolume <= 100) {
+        volumeSlider.value = newVolume;
+        volumeLabel.textContent = `${newVolume}%`;
+        saveState(localStorage.getItem('lastPlayedSong'), newVolume); // Save volume
+        fetch(`${SPOTIFY_API_URL}/me/player/volume?volume_percent=${newVolume}`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }).catch(console.error);
+      }
+    });
   </script>
 </body>
 </html>
