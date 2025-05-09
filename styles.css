@@ -31,11 +31,17 @@ body {
     }
 }
 
+* Remove bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+
 /* Navbar Styles */
 .navbar {
-    background-color: #11121a; /* Navbar background color */
-    padding: 20px; /* Increase padding for a larger navbar */
-    border-radius: 0; /* No rounded borders for full-width navbar */
+    background-color: #18141c; /* Navbar background color */
+    padding: 20px 20px; /* Add space inside the navbar */
+    border-radius: 10px; /* Rounded corners */
     position: fixed; /* Make the navbar fixed to the top */
     top: 0; /* Align it to the top of the viewport */
     left: 0; /* Align it to the left of the viewport */
@@ -45,6 +51,7 @@ body {
     justify-content: space-between; /* Space between left and right sections */
     align-items: center; /* Vertically center items */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Add a subtle shadow */
+    overflow-x: auto; /* Prevent Forms tab from going off-screen */
 }
 
 /* Add margin to the body to account for the fixed navbar height */
@@ -52,10 +59,12 @@ body {
     margin-top: 70px; /* Push content below the fixed navbar */
 }
 
+/* Navbar Left Section */
 .navbar-left {
     list-style: none; /* Remove bullet points */
     padding: 0;
     margin: 0;
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .navbar-left li {
@@ -75,12 +84,14 @@ body {
     background-color: #3a3a3a; /* Darker background on hover */
 }
 
+/* Navbar Right Section */
 .navbar-right {
     list-style: none; /* Remove bullet points */
     padding: 0;
     margin: 0;
     display: flex; /* Arrange items in a row */
     gap: 15px; /* Space between items */
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .navbar-right li {
@@ -99,6 +110,35 @@ body {
 
 .navbar-right a:hover {
     color: #007bff; /* Blue color on hover */
+}
+
+/* Remove blue underline for the selected tab */
+.navbar-right a.active::after,
+.navbar-left a.active::after {
+    width: 0; /* No underline for the active tab */
+}
+
+.navbar-right a.active,
+.navbar-left a.active {
+    color: #007bff; /* Blue text color for active tab */
+}
+
+/* Blue Underline Indicator */
+.navbar-right a::after,
+.navbar-left a::after {
+    content: ""; /* Empty content for the underline */
+    position: absolute;
+    bottom: 0; /* Place underline at the bottom */
+    left: 0;
+    width: 0; /* Initially no underline */
+    height: 2px; /* Thickness of the underline */
+    background-color: #007bff; /* Blue underline */
+    transition: width 0.3s ease; /* Smooth animation */
+}
+
+.navbar-right a:hover::after,
+.navbar-left a:hover::after {
+    width: 100%; /* Expand underline on hover */
 }
 
 /* Blue Underline Indicator */
