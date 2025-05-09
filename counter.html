@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Counter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .counter-box {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 300px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 18px;
+        }
+    </style>
+    <script>
+        const displayCounters = () => {
+            const homeVisits = parseInt(localStorage.getItem('homeVisits') || '0', 10);
+            const weatherVisits = parseInt(localStorage.getItem('weatherVisits') || '0', 10);
+
+            document.getElementById('homeCounter').innerText = `Home Page Visits: ${homeVisits}`;
+            document.getElementById('weatherCounter').innerText = `Weather Page Visits: ${weatherVisits}`;
+        };
+
+        document.addEventListener('DOMContentLoaded', displayCounters);
+    </script>
+</head>
+<body>
+    <h1>Visitor Counter</h1>
+
+    <div class="counter-box">
+        <p id="homeCounter">Home Page Visits: Loading...</p>
+    </div>
+
+    <div class="counter-box">
+        <p id="weatherCounter">Weather Page Visits: Loading...</p>
+    </div>
+</body>
+</html>
