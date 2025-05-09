@@ -41,12 +41,15 @@
             color: var(--text-color-dark);
             padding: 20px;
             position: fixed;
+            left: 0;
+            top: 0;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
             padding-bottom: 50px;
             transition: transform 0.3s, background-color 0.3s, color 0.3s;
             transform: translateX(0);
+            z-index: 1000;
         }
 
         .side-menu.hidden {
@@ -61,16 +64,19 @@
         .toggle-menu {
             position: absolute;
             top: 10px;
-            right: -30px;
+            right: -25px;
             background-color: var(--accent-color);
             color: white;
             border: none;
             border-radius: 50%;
             padding: 10px;
             cursor: pointer;
-            font-weight: bold;
             font-size: 16px;
-            transition: transform 0.3s, background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: background-color 0.3s;
         }
 
         .toggle-menu:hover {
@@ -87,10 +93,9 @@
             border-radius: 50%;
             padding: 10px;
             cursor: pointer;
-            font-weight: bold;
             font-size: 16px;
             display: none;
-            z-index: 1000;
+            z-index: 1001;
         }
 
         .open-menu.visible {
