@@ -243,6 +243,8 @@
     const REDIRECT_URI = "http://localhost:3000/callback"; // Replace with your app's callback URL
     const CLIENT_ID = "45b3cdd9806948e4b0158b699cfdcacf"; // Replace with your Spotify client ID
 
+    const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;window.location.href = authUrl;
+
     const themeSwitcher = document.getElementById('theme-switcher');
     const loginButton = document.getElementById('login-button');
     const loginDropdown = document.getElementById('login-dropdown');
