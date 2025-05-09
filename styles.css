@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     text-align: center;
     min-height: 100vh;
-    background-color: #18141c; /* Changed to a darker shade */
+    background-color: #11121a; /* Changed to a darker shade */
 }
 
 /* Fade-in Effect */
@@ -33,7 +33,7 @@ body {
 
 /* Navbar Styles */
 .navbar {
-    background-color: #18141c; /* Navbar background color */
+    background-color: #11121a; /* Navbar background color */
     padding: 20px; /* Increase padding for a larger navbar */
     border-radius: 0; /* No rounded borders for full-width navbar */
     position: fixed; /* Make the navbar fixed to the top */
@@ -157,7 +157,7 @@ header h1 {
 
 /* Individual Cards */
 .card {
-    background-color: #18141c; /* Dark card background */
+    background-color: #11121a; /* Dark card background */
     border-radius: 10px;
     overflow: hidden;
     text-align: center;
@@ -176,7 +176,7 @@ header h1 {
 /* Card Header */
 .card-header {
     height: 150px;
-    background-color: #2d2d2d; /* Darker header background color */
+    background-color: #11121a; /* Darker header background color */
     position: relative;
 }
 
