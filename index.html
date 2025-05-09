@@ -243,12 +243,17 @@
             background-color: #357ABD;
         }
     </style>
-        <script>
-        // Track visits to the Home page (only count once)
+ </style>
+    <script>
+        // Track visits to the Home page (only count unique visits)
         const trackVisit = () => {
-            if (!localStorage.getItem('homeVisited')) {
-                const homeVisits = parseInt(localStorage.getItem('homeVisits') || '0', 10);
-                localStorage.setItem('homeVisits', homeVisits + 1);
+            const homeTimestamps = JSON.parse(localStorage.getItem('homeTimestamps') || '[]');
+            const lastVisit = localStorage.getItem('homeVisited');
+
+            if (!lastVisit) {
+                // Add a new timestamp if the user hasn't visited
+                homeTimestamps.push(Date.now());
+                localStorage.setItem('homeTimestamps', JSON.stringify(homeTimestamps));
                 localStorage.setItem('homeVisited', 'true');
             }
         };
