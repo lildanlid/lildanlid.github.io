@@ -23,21 +23,21 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: var(--bg-color-dark); /* Default to dark mode */
+            background-color: var(--bg-color-dark);
             color: var(--text-color-dark);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
         }
 
         body.light-mode {
-            background-color: var(--bg-color-light); /* Light mode background */
+            background-color: var(--bg-color-light);
             color: var(--text-color-light);
         }
 
         .side-menu {
             width: 250px;
             height: 100vh;
-            background-color: var(--bg-color-dark); /* Dark mode background */
+            background-color: var(--bg-color-dark);
             color: var(--text-color-dark);
             padding: 20px;
             position: fixed;
@@ -49,7 +49,7 @@
         }
 
         body.light-mode .side-menu {
-            background-color: var(--bg-color-light); /* Light mode background */
+            background-color: var(--bg-color-light);
             color: var(--text-color-light);
         }
 
@@ -175,6 +175,73 @@
             margin-left: 270px;
             padding: 20px;
         }
+
+        .projects-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .project-box {
+            width: 300px;
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-dark);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.light-mode .project-box {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+        }
+
+        .project-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .project-content {
+            padding: 15px;
+        }
+
+        .project-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .project-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .download-button {
+            background-color: var(--accent-color);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-button:hover {
+            background-color: #357ABD;
+        }
     </style>
 </head>
 <body>
@@ -217,10 +284,9 @@
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
         const themeLabel = document.getElementById('theme-label');
-        const menuLinks = document.querySelectorAll('.side-menu ul li a');
         const content = document.getElementById('content');
+        const menuLinks = document.querySelectorAll('.side-menu ul li a');
 
-        // Load saved theme from localStorage
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             const savedTab = localStorage.getItem('activeTab') || 'home';
@@ -238,7 +304,6 @@
             if (activeLink) activeLink.classList.add('selected');
         });
 
-        // Toggle between light and dark mode
         themeToggle.addEventListener('change', () => {
             if (themeToggle.checked) {
                 body.classList.add('light-mode');
@@ -251,7 +316,6 @@
             }
         });
 
-        // Handle navigation and load content
         menuLinks.forEach(link => {
             link.addEventListener('click', (event) => {
                 event.preventDefault();
@@ -273,27 +337,94 @@
             } else if (page === 'projects') {
                 content.innerHTML = `
                     <h2>Projects</h2>
-                    <p>Project content goes here.</p>
+                    <div class="projects-container">
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="Project 1">
+                            <div class="project-content">
+                                <div class="project-title">Project One</div>
+                                <div class="project-description">This is a brief description of Project One.</div>
+                                <a class="download-button" href="https://example.com/project-one" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="Project 2">
+                            <div class="project-content">
+                                <div class="project-title">Project Two</div>
+                                <div class="project-description">This is a brief description of Project Two.</div>
+                                <a class="download-button" href="https://example.com/project-two" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="Project 3">
+                            <div class="project-content">
+                                <div class="project-title">Project Three</div>
+                                <div class="project-description">This is a brief description of Project Three.</div>
+                                <a class="download-button" href="https://example.com/project-three" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 `;
             } else if (page === 'apps') {
                 content.innerHTML = `
                     <h2>Apps</h2>
-                    <p>App content goes here.</p>
+                    <div class="projects-container">
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 1">
+                            <div class="project-content">
+                                <div class="project-title">App One</div>
+                                <div class="project-description">This is a brief description of App One.</div>
+                                <a class="download-button" href="https://example.com/app-one" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 2">
+                            <div class="project-content">
+                                <div class="project-title">App Two</div>
+                                <div class="project-description">This is a brief description of App Two.</div>
+                                <a class="download-button" href="https://example.com/app-two" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                        <div class="project-box">
+                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 3">
+                            <div class="project-content">
+                                <div class="project-title">App Three</div>
+                                <div class="project-description">This is a brief description of App Three.</div>
+                                <a class="download-button" href="https://example.com/app-three" target="_blank">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 `;
             } else if (page === 'links') {
                 content.innerHTML = `
                     <h2>Links</h2>
-                    <p>Links content goes here.</p>
+                    <p>This is the Links page. Add your favorite links here!</p>
                 `;
             } else if (page === 'forms') {
                 content.innerHTML = `
                     <h2>Forms</h2>
-                    <p>Forms content goes here.</p>
+                    <p>This is the Forms page. Add your forms here!</p>
                 `;
             } else if (page === 'donate') {
                 content.innerHTML = `
-                    <h2>Donate</h2>
-                    <p>Support our work by donating today!</p>
+                    <div class="purple-box">
+                        <h2>Donate</h2>
+                        <p>Support our work by donating today.</p>
+                        <a href="https://www.patreon.com/c/lildanlid/membership" target="_blank" class="download-button">
+                            Go to Patreon
+                        </a>
+                    </div>
                 `;
             }
         }
