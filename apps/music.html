@@ -65,16 +65,8 @@
       color: #000;
     }
 
-    .popular-songs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
+    .section {
       margin-top: 20px;
-    }
-
-    .popular-songs .song-box {
-      width: 250px;
       padding: 15px;
       background-color: #1e1e1e;
       border-radius: 12px;
@@ -82,23 +74,23 @@
       transition: background-color 0.3s ease;
     }
 
-    .popular-songs .song-box.light-mode {
+    .section.light-mode {
       background-color: #f9f9f9;
     }
 
-    .song-box h3 {
+    .section h3 {
       font-size: 18px;
       margin-bottom: 10px;
     }
 
-    .song-box p {
+    .section p {
       font-size: 14px;
       color: #aaa;
     }
 
     #ai-playlist-prompt {
       width: 100%;
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 10px;
       font-size: 16px;
       border: 1px solid #ccc;
@@ -140,27 +132,31 @@
   <div class="music-player">
     <h1>Music Player</h1>
 
-    <!-- Popular Songs Section -->
-    <div class="popular-songs">
-      <div class="song-box" id="today-popular">
-        <h3>Today's Popular</h3>
-        <p>Loading...</p>
-      </div>
-      <div class="song-box" id="week-popular">
-        <h3>This Week's Popular</h3>
-        <p>Loading...</p>
-      </div>
-      <div class="song-box" id="month-popular">
-        <h3>This Month's Popular</h3>
-        <p>Loading...</p>
-      </div>
+    <!-- AI Playlist Section -->
+    <div class="section">
+      <h3>AI Playlist Generator</h3>
+      <input type="text" id="ai-playlist-prompt" placeholder="Describe your playlist (e.g., 'chill vibes')">
+      <button id="generate-playlist">Generate Playlist</button>
+      <div id="playlist-result" style="margin-top: 20px;"></div>
     </div>
 
-    <!-- AI Playlist Prompt -->
-    <input type="text" id="ai-playlist-prompt" placeholder="Describe your playlist (e.g., 'chill vibes')">
-    <button id="generate-playlist">Generate Playlist</button>
+    <!-- Today's Popular Section -->
+    <div class="section" id="today-popular">
+      <h3>Today's Popular</h3>
+      <p>Loading...</p>
+    </div>
 
-    <div id="playlist-result" style="margin-top: 20px;"></div>
+    <!-- This Week's Popular Section -->
+    <div class="section" id="week-popular">
+      <h3>This Week's Popular</h3>
+      <p>Loading...</p>
+    </div>
+
+    <!-- This Month's Popular Section -->
+    <div class="section" id="month-popular">
+      <h3>This Month's Popular</h3>
+      <p>Loading...</p>
+    </div>
   </div>
 
   <script>
