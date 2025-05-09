@@ -243,11 +243,14 @@
             background-color: #357ABD;
         }
     </style>
-    <script>
-        // Track visits to the Home page
+        <script>
+        // Track visits to the Home page (only count once)
         const trackVisit = () => {
-            const homeVisits = parseInt(localStorage.getItem('homeVisits') || '0', 10);
-            localStorage.setItem('homeVisits', homeVisits + 1);
+            if (!localStorage.getItem('homeVisited')) {
+                const homeVisits = parseInt(localStorage.getItem('homeVisits') || '0', 10);
+                localStorage.setItem('homeVisits', homeVisits + 1);
+                localStorage.setItem('homeVisited', 'true');
+            }
         };
 
         document.addEventListener('DOMContentLoaded', trackVisit);
