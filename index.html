@@ -45,12 +45,56 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
             padding-bottom: 50px;
-            transition: background-color 0.3s, color 0.3s;
+            transition: transform 0.3s, background-color 0.3s, color 0.3s;
+            transform: translateX(0);
+        }
+
+        .side-menu.hidden {
+            transform: translateX(-100%);
         }
 
         body.light-mode .side-menu {
             background-color: var(--bg-color-light);
             color: var(--text-color-light);
+        }
+
+        .toggle-menu {
+            position: absolute;
+            top: 10px;
+            right: -30px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .toggle-menu:hover {
+            background-color: #357ABD;
+        }
+
+        .open-menu {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .open-menu.visible {
+            display: block;
         }
 
         .side-menu ul {
@@ -174,95 +218,18 @@
         .content {
             margin-left: 270px;
             padding: 20px;
+            transition: margin-left 0.3s;
         }
 
-        .projects-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
-
-        .project-box {
-            width: 300px;
-            background-color: var(--bg-color-dark);
-            color: var(--text-color-dark);
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            margin: 20px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        body.light-mode .project-box {
-            background-color: var(--bg-color-light);
-            color: var(--text-color-light);
-        }
-
-        .project-image {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        .project-content {
-            padding: 15px;
-        }
-
-        .project-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .project-description {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .download-button {
-            background-color: var(--accent-color);
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            text-transform: uppercase;
-            transition: background-color 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .download-button:hover {
-            background-color: #357ABD;
+        .content.full-width {
+            margin-left: 20px;
         }
     </style>
- </style>
-    <script>
-        // Track visits to the Home page (only count unique visits)
-        const trackVisit = () => {
-            const homeTimestamps = JSON.parse(localStorage.getItem('homeTimestamps') || '[]');
-            const lastVisit = localStorage.getItem('homeVisited');
-
-            if (!lastVisit) {
-                // Add a new timestamp if the user hasn't visited
-                homeTimestamps.push(Date.now());
-                localStorage.setItem('homeTimestamps', JSON.stringify(homeTimestamps));
-                localStorage.setItem('homeVisited', 'true');
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', trackVisit);
-    </script>
 </head>
 <body>
+    <button class="open-menu"><i class="fas fa-arrow-right"></i></button>
     <div class="side-menu">
+        <button class="toggle-menu"><i class="fas fa-arrow-left"></i></button>
         <div class="header">
             <h1>lildanlid</h1>
         </div>
@@ -298,27 +265,37 @@
     </div>
 
     <script>
+        const sideMenu = document.querySelector('.side-menu');
+        const toggleMenuButton = document.querySelector('.toggle-menu');
+        const openMenuButton = document.querySelector('.open-menu');
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
         const themeLabel = document.getElementById('theme-label');
-        const content = document.getElementById('content');
-        const menuLinks = document.querySelectorAll('.side-menu ul li a');
+        const content = document.querySelector('.content');
 
+        // Close menu functionality
+        toggleMenuButton.addEventListener('click', () => {
+            sideMenu.classList.add('hidden');
+            openMenuButton.classList.add('visible');
+            content.classList.add('full-width');
+        });
+
+        // Open menu functionality
+        openMenuButton.addEventListener('click', () => {
+            sideMenu.classList.remove('hidden');
+            openMenuButton.classList.remove('visible');
+            content.classList.remove('full-width');
+        });
+
+        // Light/Dark mode toggle
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
-            const savedTab = localStorage.getItem('activeTab') || 'home';
 
             if (savedTheme === 'light') {
                 body.classList.add('light-mode');
                 themeToggle.checked = true;
                 themeLabel.textContent = 'Dark Mode';
             }
-
-            loadPage(savedTab);
-
-            menuLinks.forEach(link => link.classList.remove('selected'));
-            const activeLink = document.querySelector(`.side-menu ul li a[href="#${savedTab}"]`);
-            if (activeLink) activeLink.classList.add('selected');
         });
 
         themeToggle.addEventListener('change', () => {
@@ -332,119 +309,6 @@
                 localStorage.setItem('theme', 'dark');
             }
         });
-
-        menuLinks.forEach(link => {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const selectedTab = link.getAttribute('href').substring(1);
-                localStorage.setItem('activeTab', selectedTab);
-
-                menuLinks.forEach(link => link.classList.remove('selected'));
-                link.classList.add('selected');
-                loadPage(selectedTab);
-            });
-        });
-
-        function loadPage(page) {
-            if (page === 'home') {
-                content.innerHTML = `
-                    <h2>Welcome to the Home Page</h2>
-                    <p>Use the menu to navigate to other pages.</p>
-                `;
-            } else if (page === 'projects') {
-                content.innerHTML = `
-                    <h2>Projects</h2>
-                    <div class="projects-container">
-                        <div class="project-box">
-                            <img class="project-image" src="https://api.mcpedl.com/storage/submissions/129160/100/minecrafttitle-5_1-520x245.png" alt="Project 1">
-                            <div class="project-content">
-                                <div class="project-title">Rank Managment</div>
-                                <div class="project-description">Easy to use & manage ranks.   /scriptevent open:rankmenu </div>
-                                <a class="download-button" href="https://lootdest.org/s?D5nydiaR" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://api.mcpedl.com/storage/submissions/119028/104/minecrafttitle_1-520x245.png" alt="Project 2">
-                            <div class="project-content">
-                                <div class="project-title">Personal Sidebar</div>
-                                <div class="project-description">Alternates the title in /titleraw to be on the side</div>
-                                <a class="download-button" href="https://loot-link.com/s?pDzGQukq" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://api.mcpedl.com/storage/submissions/129126/103/minecrafttitle-4_1-520x245.png" alt="Project 3">
-                            <div class="project-content">
-                                <div class="project-title">CPS Counter</div>
-                                <div class="project-description">(Only works when hittings entities).</div>
-                                <a class="download-button" href="https://lootdest.org/s?BesIpU4N" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (page === 'apps') {
-                content.innerHTML = `
-                    <h2>Apps</h2>
-                    <div class="projects-container">
-                        <div class="project-box">
-                            <img class="project-image" src="https://cdn.jim-nielsen.com/ios/512/weather-2019-02-07.png?rf=1024" alt="App 1">
-                            <div class="project-content">
-                                <div class="project-title">Weather App</div>
-                                <div class="project-description">Check your weather</div>
-                                <a class="download-button" href="https://lildanlid.github.io/apps/weather" target="_blank">
-                                    View
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 2">
-                            <div class="project-content">
-                                <div class="project-title">App Two</div>
-                                <div class="project-description">Two.</div>
-                                <a class="download-button" href="https://example.com/app-two" target="_blank">
-                                    View
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 3">
-                            <div class="project-content">
-                                <div class="project-title">App Three</div>
-                                <div class="project-description">Three.</div>
-                                <a class="download-button" href="https://example.com/app-three" target="_blank">
-                                    View
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (page === 'links') {
-                content.innerHTML = `
-                    <h2>Links</h2>
-                    <p>This is the Links page.</p>
-                `;
-            } else if (page === 'forms') {
-                content.innerHTML = `
-                    <h2>Forms</h2>
-                    <p>This is the Forms page.</p>
-                `;
-            } else if (page === 'donate') {
-                content.innerHTML = `
-                    <div class="purple-box">
-                        <h2>Donate</h2>
-                        <p>Support our work by donating today.</p>
-                        <a href="https://www.patreon.com/c/lildanlid/membership" target="_blank" class="download-button">
-                            Go to Patreon
-                        </a>
-                    </div>
-                `;
-            }
-        }
     </script>
 </body>
 </html>
