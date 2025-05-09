@@ -2,154 +2,126 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Day #78 - Google Gemini Clone | AsmrProg</title>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
-        
-        /* --- Paste all of style.css content here --- */
-        /* [CSS content from style.css starts here] */
-        * {
-            margin: 0;
-            padding: 0;
-            outline: none;
-            box-sizing: border-box;
-            font-family: "Open Sans", sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <title>Day #78 - Google Gemini Clone | AsmrProg</title>
 
-        :root {
-            --primary-color: #131314;
-            --secondary-color: #1E1F20;
-            --secondary-hover-color: #333537;
-            --focus-color: #282A2C;
-            --focus-hover-color: #37393B;
-            --button-hover-color: #2f3030;
-            --text-color: #fff;
-            --text-secondary-color: #D8D8D8;
-            --heading-secondary-color: #444746;
-            --placeholder-color: #ABAFB3;
-        }
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
-        /* [the rest of style.css follows...] */
-        /* ... CSS content from the uploaded file goes here completely ... */
+    /* Include your entire CSS here */
+    * {
+      margin: 0;
+      padding: 0;
+      outline: none;
+      box-sizing: border-box;
+      font-family: "Open Sans", sans-serif;
+    }
 
-        @media screen and (max-width: 980px) {
-            .header {
-                padding: 0 2rem;
-            }
+    :root {
+      --primary-color: #131314;
+      --secondary-color: #1E1F20;
+      --secondary-hover-color: #333537;
+      --focus-color: #282A2C;
+      --focus-hover-color: #37393B;
+      --button-hover-color: #2f3030;
+      --text-color: #fff;
+      --text-secondary-color: #D8D8D8;
+      --heading-secondary-color: #444746;
+      --placeholder-color: #ABAFB3;
+    }
 
-            .header__title {
-                line-height: 2.8rem;
-            }
+    /* Include the rest of your CSS content here... */
+    @media screen and (max-width: 980px) {
+      .header {
+        padding: 0 2rem;
+      }
 
-            .header__title h1 {
-                font-size: 2.7rem;
-            }
+      .header__title {
+        line-height: 2.8rem;
+      }
 
-            .header__title h2 {
-                font-size: 2.5rem;
-            }
+      .header__title h1 {
+        font-size: 2.7rem;
+      }
 
-            .suggests {
-                justify-content: center;
-            }
+      .header__title h2 {
+        font-size: 2.5rem;
+      }
 
-            .suggests__item:nth-child(3),
-            .suggests__item:nth-child(4) {
-                display: none;
-            }
+      .suggests {
+        justify-content: center;
+      }
 
-            .message {
-                padding: 0 1.5rem;
-            }
+      .suggests__item:nth-child(3),
+      .suggests__item:nth-child(4) {
+        display: none;
+      }
 
-            .prompt__disclaim {
-                font-size: 0.8rem;
-            }
-        }
-    </style>
+      .message {
+        padding: 0 1.5rem;
+      }
+
+      .prompt__disclaim {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <!-- HTML body content remains unchanged -->
-    <nav class="navbar">
-        <h3 class="navbar__logo">AsmrProg Gemini</h3>
-        <button class="navbar__button" id="themeToggler"><i class='bx bx-sun'></i></button>
-    </nav>
+  <nav class="navbar">
+    <h3 class="navbar__logo">AsmrProg Gemini</h3>
+    <button class="navbar__button" id="themeToggler"><i class='bx bx-sun'></i></button>
+  </nav>
 
-    <header class="header">
-        <div class="header__title">
-            <h1>Hello, There!</h1>
-            <h2>How can I help you today?</h2>
-        </div>
-        <div class="suggests">
-            <div class="suggests__item">
-                <p class="suggests__item-text">
-                    Give tips on helping kids finish their homework on time
-                </p>
-                <div class="suggests__item-icon">
-                    <i class='bx bx-stopwatch'></i>
-                </div>
-            </div>
-            <div class="suggests__item">
-                <p class="suggests__item-text">
-                    Help me write an out-of-office email
-                </p>
-                <div class="suggests__item-icon">
-                    <i class='bx bx-edit-alt'></i>
-                </div>
-            </div>
-            <div class="suggests__item">
-                <p class="suggests__item-text">
-                    Give me phrases to learn a new language
-                </p>
-                <div class="suggests__item-icon">
-                    <i class='bx bx-compass'></i>
-                </div>
-            </div>
-            <div class="suggests__item">
-                <p class="suggests__item-text">
-                    Show me how to build something by hand
-                </p>
-                <div class="suggests__item-icon">
-                    <i class='bx bx-wrench'></i>
-                </div>
-            </div>
-        </div>
-    </header>
+  <header class="header">
+    <div class="header__title">
+      <h1>Hello, There!</h1>
+      <h2>How can I help you today?</h2>
+    </div>
+    <div class="suggests">
+      <div class="suggests__item">
+        <p class="suggests__item-text">Give tips on helping kids finish their homework on time</p>
+        <div class="suggests__item-icon"><i class='bx bx-stopwatch'></i></div>
+      </div>
+      <div class="suggests__item">
+        <p class="suggests__item-text">Help me write an out-of-office email</p>
+        <div class="suggests__item-icon"><i class='bx bx-edit-alt'></i></div>
+      </div>
+      <div class="suggests__item">
+        <p class="suggests__item-text">Give me phrases to learn a new language</p>
+        <div class="suggests__item-icon"><i class='bx bx-compass'></i></div>
+      </div>
+      <div class="suggests__item">
+        <p class="suggests__item-text">Show me how to build something by hand</p>
+        <div class="suggests__item-icon"><i class='bx bx-wrench'></i></div>
+      </div>
+    </div>
+  </header>
 
-    <section class="chats"></section>
+  <section class="chats"></section>
 
-    <section class="prompt">
-        <form action="#" class="prompt__form" novalidate>
-            <div class="prompt__input-wrapper">
-                <input type="text" placeholder="Enter a prompt here" class="prompt__form-input" required>
-                <button class="prompt__form-button" id="sendButton">
-                    <i class='bx bx-send'></i>
-                </button>
-                <button class="prompt__form-button" id="deleteButton">
-                    <i class='bx bx-trash'></i>
-                </button>
-            </div>
-        </form>
-        <p class="prompt__disclaim">
-            Gemini may display inaccurate info, including about people, so double-check its responses.
-        </p>
-    </section>
+  <section class="prompt">
+    <form action="#" class="prompt__form" novalidate>
+      <div class="prompt__input-wrapper">
+        <input type="text" placeholder="Enter a prompt here" class="prompt__form-input" required>
+        <button class="prompt__form-button" id="sendButton"><i class='bx bx-send'></i></button>
+        <button class="prompt__form-button" id="deleteButton"><i class='bx bx-trash'></i></button>
+      </div>
+    </form>
+    <p class="prompt__disclaim">
+      Gemini may display inaccurate info, including about people, so double-check its responses.
+    </p>
+  </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="script.js"></script>
-</body>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-</html>
-
-Use the above text and add combine the txt underneath it
-
+  <!-- Your JS goes here inside the <script> tag -->
+  <script>
 const messageForm = document.querySelector(".prompt__form");
 const chatHistoryContainer = document.querySelector(".chats");
 const suggestionItems = document.querySelectorAll(".suggests__item");
@@ -425,3 +397,10 @@ messageForm.addEventListener('submit', (e) => {
 
 // Load saved chat history on page load
 loadSavedChatHistory();
+    const messageForm = document.querySelector(".prompt__form");
+    // ... rest of your JavaScript ...
+    loadSavedChatHistory();
+  </script>
+</body>
+
+</html>
