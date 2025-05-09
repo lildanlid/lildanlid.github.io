@@ -7,11 +7,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         :root {
+            /* Dark mode colors */
             --bg-color-dark: #121212;
             --text-color-dark: #ffffff;
             --hover-bg-dark: #1c1c1c;
             --accent-color: #4A90E2;
             --purple-color: #6a0dad;
+
+            /* Light mode colors */
             --bg-color-light: #f5f5f5;
             --text-color-light: #000000;
             --hover-bg-light: #e0e0e0;
@@ -43,13 +46,19 @@
             border-radius: 0 15px 15px 0;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             overflow-y: auto;
-            transition: transform 0.3s ease;
+            padding-bottom: 50px;
+            transition: transform 0.3s ease, background-color 0.3s, color 0.3s;
             transform: translateX(0); /* Open by default */
             z-index: 1000;
         }
 
         .side-menu.closed {
             transform: translateX(-100%);
+        }
+
+        body.light-mode .side-menu {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
         }
 
         .menu-toggle {
@@ -59,15 +68,33 @@
             background-color: var(--accent-color);
             color: #ffffff;
             border: none;
-            padding: 5px 8px;
-            font-size: 14px;
+            padding: 5px 8px; /* Reduced padding for smaller size */
+            font-size: 14px; /* Reduced font size */
             border-radius: 5px;
             cursor: pointer;
             z-index: 1001;
+            transition: background-color 0.3s, opacity 0.3s, transform 0.3s;
+            opacity: 1;
+            transform: scale(1);
         }
 
         .menu-toggle.hidden {
             display: none;
+        }
+
+        .menu-toggle.fade-in {
+            animation: fade-in 0.5s ease-out;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .menu-toggle:hover {
@@ -85,36 +112,84 @@
             font-size: 14px;
             border-radius: 5px;
             cursor: pointer;
-        }
-
-        .close-button.hidden {
-            display: none;
+            transition: background-color 0.3s;
         }
 
         .close-button:hover {
             background-color: #cc0000;
         }
 
-        .theme-switch-box {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: var(--hover-bg-dark);
-            border-radius: 10px;
-            text-align: center;
-            transition: background-color 0.3s;
+        .side-menu ul {
+            list-style: none;
+            padding: 0;
         }
 
-        body.light-mode .theme-switch-box {
+        .side-menu ul li {
+            margin-bottom: 15px;
+        }
+
+        .side-menu ul li a {
+            text-decoration: none;
+            color: var(--text-color-dark);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+
+        .side-menu ul li a:hover {
+            color: var(--accent-color);
+            background-color: var(--hover-bg-dark);
+        }
+
+        body.light-mode .side-menu ul li a {
+            color: var(--text-color-light);
+        }
+
+        body.light-mode .side-menu ul li a:hover {
             background-color: var(--hover-bg-light);
         }
 
-        .theme-switch-box label {
-            font-weight: bold;
-            color: var(--text-color-dark);
+        .side-menu ul li a i {
+            margin-right: 15px;
+            font-size: 18px;
         }
 
-        body.light-mode .theme-switch-box label {
-            color: var(--text-color-light);
+        .side-menu ul li a.selected {
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 8px var(--accent-color);
+        }
+
+        .side-menu ul li a.donate {
+            background-color: var(--purple-color);
+            color: #ffffff;
+            text-align: center;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .side-menu ul li a.donate:hover {
+            background-color: #520c9b;
+        }
+
+        .theme-switch-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: var(--hover-bg-dark);
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .theme-switch-box label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--text-color-dark);
         }
 
         .theme-switch-box input {
@@ -149,12 +224,21 @@
             left: 21px;
         }
 
+        body.light-mode .theme-switch-box {
+            background-color: var(--hover-bg-light);
+            color: var(--text-color-light);
+        }
+
+        body.light-mode .theme-switch-box label {
+            color: var(--text-color-light);
+        }
+
         body.light-mode .theme-switch-box input::before {
             background: var(--text-color-light);
         }
 
         .content {
-            margin-left: 250px;
+            margin-left: 270px;
             padding: 20px;
             transition: margin-left 0.3s ease;
         }
@@ -163,83 +247,95 @@
             margin-left: 20px;
         }
     </style>
-</head>
-<body>
-    <!-- Open Menu Button -->
-    <button class="menu-toggle hidden">☰ Menu</button>
-
-    <!-- Sidebar -->
-    <div class="side-menu">
-        <!-- Close Button -->
-        <button class="close-button">Close</button>
-
-        <div class="header">
-            <h1>lildanlid</h1>
-        </div>
-
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#apps">Apps</a></li>
-        </ul>
-
-        <!-- Theme Switcher -->
-        <div class="theme-switch-box">
-            <label for="theme-toggle">Light Mode</label>
-            <input type="checkbox" id="theme-toggle">
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="content">
-        <h2>Welcome to the Home Page</h2>
-        <p>Use the menu to navigate to other pages.</p>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Selectors
             const menuToggle = document.querySelector('.menu-toggle');
             const sideMenu = document.querySelector('.side-menu');
             const closeButton = document.querySelector('.close-button');
-            const themeToggle = document.getElementById('theme-toggle');
-            const body = document.body;
+            const content = document.querySelector('.content');
 
-            // Initialize: Open Sidebar and Hide "☰ Menu" Button
-            menuToggle.classList.add('hidden'); // Hide "☰ Menu"
-            closeButton.classList.remove('hidden'); // Show Close Button
+            // Hide "☰ Menu" button on page load if the sidebar is open
+            if (!sideMenu.classList.contains('closed')) {
+                menuToggle.classList.add('hidden');
+            }
 
-            // Event: Open Menu
             menuToggle.addEventListener('click', () => {
                 sideMenu.classList.remove('closed');
-                menuToggle.classList.add('hidden'); // Hide "☰ Menu"
-                closeButton.classList.remove('hidden'); // Show Close Button
+                content.classList.remove('shifted');
+                menuToggle.classList.add('hidden'); // Hide the "☰ Menu" button
             });
 
-            // Event: Close Menu
             closeButton.addEventListener('click', () => {
                 sideMenu.classList.add('closed');
-                menuToggle.classList.remove('hidden'); // Show "☰ Menu"
-                closeButton.classList.add('hidden'); // Hide Close Button
+                content.classList.add('shifted');
+                menuToggle.classList.remove('hidden'); // Show the "☰ Menu" button
+                menuToggle.classList.add('fade-in'); // Add fade-in animation
+                setTimeout(() => {
+                    menuToggle.classList.remove('fade-in'); // Remove fade-in class after animation completes
+                }, 500); // Match the duration of the fade-in animation
             });
 
-            // Event: Toggle Theme
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+            const themeLabel = document.getElementById('theme-label');
+
             const savedTheme = localStorage.getItem('theme') || 'dark';
             if (savedTheme === 'light') {
                 body.classList.add('light-mode');
                 themeToggle.checked = true;
+                themeLabel.textContent = 'Dark Mode';
             }
 
             themeToggle.addEventListener('change', () => {
                 if (themeToggle.checked) {
-                    body.classList.add('light-mode'); // Switch to Light Mode
+                    body.classList.add('light-mode');
+                    themeLabel.textContent = 'Dark Mode';
                     localStorage.setItem('theme', 'light');
                 } else {
-                    body.classList.remove('light-mode'); // Switch to Dark Mode
+                    body.classList.remove('light-mode');
+                    themeLabel.textContent = 'Light Mode';
                     localStorage.setItem('theme', 'dark');
                 }
             });
         });
     </script>
+</head>
+<body>
+    <button class="menu-toggle">☰ Menu</button>
+    <div class="side-menu">
+        <button class="close-button">Close</button>
+        <div class="header">
+            <h1>lildanlid</h1>
+        </div>
+        <ul>
+            <li>
+                <a href="#home" class="selected"><i class="fas fa-home"></i> Home</a>
+            </li>
+            <li>
+                <a href="#projects"><i class="fas fa-th-large"></i> Projects</a>
+            </li>
+            <li>
+                <a href="#apps"><i class="fas fa-mobile-alt"></i> Apps</a>
+            </li>
+            <li>
+                <a href="#links"><i class="fas fa-folder"></i> Links</a>
+            </li>
+            <li>
+                <a href="#forms"><i class="fas fa-tasks"></i> Forms</a>
+            </li>
+            <li>
+                <a href="#donate" class="donate"><i class="fas fa-calendar-alt"></i> Donate</a>
+            </li>
+        </ul>
+        <div class="theme-switch-box">
+            <label for="theme-toggle" id="theme-label">Light Mode</label>
+            <input type="checkbox" id="theme-toggle">
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>Welcome to the Home Page</h2>
+        <p>Use the menu to navigate to other pages.</p>
+    </div>
 </body>
 </html>
