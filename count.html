@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website with Live Counter and Time Tracking</title>
+    <title>Live Counter with Time and Views Tracking</title>
     <style>
         /* General Reset and Styling */
         body {
@@ -39,60 +39,80 @@
             margin: 10px 0;
             font-size: 18px;
         }
-
-        .counter-box .time-spent {
-            font-size: 14px;
-            color: #aaaaaa;
-        }
     </style>
     <script>
-        let startTime;
-
-        const updateCounter = (pageKey) => {
-            // Check if the user has already been counted for the specific page
-            if (!localStorage.getItem(pageKey)) {
-                // Mark the user as visited for this page
-                localStorage.setItem(pageKey, 'true');
-
-                // Simulate a counter increment (frontend-only approach)
-                const currentCount = parseInt(localStorage.getItem(`${pageKey}_count`) || '0', 10);
-                localStorage.setItem(`${pageKey}_count`, currentCount + 1);
-            }
+        // Helper function to convert milliseconds to a readable format
+        const formatTime = (milliseconds) => {
+            const seconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}m ${remainingSeconds}s`;
         };
 
-        const displayCounter = (pageKey, elementId) => {
-            // Get the current visitor count for the specific page
-            const visitorCount = localStorage.getItem(`${pageKey}_count`) || '0';
-            document.getElementById(elementId).innerText = `Total Visitors: ${visitorCount}`;
+        // Calculate Views for Last Week or Last Month
+        const calculateViews = (timestamps, days) => {
+            const currentTime = Date.now();
+            const cutoffTime = currentTime - days * 24 * 60 * 60 * 1000; // Convert days to milliseconds
+            return timestamps.filter(timestamp => timestamp >= cutoffTime).length;
         };
 
-        const trackTime = (elementId) => {
-            const elapsedTime = Math.floor((performance.now() - startTime) / 1000); // Time in seconds
-            const minutes = Math.floor(elapsedTime / 60);
-            const seconds = elapsedTime % 60;
-            document.getElementById(elementId).innerText = `Time Spent: ${minutes}m ${seconds}s`;
+        const displayStats = () => {
+            // Data for Home Page
+            const homeTimestamps = JSON.parse(localStorage.getItem('homePage_timestamps') || '[]');
+            const homeMaxTime = parseInt(localStorage.getItem('homePage_maxTime') || '0', 10);
+
+            const homeWeeklyViews = calculateViews(homeTimestamps, 7); // Last 7 days
+            const homeMonthlyViews = calculateViews(homeTimestamps, 30); // Last 30 days
+
+            document.getElementById('visitorCountHome').innerText = `Total Visitors: ${homeTimestamps.length}`;
+            document.getElementById('weeklyViewsHome').innerText = `Views Last Week: ${homeWeeklyViews}`;
+            document.getElementById('monthlyViewsHome').innerText = `Views Last Month: ${homeMonthlyViews}`;
+            document.getElementById('maxTimeHome').innerText = `Most Time Spent: ${formatTime(homeMaxTime)}`;
+
+            // Data for Weather Page
+            const weatherTimestamps = JSON.parse(localStorage.getItem('weatherPage_timestamps') || '[]');
+            const weatherMaxTime = parseInt(localStorage.getItem('weatherPage_maxTime') || '0', 10);
+
+            const weatherWeeklyViews = calculateViews(weatherTimestamps, 7); // Last 7 days
+            const weatherMonthlyViews = calculateViews(weatherTimestamps, 30); // Last 30 days
+
+            document.getElementById('visitorCountWeather').innerText = `Total Visitors: ${weatherTimestamps.length}`;
+            document.getElementById('weeklyViewsWeather').innerText = `Views Last Week: ${weatherWeeklyViews}`;
+            document.getElementById('monthlyViewsWeather').innerText = `Views Last Month: ${weatherMonthlyViews}`;
+            document.getElementById('maxTimeWeather').innerText = `Most Time Spent: ${formatTime(weatherMaxTime)}`;
         };
 
-        const init = () => {
-            // Record start time
-            startTime = performance.now();
+        const trackTimeOnPage = (pageKey) => {
+            const startTime = Date.now(); // Record the time when the user enters the page
 
-            // Update and display counter for the home page
-            updateCounter('uniqueVisitor_home');
-            displayCounter('uniqueVisitor_home', 'visitorCountHome');
+            // When the user leaves the page
+            window.addEventListener('beforeunload', () => {
+                const endTime = Date.now(); // Record the time when the user leaves
+                const timeSpent = endTime - startTime; // Calculate time spent in milliseconds
 
-            // Update and display counter for the weather page
-            updateCounter('uniqueVisitor_weather');
-            displayCounter('uniqueVisitor_weather', 'visitorCountWeather');
+                // Get the current maximum time spent from localStorage
+                const maxTimeSpent = parseInt(localStorage.getItem(`${pageKey}_maxTime`) || '0', 10);
 
-            // Start time tracking
-            setInterval(() => {
-                trackTime('timeSpentHome');
-                trackTime('timeSpentWeather');
-            }, 1000); // Update every second
+                // Update the maximum time if the new visit exceeds the current record
+                if (timeSpent > maxTimeSpent) {
+                    localStorage.setItem(`${pageKey}_maxTime`, timeSpent);
+                }
+
+                // Store timestamps for weekly and monthly views tracking
+                let timestamps = JSON.parse(localStorage.getItem(`${pageKey}_timestamps`)) || [];
+                timestamps.push(startTime); // Add the visit's start time
+                localStorage.setItem(`${pageKey}_timestamps`, JSON.stringify(timestamps));
+            });
         };
 
-        document.addEventListener('DOMContentLoaded', init);
+        // Call this function with a unique key for each page
+        if (window.location.pathname === '/') {
+            trackTimeOnPage('homePage');
+        } else if (window.location.pathname === '/apps/weather') {
+            trackTimeOnPage('weatherPage');
+        }
+
+        document.addEventListener('DOMContentLoaded', displayStats);
     </script>
 </head>
 <body>
@@ -100,14 +120,18 @@
     <div class="counter-box">
         <h1>Home Page Visitors</h1>
         <p id="visitorCountHome">Loading visitor count...</p>
-        <p class="time-spent" id="timeSpentHome">Time Spent: 0m 0s</p>
+        <p id="weeklyViewsHome">Views Last Week: Loading...</p>
+        <p id="monthlyViewsHome">Views Last Month: Loading...</p>
+        <p id="maxTimeHome">Most Time Spent: Loading...</p>
     </div>
 
     <!-- Counter for the Weather Page -->
     <div class="counter-box">
         <h1>Weather Page Visitors</h1>
         <p id="visitorCountWeather">Loading visitor count...</p>
-        <p class="time-spent" id="timeSpentWeather">Time Spent: 0m 0s</p>
+        <p id="weeklyViewsWeather">Views Last Week: Loading...</p>
+        <p id="monthlyViewsWeather">Views Last Month: Loading...</p>
+        <p id="maxTimeWeather">Most Time Spent: Loading...</p>
     </div>
 </body>
 </html>
