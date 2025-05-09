@@ -33,8 +33,6 @@
             overflow-x: hidden;
         }
 
-        /* Other styles remain unchanged */
-
         /* Adjust project box for dynamic theming */
         .project-box {
             width: 300px;
@@ -76,6 +74,8 @@
         body.light-mode .download-button {
             background-color: var(--accent-color);
         }
+
+        /* Additional styles remain unchanged */
     </style>
 </head>
 <body>
@@ -149,6 +149,15 @@
             }
         });
 
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                menuLinks.forEach(link => link.classList.remove('selected'));
+                this.classList.add('selected');
+                loadPage(this.getAttribute('href').substring(1));
+            });
+        });
+
         function loadPage(page) {
             if (page === 'home') {
                 content.innerHTML = `
@@ -184,7 +193,7 @@
                             </div>
                         </div>
                     </div>
-                ;
+                `;
             }
         }
     </script>
