@@ -31,6 +31,69 @@ body {
     }
 }
 
+/* Navbar Styles */
+.navbar {
+    background-color: #18141c; /* Navbar background color */
+    padding: 15px 20px; /* Add space inside the navbar */
+    border-radius: 10px; /* Rounded borders */
+    display: flex;
+    justify-content: space-between; /* Space between left and right sections */
+    align-items: center; /* Vertically center items */
+    margin: 20px auto; /* Add spacing above and below the navbar */
+    max-width: 1200px; /* Center the navbar and limit width */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Add a subtle shadow */
+}
+
+/* Navbar Left Section */
+.navbar-left {
+    list-style: none; /* Remove bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-left li {
+    display: inline; /* Display items inline */
+}
+
+.navbar-left a {
+    color: white; /* Link text color */
+    text-decoration: none; /* Remove underline */
+    font-size: 1rem;
+    padding: 10px 15px; /* Add padding for clickable area */
+    border-radius: 5px; /* Slight rounding for hover effect */
+    transition: background-color 0.3s ease;
+}
+
+.navbar-left a:hover {
+    background-color: #3a3a3a; /* Darker background on hover */
+}
+
+/* Navbar Right Section */
+.navbar-right {
+    list-style: none; /* Remove bullet points */
+    padding: 0;
+    margin: 0;
+    display: flex; /* Arrange items in a row */
+    gap: 15px; /* Space between items */
+}
+
+.navbar-right li {
+    display: inline; /* Display items inline */
+}
+
+.navbar-right a {
+    color: white; /* Link text color */
+    text-decoration: none; /* Remove underline */
+    font-size: 1rem;
+    padding: 10px 15px; /* Add padding for clickable area */
+    border-radius: 5px; /* Slight rounding for hover effect */
+    transition: background-color 0.3s ease;
+}
+
+.navbar-right a:hover {
+    background-color: #3a3a3a; /* Darker background on hover */
+}
+
 /* Container Styles */
 .container {
     text-align: center;
@@ -144,16 +207,6 @@ header h1 {
 
 .download-button:hover {
     background-color: #0056b3;
-}
-
-.container {
-    text-align: center;
-    padding: 2rem;
-    background-color: #171616; /* Change this color to your desired background */
-    border-radius: 10px; /* Keeps rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8); /* Adjust shadow for a better look */
-    max-width: 1200px;
-    margin: 2rem auto;
 }
 
 /* FREE Tag */
