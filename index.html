@@ -64,7 +64,7 @@
         .toggle-menu {
             position: absolute;
             top: 10px;
-            right: -25px;
+            right: -15px; /* Adjusted to ensure visibility */
             background-color: var(--accent-color);
             color: white;
             border: none;
@@ -77,6 +77,7 @@
             justify-content: center;
             z-index: 1001;
             transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .toggle-menu:hover {
@@ -96,6 +97,7 @@
             font-size: 16px;
             display: none;
             z-index: 1001;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .open-menu.visible {
