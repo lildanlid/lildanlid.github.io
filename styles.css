@@ -9,7 +9,7 @@ body {
     flex-direction: column;
     text-align: center;
     min-height: 100vh;
-    background-color: #171616; /* Changed to a darker shade */
+    background-color: #18141c; /* Changed to a darker shade */
 }
 
 /* Fade-in Effect */
@@ -58,7 +58,7 @@ header h1 {
 
 /* Individual Cards */
 .card {
-    background-color: #1e1e1e; /* Dark card background */
+    background-color: #18141c; /* Dark card background */
     border-radius: 10px;
     overflow: hidden;
     text-align: center;
