@@ -298,7 +298,7 @@
                 <a href="#forms"><i class="fas fa-tasks"></i> Forms</a>
             </li>
             <li>
-                <a href="https://www.patreon.com/c/lildanlid/membership" class="donate"><i class="fas fa-calendar-alt"></i> Donate</a>
+                <a href="#donate" class="donate"><i class="fas fa-calendar-alt"></i> Donate</a>
             </li>
         </ul>
         <div class="theme-switch-box">
@@ -321,8 +321,12 @@
         const content = document.getElementById('content');
         const menuLinks = document.querySelectorAll('.side-menu ul li a');
 
+        // Load saved theme and active tab on page load
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedTab = localStorage.getItem('activeTab') || 'home';
+
+            // Apply saved theme
             if (savedTheme === 'light') {
                 body.classList.add('light-mode');
                 sideMenu.classList.add('light-mode');
@@ -332,8 +336,17 @@
             } else {
                 themeLabel.textContent = 'Light Mode';
             }
+
+            // Load the last active tab
+            loadPage(savedTab);
+
+            // Highlight the correct menu link
+            menuLinks.forEach(link => link.classList.remove('selected'));
+            const activeLink = document.querySelector(`.side-menu ul li a[href="#${savedTab}"]`);
+            if (activeLink) activeLink.classList.add('selected');
         });
 
+        // Save theme preference on toggle
         themeToggle.addEventListener('change', () => {
             if (themeToggle.checked) {
                 body.classList.add('light-mode');
@@ -350,15 +363,23 @@
             }
         });
 
+        // Handle menu link clicks
         menuLinks.forEach(link => {
             link.addEventListener('click', function(event) {
                 event.preventDefault();
+
+                // Save the selected tab
+                const selectedTab = this.getAttribute('href').substring(1);
+                localStorage.setItem('activeTab', selectedTab);
+
+                // Update the UI
                 menuLinks.forEach(link => link.classList.remove('selected'));
                 this.classList.add('selected');
-                loadPage(this.getAttribute('href').substring(1));
+                loadPage(selectedTab);
             });
         });
 
+        // Load the content for the selected tab
         function loadPage(page) {
             if (page === 'home') {
                 content.innerHTML = `
@@ -400,7 +421,13 @@
             } else if (page === 'forms') {
                 content.innerHTML = `<h2>Forms</h2><p>This is the Forms page.</p>`;
             } else if (page === 'donate') {
-                content.innerHTML = `<h2>Donate</h2><p>Support our work by donating today.</p>`;
+                content.innerHTML = `
+                    <h2>Donate</h2>
+                    <p>Support our work by donating today.</p>
+                    <a href="https://www.patreon.com/c/lildanlid/membership" target="_blank">
+                        Go to Patreon
+                    </a>
+                `;
             }
         }
     </script>
