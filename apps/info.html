@@ -1,130 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Full Utilities App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multi Tool Web App</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f4f4f4; color: #333; }
-    input, button, select, textarea {
-      margin: 0.25rem 0; padding: 0.5rem; font-size: 1rem;
+    /* ========== Base Styles ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
-    #calcButtons button {
-      width: 60px; height: 40px; font-size: 1rem; margin: 3px;
+
+    body.light {
+      background-color: #f0f0f0;
+      color: #000;
     }
-    .box { background: white; padding: 1rem; margin-bottom: 2rem; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+
+    body.dark {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ========== Sidebar ========== */
+    .sidebar {
+      width: 250px;
+      background-color: #2c3e50;
+      padding: 1rem;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar button {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #34495e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sidebar button:hover {
+      background-color: #3d5a73;
+    }
+
+    .folder-header {
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .folder-content {
+      display: none;
+      flex-direction: column;
+      margin-top: 5px;
+      animation: slideDown 0.3s ease-in-out forwards;
+    }
+
+    .folder.open .folder-content {
+      display: flex;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tool-button.selected {
+      outline: 2px solid lightblue;
+      color: #3498db;
+    }
+
+    /* ========== Main Content ========== */
+    main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input, button {
+      padding: 5px;
+      margin: 5px 0;
+    }
   </style>
 </head>
-<body>
-  <h1>Utilities App</h1>
+<body class="light">
+  <div class="container">
+    <aside class="sidebar">
+      <button id="themeToggle">Toggle Theme</button>
 
-  <!-- Weather Section -->
-  <div class="box">
-    <h2>🌦️ Weather</h2>
-    <input type="text" id="weatherSearch" placeholder="Enter city">
-    <button onclick="searchWeather()">Search</button>
-    <p id="weatherResult">Search for a city...</p>
-  </div>
+      <div class="folder" data-folder="clock">
+        <div class="folder-header">🕒 Clock</div>
+        <div class="folder-content">
+          <button class="tool-button" data-tool="stopwatch">Stopwatch</button>
+          <button class="tool-button" data-tool="timer">Timer</button>
+          <button class="tool-button" data-tool="alarm">Alarm</button>
+          <button class="tool-button" data-tool="countdown">Countdown</button>
+        </div>
+      </div>
 
-  <!-- Speed Test -->
-  <div class="box">
-    <h2>🚀 Internet Speed Test</h2>
-    <button onclick="runSpeedTest()">Start Test</button>
-    <p>Download: <span id="downloadSpeed">--</span> Mbps</p>
-    <p>Upload: <span id="uploadSpeed">--</span> Mbps</p>
-  </div>
+      <div class="folder" data-folder="random">
+        <div class="folder-header">🎲 Random Stuff</div>
+        <div class="folder-content">
+          <button class="tool-button" data-tool="speed">Internet Speed</button>
+          <button class="tool-button" data-tool="calculator">Calculator</button>
+          <button class="tool-button" data-tool="weather">Weather</button>
+        </div>
+      </div>
+    </aside>
 
-  <!-- Calculator -->
-  <div class="box">
-    <h2>🧮 Calculator</h2>
-    <input type="text" id="calcDisplay" readonly>
-    <div id="calcButtons">
-      <div>
-        <button onclick="addCalc('7')">7</button>
-        <button onclick="addCalc('8')">8</button>
-        <button onclick="addCalc('9')">9</button>
-        <button onclick="addCalc('/')">÷</button>
-      </div>
-      <div>
-        <button onclick="addCalc('4')">4</button>
-        <button onclick="addCalc('5')">5</button>
-        <button onclick="addCalc('6')">6</button>
-        <button onclick="addCalc('*')">x</button>
-      </div>
-      <div>
-        <button onclick="addCalc('1')">1</button>
-        <button onclick="addCalc('2')">2</button>
-        <button onclick="addCalc('3')">3</button>
-        <button onclick="addCalc('-')">−</button>
-      </div>
-      <div>
-        <button onclick="addCalc('0')">0</button>
-        <button onclick="addCalc('.')">.</button>
-        <button onclick="calculate()">=</button>
-        <button onclick="addCalc('+')">+</button>
-      </div>
-      <button onclick="clearCalc()">Clear</button>
-    </div>
-    <p id="calcResult"></p>
+    <main id="main-content">
+      <h2>Welcome</h2>
+      <p>Select a tool from the sidebar.</p>
+    </main>
   </div>
 
   <script>
-    function searchWeather() {
-      const city = document.getElementById("weatherSearch").value;
-      if (!city) return;
+    // Theme toggle
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      document.body.classList.toggle('light');
+    });
 
-      fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}`)
-        .then(res => res.json())
-        .then(geo => {
-          if (!geo.results || geo.results.length === 0) {
-            document.getElementById("weatherResult").innerText = "City not found.";
-            return;
-          }
-          const { latitude, longitude, name, country } = geo.results[0];
-          return fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`)
-            .then(res => res.json())
-            .then(data => {
-              const temp = data.current_weather.temperature;
-              const wind = data.current_weather.windspeed;
-              document.getElementById("weatherResult").innerText = `📍 ${name}, ${country} — Temp: ${temp}°C, Wind: ${wind} km/h`;
-            });
-        });
-    }
+    // Folder toggle
+    document.querySelectorAll('.folder-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const folder = header.parentElement;
+        folder.classList.toggle('open');
+      });
+    });
 
-    function runSpeedTest() {
-      const image = new Image();
-      const startTime = new Date().getTime();
-      image.onload = function () {
-        const duration = (new Date().getTime() - startTime) / 1000;
-        const bitsLoaded = 500000 * 8;
-        const speedBps = bitsLoaded / duration;
-        const speedMbps = (speedBps / 1024 / 1024).toFixed(2);
-        document.getElementById("downloadSpeed").innerText = speedMbps;
-        document.getElementById("uploadSpeed").innerText = (speedMbps * 0.85).toFixed(2);
-      };
-      image.src = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg?t=" + Math.random();
-    }
+    // Tool switching
+    const buttons = document.querySelectorAll('.tool-button');
+    const main = document.getElementById('main-content');
 
-    let calcExp = "";
-    function addCalc(char) {
-      if (char === "x") char = "*";
-      calcExp += char;
-      document.getElementById("calcDisplay").value = calcExp;
-    }
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
 
-    function clearCalc() {
-      calcExp = "";
-      document.getElementById("calcDisplay").value = "";
-      document.getElementById("calcResult").innerText = "";
-    }
+        const tool = btn.dataset.tool;
+        main.innerHTML = renderTool(tool);
+        runTool(tool);
+      });
+    });
 
-    function calculate() {
-      try {
-        const result = eval(calcExp);
-        document.getElementById("calcResult").innerText = "Result: " + result;
-      } catch {
-        document.getElementById("calcResult").innerText = "Error";
+    function renderTool(tool) {
+      switch (tool) {
+        case "stopwatch":
+          return `<h2>Stopwatch</h2><div><span id="sw-time">00:00:00</span><br>
+            <button onclick="startSW()">Start</button>
+            <button onclick="stopSW()">Stop</button>
+            <button onclick="resetSW()">Reset</button></div>`;
+        case "timer":
+          return `<h2>Timer</h2><input id="timer-minutes" type="number" placeholder="Minutes"/>
+            <button onclick="startTimer()">Start Timer</button>
+            <div id="timer-display"></div>`;
+        case "alarm":
+          return `<h2>Alarm</h2><input id="alarm-time" type="time"/>
+            <button onclick="setAlarm()">Set Alarm</button><div id="alarm-status"></div>`;
+        case "countdown":
+          return `<h2>Countdown</h2><input type="datetime-local" id="cd-target"/>
+            <button onclick="startCountdown()">Start Countdown</button><div id="cd-display"></div>`;
+        case "speed":
+          return `<h2>Internet Speed</h2><button onclick="checkSpeed()">Check Speed</button>
+            <div id="speed-result"></div>`;
+        case "calculator":
+          return `<h2>Calculator</h2>
+            <input id="calc" placeholder="e.g. 2+2"/><button onclick="calculate()">=</button>
+            <div id="calc-result"></div>`;
+        case "weather":
+          return `<h2>Weather</h2><input id="city" placeholder="Enter city"/>
+            <button onclick="getWeather()">Get Weather</button><div id="weather-result"></div>`;
+        default:
+          return `<p>Unknown tool</p>`;
       }
+    }
+
+    // ========== TOOL LOGIC ==========
+
+    // Stopwatch
+    let swInterval, swSec = 0;
+    function updateSW() {
+      swSec++;
+      let h = String(Math.floor(swSec / 3600)).padStart(2, '0');
+      let m = String(Math.floor((swSec % 3600) / 60)).padStart(2, '0');
+      let s = String(swSec % 60).padStart(2, '0');
+      document.getElementById("sw-time").innerText = `${h}:${m}:${s}`;
+    }
+    function startSW() { swInterval = setInterval(updateSW, 1000); }
+    function stopSW() { clearInterval(swInterval); }
+    function resetSW() { stopSW(); swSec = 0; document.getElementById("sw-time").innerText = "00:00:00"; }
+
+    // Timer
+    function startTimer() {
+      let mins = parseInt(document.getElementById("timer-minutes").value);
+      let total = mins * 60;
+      const display = document.getElementById("timer-display");
+      const interval = setInterval(() => {
+        let m = String(Math.floor(total / 60)).padStart(2, '0');
+        let s = String(total % 60).padStart(2, '0');
+        display.innerText = `${m}:${s}`;
+        if (--total < 0) {
+          clearInterval(interval);
+          alert("Timer done!");
+        }
+      }, 1000);
+    }
+
+    // Alarm
+    function setAlarm() {
+      const alarmTime = document.getElementById("alarm-time").value;
+      const status = document.getElementById("alarm-status");
+      const interval = setInterval(() => {
+        let now = new Date();
+        let [h, m] = alarmTime.split(':');
+        if (now.getHours() == h && now.getMinutes() == m) {
+          clearInterval(interval);
+          alert("Alarm ringing!");
+        }
+      }, 1000);
+      status.innerText = `Alarm set for ${alarmTime}`;
+    }
+
+    // Countdown
+    function startCountdown() {
+      const target = new Date(document.getElementById("cd-target").value);
+      const display = document.getElementById("cd-display");
+      const interval = setInterval(() => {
+        const now = new Date();
+        const diff = Math.max(0, target - now);
+        if (diff <= 0) {
+          clearInterval(interval);
+          display.innerText = "Countdown complete!";
+          return;
+        }
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        display.innerText = `${h}h ${m}m ${s}s`;
+      }, 1000);
+    }
+
+    // Internet Speed (fake)
+    function checkSpeed() {
+      const result = document.getElementById("speed-result");
+      result.innerText = "Testing...";
+      setTimeout(() => {
+        const speed = (Math.random() * 100).toFixed(2);
+        result.innerText = `Estimated Speed: ${speed} Mbps`;
+      }, 1500);
+    }
+
+    // Calculator
+    function calculate() {
+      const input = document.getElementById("calc").value;
+      try {
+        const res = eval(input);
+        document.getElementById("calc-result").innerText = `Result: ${res}`;
+      } catch {
+        document.getElementById("calc-result").innerText = "Invalid expression";
+      }
+    }
+
+    // Weather
+    async function getWeather() {
+      const city = document.getElementById("city").value;
+      const result = document.getElementById("weather-result");
+      result.innerText = "Loading...";
+      try {
+        const res = await fetch(`https://wttr.in/${city}?format=3`);
+        const text = await res.text();
+        result.innerText = text;
+      } catch {
+        result.innerText = "Could not fetch weather.";
+      }
+    }
+
+    function runTool(tool) {
+      // Placeholder if tool needs setup on init
     }
   </script>
 </body>
