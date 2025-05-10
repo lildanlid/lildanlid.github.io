@@ -2,96 +2,274 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Form Submission</title>
+  <title>Form System</title>
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background-color: #121212;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    h1, h2 {
-      color: #333;
+    h1, h2, h3 {
+      color: #ffffff;
+      text-align: center;
     }
 
-    form, .formCard, #loginSection {
-      background: #fff;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    textarea {
+    .card {
+      background: #1e1e1e;
+      padding: 25px;
+      margin-top: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0, 200, 255, 0.4);
       width: 100%;
-      height: 100px;
+      max-width: 700px;
     }
 
+    label {
+      display: block;
+      margin: 12px 0 5px;
+    }
+
+    select, textarea, input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #2a2a2a;
+      color: #ffffff;
+    }
+
+    textarea { height: 100px; }
     button {
       margin-top: 10px;
-      padding: 8px 12px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #00c8ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
     }
+    button:hover { background-color: #00b0e0; }
 
-    #formEntries .formCard {
-      margin-bottom: 10px;
+    .formCard {
+      background: #1a1a1a;
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border-left: 4px solid #00c8ff;
     }
 
     pre {
-      background: #eee;
+      background: #2b2b2b;
       padding: 10px;
       white-space: pre-wrap;
     }
+
+    .status {
+      font-weight: bold;
+      padding: 5px;
+      margin: 5px 0;
+    }
+
+    .status.approved { color: #00ff90; }
+    .status.declined { color: #ff6060; }
+    .status.pending { color: #ccc; }
   </style>
 </head>
 <body>
+
   <h1>Submit a Form</h1>
+  <div class="card">
+    <form id="formInput">
+      <label for="username">Your Name or ID:</label>
+      <input type="text" id="username" required>
 
-  <label for="formType">Select Form Type:</label>
-  <select id="formType">
-    <option value="suggestion">Suggestion</option>
-    <option value="bug">Bug Report</option>
-  </select>
+      <label for="formType">Form Type:</label>
+      <select id="formType">
+        <option value="suggestion">Suggestion</option>
+        <option value="bug">Bug Report</option>
+      </select>
 
-  <form id="formInput">
-    <label for="content">Your Message:</label>
-    <textarea id="content" required></textarea><br>
-    <button type="submit">Submit</button>
-  </form>
+      <label for="content">Your Message:</label>
+      <textarea id="content" required></textarea>
 
-  <hr>
-
-  <h2>Admin Dashboard</h2>
-  <div id="loginSection">
-    <input type="password" id="adminPassword" placeholder="Enter admin password">
-    <button onclick="login()">Login</button>
-    <p id="loginError" style="color:red;"></p>
+      <button type="submit">Submit</button>
+    </form>
   </div>
 
-  <div id="dashboardSection" style="display:none;">
-    <button onclick="logout()">Logout</button>
-    <h3>Submitted Forms</h3>
+  <div class="card">
+    <h2>Check Form Status</h2>
+    <input type="text" id="checkUser" placeholder="Enter your name or ID">
+    <button onclick="checkStatus()">Check</button>
+    <div id="userForms"></div>
+  </div>
 
-    <label for="filterType">Filter by type:</label>
-    <select id="filterType" onchange="renderForms()">
-      <option value="all">All</option>
-      <option value="suggestion">Suggestions</option>
-      <option value="bug">Bug Reports</option>
-    </select>
+  <div class="card">
+    <h2>Admin Dashboard</h2>
 
-    <div id="formEntries"></div>
+    <div id="loginSection">
+      <label>Admin Login:</label>
+      <input type="password" id="adminPassword" placeholder="Enter admin password">
+      <button onclick="login()">Login</button>
+      <p id="loginError" style="color:red;"></p>
+    </div>
+
+    <div id="dashboardSection" style="display:none;">
+      <button onclick="logout()">Logout</button>
+      <h3>Submitted Forms</h3>
+
+      <label for="filterType">Filter by type:</label>
+      <select id="filterType" onchange="renderForms()">
+        <option value="all">All</option>
+        <option value="suggestion">Suggestions</option>
+        <option value="bug">Bug Reports</option>
+      </select>
+
+      <div id="formEntries"></div>
+    </div>
   </div>
 
   <script>
-    // --- Form Submission Logic ---
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("formInput");
       if (form) {
         form.addEventListener("submit", (e) => {
           e.preventDefault();
+          const username = document.getElementById("username").value.trim();
           const type = document.getElementById("formType").value;
           const content = document.getElementById("content").value.trim();
+
           const entry = {
+            id: Date.now(),
+            user: username,
             type,
             content,
-            date: new Date().toLocaleString()
+            date: new Date().toLocaleString(),
+            status: "pending",
+            reply: ""
           };
+
+          const existing = JSON.parse(localStorage.getItem("formEntries") || "[]");
+          existing.push(entry);
+          localStorage.setItem("formEntries", JSON.stringify(existing));
+
+          alert("Form submitted!");
+          form.reset();
+        });
+      }
+
+      if (sessionStorage.getItem("adminLoggedIn") === "true") {
+        showDashboard();
+      }
+
+      window.login = function () {
+        const input = document.getElementById("adminPassword").value;
+        if (input === "admin123") {
+          sessionStorage.setItem("adminLoggedIn", "true");
+          showDashboard();
+        } else {
+          document.getElementById("loginError").textContent = "Incorrect password!";
+        }
+      };
+
+      window.logout = function () {
+        sessionStorage.removeItem("adminLoggedIn");
+        location.reload();
+      };
+
+      function showDashboard() {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("dashboardSection").style.display = "block";
+        renderForms();
+      }
+
+      window.renderForms = function () {
+        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+        const filter = document.getElementById("filterType").value;
+        const filtered = filter === "all" ? entries : entries.filter(e => e.type === filter);
+        const container = document.getElementById("formEntries");
+        container.innerHTML = "";
+
+        if (filtered.length === 0) {
+          container.innerHTML = "<p>No submissions.</p>";
+          return;
+        }
+
+        filtered.reverse().forEach((entry) => {
+          const div = document.createElement("div");
+          div.className = "formCard";
+          div.innerHTML = `
+            <strong>User:</strong> ${entry.user}<br>
+            <strong>Type:</strong> ${entry.type}<br>
+            <strong>Date:</strong> ${entry.date}<br>
+            <strong>Content:</strong><br><pre>${entry.content}</pre>
+            <div class="status ${entry.status}">Status: ${entry.status}</div>
+            ${entry.reply ? `<div><strong>Reply:</strong><br><pre>${entry.reply}</pre></div>` : ""}
+            <label>Reply:</label><textarea id="reply-${entry.id}">${entry.reply || ""}</textarea>
+            <button onclick="updateStatus(${entry.id}, 'approved')">✅ Approve</button>
+            <button onclick="updateStatus(${entry.id}, 'declined')">❌ Decline</button>
+            <button onclick="saveReply(${entry.id})">💬 Save Reply</button>
+          `;
+          container.appendChild(div);
+        });
+      };
+
+      window.updateStatus = function (id, newStatus) {
+        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+        const entry = entries.find(e => e.id === id);
+        if (entry) {
+          entry.status = newStatus;
+          localStorage.setItem("formEntries", JSON.stringify(entries));
+          renderForms();
+        }
+      };
+
+      window.saveReply = function (id) {
+        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+        const entry = entries.find(e => e.id === id);
+        const textarea = document.getElementById("reply-" + id);
+        if (entry && textarea) {
+          entry.reply = textarea.value;
+          localStorage.setItem("formEntries", JSON.stringify(entries));
+          renderForms();
+        }
+      };
+
+      window.checkStatus = function () {
+        const name = document.getElementById("checkUser").value.trim();
+        const container = document.getElementById("userForms");
+        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+        const userForms = entries.filter(e => e.user.toLowerCase() === name.toLowerCase());
+
+        container.innerHTML = "";
+
+        if (userForms.length === 0) {
+          container.innerHTML = "<p>No submissions found for this name.</p>";
+          return;
+        }
+
+        userForms.reverse().forEach(e => {
+          const div = document.createElement("div");
+          div.className = "formCard";
+          div.innerHTML = `
+            <strong>Type:</strong> ${e.type}<br>
+            <strong>Date:</strong> ${e.date}<br>
+            <strong>Content:</strong><br><pre>${e.content}</pre>
+            <div class="status ${e.status}">Status: ${e.status}</div>
+            ${e.reply ? `<div><strong>Reply:</strong><br><pre>${e.reply}</pre></div>` : ""}
+          `;
+          container.appendChild(div);
+        });
+      };
+    });
+  </script>
+</body>
+</html>
