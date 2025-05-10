@@ -1,3 +1,4 @@
+<!-- FULL index.html WITH ALL FEATURES (Dual Storage + Theme + Mailbox + Delete) -->
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -37,7 +38,6 @@
       align-items: center;
     }
 
-    /* Navbar */
     .navbar {
       position: fixed;
       top: 0;
@@ -60,7 +60,7 @@
     .navbar-icons {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .icon-btn {
@@ -103,6 +103,7 @@
     }
 
     textarea { height: 100px; }
+
     button {
       margin-top: 10px;
       padding: 10px 16px;
@@ -165,17 +166,20 @@
 <body>
 
   <div class="navbar">
-    <h2>📋 FormApp</h2>
+    <h2>📋 MyFormApp</h2>
     <div class="navbar-icons">
       <button class="icon-btn" onclick="toggleTheme()">🌗</button>
       <button class="icon-btn" onclick="toggleStatusPopup()">📨</button>
-      <input type="password" id="adminPassword" placeholder="Admin Password" style="height: 25px;">
-      <button onclick="login()">Login</button>
-      <button onclick="logout()"> </button>
+
+      <div id="adminAuth" style="display: flex; gap: 8px;">
+        <input type="password" id="adminPassword" placeholder="Admin Password" style="height: 25px;">
+        <button onclick="login()">Login</button>
+      </div>
+
+      <button onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <!-- Status Popup -->
   <div id="statusPopup">
     <label>Check Your Status</label>
     <input type="text" id="checkUser" placeholder="Enter your name or ID">
@@ -183,7 +187,6 @@
     <div id="userForms"></div>
   </div>
 
-  <!-- Submit Form -->
   <div class="card">
     <form id="formInput">
       <label for="username">Your Name or ID:</label>
@@ -202,22 +205,18 @@
     </form>
   </div>
 
-  <!-- Admin Dashboard -->
   <div class="card" id="dashboardSection" style="display:none;">
     <h3>Admin Dashboard</h3>
-
     <label for="filterType">Filter by type:</label>
     <select id="filterType" onchange="renderForms()">
       <option value="all">All</option>
       <option value="suggestion">Suggestions</option>
       <option value="bug">Bug Reports</option>
     </select>
-
     <div id="formEntries"></div>
   </div>
 
   <script>
-    // Theme toggle
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
@@ -233,7 +232,7 @@
       if (form) {
         form.addEventListener("submit", (e) => {
           e.preventDefault();
-          const username = document.getElementById("username").value.trim();
+          const username = document.getElementById("username").value.trim().toLowerCase();
           const type = document.getElementById("formType").value;
           const content = document.getElementById("content").value.trim();
 
@@ -247,9 +246,14 @@
             reply: ""
           };
 
-          const existing = JSON.parse(localStorage.getItem("formEntries") || "[]");
-          existing.push(entry);
-          localStorage.setItem("formEntries", JSON.stringify(existing));
+          const allForms = JSON.parse(localStorage.getItem("formEntries") || "[]");
+          allForms.push(entry);
+          localStorage.setItem("formEntries", JSON.stringify(allForms));
+
+          const userInboxKey = `userInbox_${username}`;
+          const userInbox = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
+          userInbox.push(entry);
+          localStorage.setItem(userInboxKey, JSON.stringify(userInbox));
 
           alert("Form submitted!");
           form.reset();
@@ -272,11 +276,13 @@
 
       window.logout = function () {
         sessionStorage.removeItem("adminLoggedIn");
-        location.reload();
+        document.getElementById("dashboardSection").style.display = "none";
+        document.getElementById("adminAuth").style.display = "flex";
       };
 
       function showDashboard() {
         document.getElementById("dashboardSection").style.display = "block";
+        document.getElementById("adminAuth").style.display = "none";
         renderForms();
       }
 
@@ -306,6 +312,7 @@
             <button onclick="updateStatus(${entry.id}, 'approved')">✅ Approve</button>
             <button onclick="updateStatus(${entry.id}, 'declined')">❌ Decline</button>
             <button onclick="saveReply(${entry.id})">💬 Save Reply</button>
+            <button onclick="deleteForm(${entry.id})">🗑️ Delete</button>
           `;
           container.appendChild(div);
         });
@@ -332,11 +339,19 @@
         }
       };
 
+      window.deleteForm = function (id) {
+        let entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+        entries = entries.filter(e => e.id !== id);
+        localStorage.setItem("formEntries", JSON.stringify(entries));
+        renderForms();
+        checkStatus(); // update user inbox display
+      };
+
       window.checkStatus = function () {
-        const name = document.getElementById("checkUser").value.trim();
+        const name = document.getElementById("checkUser").value.trim().toLowerCase();
         const container = document.getElementById("userForms");
-        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        const userForms = entries.filter(e => e.user.toLowerCase() === name.toLowerCase());
+        const userInboxKey = `userInbox_${name}`;
+        const userForms = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
 
         container.innerHTML = "";
 
@@ -354,9 +369,18 @@
             <strong>Content:</strong><pre>${e.content}</pre>
             <div class="status ${e.status}">Status: ${e.status}</div>
             ${e.reply ? `<div><strong>Reply:</strong><pre>${e.reply}</pre></div>` : ""}
+            <button onclick="deleteFromInbox(${e.id}, '${name}')">🗑️ Remove</button>
           `;
           container.appendChild(div);
         });
+      };
+
+      window.deleteFromInbox = function (id, username) {
+        const key = `userInbox_${username}`;
+        let inbox = JSON.parse(localStorage.getItem(key) || "[]");
+        inbox = inbox.filter(e => e.id !== id);
+        localStorage.setItem(key, JSON.stringify(inbox));
+        checkStatus();
       };
     });
   </script>
