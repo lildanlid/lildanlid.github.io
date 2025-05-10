@@ -1,389 +1,247 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Form System</title>
+  <title>Password Creation Game</title>
   <style>
     :root {
-      --bg-dark: #121212;
-      --bg-light: #f4f4f4;
-      --card-dark: #1e1e1e;
-      --card-light: #ffffff;
-      --text-dark: #e0e0e0;
-      --text-light: #111;
-      --accent: #00c8ff;
+      --bg-color: #f4f4f4;
+      --text-color: #000;
+      --box-bg: white;
+      --box-shadow: 0 0 15px rgba(0, 153, 255, 0.4);
+      --btn-bg: #007BFF;
+      --btn-hover: #0056b3;
     }
 
     [data-theme="dark"] {
-      --bg: var(--bg-dark);
-      --card: var(--card-dark);
-      --text: var(--text-dark);
-    }
-
-    [data-theme="light"] {
-      --bg: var(--bg-light);
-      --card: var(--card-light);
-      --text: var(--text-light);
+      --bg-color: #1e1e1e;
+      --text-color: #e0e0e0;
+      --box-bg: #2b2b2b;
+      --box-shadow: 0 0 15px rgba(0, 200, 255, 0.4);
+      --btn-bg: #3399ff;
+      --btn-hover: #007acc;
     }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 60px 20px 20px;
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .navbar {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      height: 50px;
-      background-color: var(--card);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-      z-index: 10;
-    }
-
-    .navbar h2 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .navbar-icons {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      font-size: 20px;
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .card {
-      background: var(--card);
-      padding: 25px;
-      margin-top: 25px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
-      width: 100%;
-      max-width: 700px;
-    }
-
-    label {
-      display: block;
-      margin: 12px 0 5px;
-    }
-
-    select, textarea, input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      background: #2a2a2a;
-      color: #ffffff;
-    }
-
-    [data-theme="light"] input,
-    [data-theme="light"] textarea,
-    [data-theme="light"] select {
-      background: #eee;
-      color: #111;
-    }
-
-    textarea { height: 100px; }
-
-    button {
-      margin-top: 10px;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: var(--accent);
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .formCard {
-      background: var(--card);
-      margin: 10px 0;
-      padding: 10px 15px;
-      border-radius: 8px;
-      border-left: 4px solid var(--accent);
-    }
-
-    pre {
-      background: #2b2b2b;
-      padding: 10px;
-      white-space: pre-wrap;
-    }
-
-    [data-theme="light"] pre {
-      background: #eaeaea;
-      color: #222;
-    }
-
-    .status {
-      font-weight: bold;
-      margin: 5px 0;
-    }
-
-    .status.approved { color: #00ff90; }
-    .status.declined { color: #ff6060; }
-    .status.pending { color: #aaa; }
-
-    #statusPopup {
-      position: fixed;
-      top: 60px;
-      right: 20px;
-      background: var(--card);
-      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
-      display: none;
-      z-index: 99;
-      width: 300px;
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    #statusPopup input {
+    .container {
+      background-color: var(--box-bg);
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: var(--box-shadow);
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label, input {
+      display: block;
+      width: 100%;
       margin-bottom: 10px;
     }
 
-    .hidden { display: none; }
+    input {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      background: var(--btn-bg);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: var(--btn-hover);
+    }
+
+    #message {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    #modeSwitcher {
+      margin: 20px auto;
+      display: block;
+      background: #333;
+      color: white;
+      width: auto;
+    }
   </style>
 </head>
 <body>
+<button id="modeSwitcher">Switch to Dark Mode</button>
+<div class="container">
+  <h2 id="title">Create Your Password</h2>
+  <div id="form"></div>
+  <button id="submitBtn">Submit</button>
+  <p id="message"></p>
+  <button id="toggleMode">Switch to Login</button>
+</div>
 
-  <div class="navbar">
-    <h2>📋 MyFormApp</h2>
-    <div class="navbar-icons">
-      <button class="icon-btn" onclick="toggleTheme()">🌗</button>
-      <button class="icon-btn" onclick="toggleStatusPopup()">📨</button>
+<script>
+  const PROMPT_TIERS = {
+    easy: [
+      "What is your favorite color?", "What is your pet’s name?", "What is your favorite food?",
+      "What city were you born in?", "What is your favorite drink?", "What’s your favorite day of the week?",
+      "What’s your favorite dessert?", "What is your favorite season?", "What is your favorite animal?",
+      "What is your birth month?", "What’s your shoe size?", "What’s your favorite number?",
+      "What’s your favorite fruit?", "What is your lucky number?", "What’s your favorite TV show?",
+      "What’s your favorite cartoon?", "What’s your favorite hobby?", "What’s your eye color?",
+      "What’s your favorite flower?", "What is your favorite candy?"
+    ],
+    medium: [
+      "What is your dream job?", "What was the name of your elementary school?", "What is your mother’s maiden name?",
+      "What’s your father’s middle name?", "What’s your first car?", "What’s your high school mascot?",
+      "What was your childhood nickname?", "What’s your best friend’s first name?", "What’s your favorite book?",
+      "Who is your favorite teacher?", "Where did you go on your first trip?", "What’s the name of your first boss?",
+      "What’s your favorite board game?", "Where was your first date?", "What’s your favorite restaurant?",
+      "What’s the name of your hometown?", "What’s your favorite video game?", "What’s the last name of your first crush?",
+      "Where did you go to college?", "What’s the make of your first laptop?"
+    ],
+    hard: [
+      "What is your biggest fear?", "What is your most embarrassing moment?", "What is a secret no one knows about you?",
+      "Describe your perfect day.", "What memory still haunts you?", "Who was your childhood hero?",
+      "What’s something you regret not doing?", "What’s your biggest achievement?", "What’s a painful childhood memory?",
+      "What personal belief has changed recently?", "What’s your most irrational fear?",
+      "What’s the worst advice you ever got?", "What’s your biggest insecurity?", "What’s something you’ve never told anyone?",
+      "Describe your first heartbreak.", "What event changed your life?", "Who has influenced you the most?",
+      "What’s your deepest hope?", "What do you fear people knowing about you?", "What’s something you can’t forgive?"
+    ]
+  };
 
-      <div id="adminAuth" style="display: flex; gap: 8px;">
-        <input type="password" id="adminPassword" placeholder="Admin Password" style="height: 25px;">
-        <button onclick="login()">Login</button>
-      </div>
+  let mode = 'create';
+  let selectedPrompts = [];
+  let expectedAnswers = {};
+  const formDiv = document.getElementById('form');
+  const submitBtn = document.getElementById('submitBtn');
+  const toggleBtn = document.getElementById('toggleMode');
+  const title = document.getElementById('title');
+  const message = document.getElementById('message');
+  const modeSwitcher = document.getElementById('modeSwitcher');
 
-      <button onclick="logout()">Logout</button>
-    </div>
-  </div>
+  function getTieredPrompts() {
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    return [
+      pick(PROMPT_TIERS.easy),
+      pick(PROMPT_TIERS.medium),
+      pick(PROMPT_TIERS.hard)
+    ];
+  }
 
-  <div id="statusPopup">
-    <label>Check Your Status</label>
-    <input type="text" id="checkUser" placeholder="Enter your name or ID">
-    <button onclick="checkStatus()">Check</button>
-    <div id="userForms"></div>
-  </div>
-
-  <div class="card">
-    <form id="formInput">
-      <label for="username">Your Name or ID:</label>
-      <input type="text" id="username" required>
-
-      <label for="formType">Form Type:</label>
-      <select id="formType">
-        <option value="suggestion">Suggestion</option>
-        <option value="bug">Bug Report</option>
-      </select>
-
-      <label for="content">Your Message:</label>
-      <textarea id="content" required></textarea>
-
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-
-  <div class="card" id="dashboardSection" style="display:none;">
-    <h3>Admin Dashboard</h3>
-    <label for="filterType">Filter by type:</label>
-    <select id="filterType" onchange="renderForms()">
-      <option value="all">All</option>
-      <option value="suggestion">Suggestions</option>
-      <option value="bug">Bug Reports</option>
-    </select>
-    <div id="formEntries"></div>
-  </div>
-
-  <script>
-    // Always log out on page reload
-    localStorage.removeItem("adminLoggedIn");
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
-    }
-
-    function toggleStatusPopup() {
-      const popup = document.getElementById("statusPopup");
-      popup.style.display = popup.style.display === "block" ? "none" : "block";
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("formInput");
-      if (form) {
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const username = document.getElementById("username").value.trim().toLowerCase();
-          const type = document.getElementById("formType").value;
-          const content = document.getElementById("content").value.trim();
-
-          const entry = {
-            id: Date.now(),
-            user: username,
-            type,
-            content,
-            date: new Date().toLocaleString(),
-            status: "pending",
-            reply: ""
-          };
-
-          const allForms = JSON.parse(localStorage.getItem("formEntries") || "[]");
-          allForms.push(entry);
-          localStorage.setItem("formEntries", JSON.stringify(allForms));
-
-          const userInboxKey = `userInbox_${username}`;
-          const userInbox = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
-          userInbox.push(entry);
-          localStorage.setItem(userInboxKey, JSON.stringify(userInbox));
-
-          alert("Form submitted!");
-          form.reset();
-        });
-      }
-
-      if (localStorage.getItem("adminLoggedIn") === "true") {
-        showDashboard();
-      }
-
-      window.login = function () {
-        const input = document.getElementById("adminPassword").value;
-        if (input === "c5P>i3W<5ZrCr&n7*_NG") {
-          localStorage.setItem("adminLoggedIn", "true");
-          showDashboard();
-        } else {
-          alert("Incorrect password!");
-        }
-      };
-
-      window.logout = function () {
-        localStorage.removeItem("adminLoggedIn");
-        location.reload();
-      };
-
-      function showDashboard() {
-        document.getElementById("dashboardSection").style.display = "block";
-        document.getElementById("adminAuth").style.display = "none";
-        renderForms();
-      }
-
-      window.renderForms = function () {
-        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        const filter = document.getElementById("filterType").value;
-        const filtered = filter === "all" ? entries : entries.filter(e => e.type === filter);
-        const container = document.getElementById("formEntries");
-        container.innerHTML = "";
-
-        if (filtered.length === 0) {
-          container.innerHTML = "<p>No submissions.</p>";
-          return;
-        }
-
-        filtered.reverse().forEach((entry) => {
-          const div = document.createElement("div");
-          div.className = "formCard";
-          div.innerHTML = `
-            <strong>User:</strong> ${entry.user}<br>
-            <strong>Type:</strong> ${entry.type}<br>
-            <strong>Date:</strong> ${entry.date}<br>
-            <strong>Content:</strong><br><pre>${entry.content}</pre>
-            <div class="status ${entry.status}">Status: ${entry.status}</div>
-            ${entry.reply ? `<div><strong>Reply:</strong><pre>${entry.reply}</pre></div>` : ""}
-            <label>Reply:</label><textarea id="reply-${entry.id}">${entry.reply || ""}</textarea>
-            <button onclick="updateStatus(${entry.id}, 'approved')">✅ Approve</button>
-            <button onclick="updateStatus(${entry.id}, 'declined')">❌ Decline</button>
-            <button onclick="saveReply(${entry.id})">💬 Save Reply</button>
-            <button onclick="deleteForm(${entry.id})">🗑️ Delete</button>
-          `;
-          container.appendChild(div);
-        });
-      };
-
-      window.updateStatus = function (id, newStatus) {
-        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        const entry = entries.find(e => e.id === id);
-        if (entry) {
-          entry.status = newStatus;
-          localStorage.setItem("formEntries", JSON.stringify(entries));
-          renderForms();
-        }
-      };
-
-      window.saveReply = function (id) {
-        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        const entry = entries.find(e => e.id === id);
-        const textarea = document.getElementById("reply-" + id);
-        if (entry && textarea) {
-          entry.reply = textarea.value;
-          localStorage.setItem("formEntries", JSON.stringify(entries));
-          renderForms();
-        }
-      };
-
-      window.deleteForm = function (id) {
-        let entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        entries = entries.filter(e => e.id !== id);
-        localStorage.setItem("formEntries", JSON.stringify(entries));
-        renderForms();
-        checkStatus();
-      };
-
-      window.checkStatus = function () {
-        const name = document.getElementById("checkUser").value.trim().toLowerCase();
-        const container = document.getElementById("userForms");
-        const userInboxKey = `userInbox_${name}`;
-        const userForms = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
-
-        container.innerHTML = "";
-
-        if (userForms.length === 0) {
-          container.innerHTML = "<p>No submissions found.</p>";
-          return;
-        }
-
-        userForms.reverse().forEach(e => {
-          const div = document.createElement("div");
-          div.className = "formCard";
-          div.innerHTML = `
-            <strong>Type:</strong> ${e.type}<br>
-            <strong>Date:</strong> ${e.date}<br>
-            <strong>Content:</strong><pre>${e.content}</pre>
-            <div class="status ${e.status}">Status: ${e.status}</div>
-            ${e.reply ? `<div><strong>Reply:</strong><pre>${e.reply}</pre></div>` : ""}
-            <button onclick="deleteFromInbox(${e.id}, '${name}')">🗑️ Remove</button>
-          `;
-          container.appendChild(div);
-        });
-      };
-
-      window.deleteFromInbox = function (id, username) {
-        const key = `userInbox_${username}`;
-        let inbox = JSON.parse(localStorage.getItem(key) || "[]");
-        inbox = inbox.filter(e => e.id !== id);
-        localStorage.setItem(key, JSON.stringify(inbox));
-        checkStatus();
-      };
+  function renderForm(prompts) {
+    formDiv.innerHTML = '';
+    prompts.forEach((prompt, index) => {
+      const label = document.createElement('label');
+      label.textContent = `[${["Easy", "Medium", "Hard"][index]}] ${prompt}`;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.name = `q${index}`;
+      input.dataset.prompt = prompt;
+      formDiv.appendChild(label);
+      formDiv.appendChild(input);
     });
-  </script>
+  }
+
+  function saveAnswers(data) {
+    localStorage.setItem('passwordPrompts', JSON.stringify(data));
+  }
+
+  function loadSavedAnswers() {
+    return JSON.parse(localStorage.getItem('passwordPrompts') || '{}');
+  }
+
+  function initCreateMode() {
+    mode = 'create';
+    title.textContent = "Create Your Password";
+    toggleBtn.textContent = "Switch to Login";
+    selectedPrompts = getTieredPrompts();
+    renderForm(selectedPrompts);
+    message.textContent = '';
+  }
+
+  function initLoginMode() {
+    const saved = loadSavedAnswers();
+    if (!saved || !saved.prompts) {
+      message.style.color = 'red';
+      message.textContent = "No stored password found. Please create one first.";
+      return;
+    }
+    mode = 'login';
+    title.textContent = "Login With Your Password";
+    toggleBtn.textContent = "Switch to Create";
+    selectedPrompts = saved.prompts;
+    expectedAnswers = saved.answers;
+    renderForm(selectedPrompts);
+    message.textContent = '';
+  }
+
+  function handleSubmit() {
+    const inputs = formDiv.querySelectorAll('input');
+    const answers = {};
+    let retry = false;
+    let retryPrompts = [];
+
+    inputs.forEach(input => {
+      const prompt = input.dataset.prompt;
+      const value = input.value.trim();
+      if (mode === 'create') {
+        answers[prompt] = value;
+      } else {
+        if (value !== expectedAnswers[prompt]) {
+          retry = true;
+          retryPrompts.push(prompt);
+        }
+      }
+    });
+
+    if (mode === 'create') {
+      saveAnswers({ prompts: selectedPrompts, answers });
+      message.style.color = 'green';
+      message.textContent = "Password created successfully!";
+    } else {
+      if (retry) {
+        message.style.color = 'red';
+        message.textContent = "Some answers were incorrect. Try again.";
+        renderForm(retryPrompts);
+      } else {
+        message.style.color = 'green';
+        message.textContent = "Login successful!";
+      }
+    }
+  }
+
+  submitBtn.addEventListener('click', handleSubmit);
+
+  toggleBtn.addEventListener('click', () => {
+    mode === 'create' ? initLoginMode() : initCreateMode();
+  });
+
+  modeSwitcher.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    modeSwitcher.textContent = isDark ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+  });
+
+  initCreateMode();
+</script>
 </body>
 </html>
