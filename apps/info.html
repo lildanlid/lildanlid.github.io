@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Utilities App</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --text: #e0e0e0;
+      --accent: #2196F3;
+      --card: #1e1e1e;
+    }
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --text: #111;
+      --accent: #1565C0;
+      --card: #f0f0f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    aside {
+      width: 250px;
+      background: var(--card);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    aside h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    aside button {
+      background: none;
+      color: var(--text);
+      border: none;
+      text-align: left;
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+
+    aside button:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--card);
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      padding: 1rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .utility {
+      display: none;
+    }
+
+    .utility.active {
+      display: block;
+    }
+
+    .theme-toggle {
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      aside {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        padding: 0.5rem;
+      }
+      aside button {
+        flex: 1 1 45%;
+      }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <aside>
+    <div>
+      <h2>Time Stuff</h2>
+      <button onclick="show('alarm')">Alarm</button>
+      <button onclick="show('stopwatch')">Stopwatch</button>
+      <button onclick="show('countdown')">Countdown</button>
+      <button onclick="show('timer')">Timer</button>
+    </div>
+    <div>
+      <h2>Random Stuff</h2>
+      <button onclick="show('speed')">Speed Test</button>
+      <button onclick="show('password')">Password Gen</button>
+      <button onclick="show('calc')">Calculator</button>
+      <button onclick="show('crypto')">Encrypt/Decrypt</button>
+      <button onclick="show('weather')">Weather</button>
+    </div>
+  </aside>
+  <div class="main">
+    <header>
+      <h1>Utilities App</h1>
+      <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+    </header>
+    <div class="content">
+      <div id="alarm" class="utility active">
+        <h2>Alarm</h2>
+        <input type="time" id="alarmTime" />
+        <select id="alarmSoundSelect">
+          <option value="alarm1">Default Beep</option>
+          <option value="alarm2">Chime</option>
+        </select>
+        <button onclick="setAlarm()">Set Alarm</button>
+        <div id="alarmStatus"></div>
+      </div>
+      <div id="stopwatch" class="utility">
+        <h2>Stopwatch</h2>
+        <div id="swDisplay">00:00:00</div>
+        <button onclick="swStart()">Start</button>
+        <button onclick="swStop()">Stop</button>
+        <button onclick="swReset()">Reset</button>
+      </div>
+      <div id="countdown" class="utility">
+        <h2>Countdown</h2>
+        <input type="number" placeholder="Seconds" id="cdInput" />
+        <button onclick="startCountdown()">Start</button>
+        <div id="cdDisplay"></div>
+      </div>
+      <div id="timer" class="utility">
+        <h2>Timer</h2>
+        <input type="number" placeholder="Minutes" id="timerInput" />
+        <select id="timerSoundSelect">
+          <option value="alarm1">Default Beep</option>
+          <option value="alarm2">Chime</option>
+        </select>
+        <button onclick="startTimer()">Start</button>
+        <div id="timerDisplay"></div>
+      </div>
+      <div id="speed" class="utility">
+        <h2>Internet Speed Test</h2>
+        <p>Ping: <span id="ping">---</span> ms</p>
+        <p>Download: <span id="down">---</span> Mbps</p>
+        <p>Upload: <span id="up">---</span> Mbps</p>
+        <button onclick="mockSpeedTest()">Run Test</button>
+      </div>
+      <div id="password" class="utility">
+        <h2>Password Generator</h2>
+        <input type="number" id="pwLength" placeholder="Length" />
+        <button onclick="generatePassword()">Generate</button>
+        <p id="passwordResult"></p>
+      </div>
+      <div id="calc" class="utility">
+        <h2>Calculator</h2>
+        <input id="calcInput" />
+        <button onclick="calc()">=</button>
+        <p id="calcResult"></p>
+      </div>
+      <div id="crypto" class="utility">
+        <h2>Encrypt/Decrypt</h2>
+        <textarea id="cryptoText"></textarea>
+        <input type="number" id="shift" placeholder="Shift" value="3"/>
+        <button onclick="encrypt()">Encrypt</button>
+        <button onclick="decrypt()">Decrypt</button>
+        <p id="cryptoResult"></p>
+      </div>
+      <div id="weather" class="utility">
+        <h2>Weather</h2>
+        <p>Location: <span id="loc">---</span></p>
+        <p>Temperature: <span id="temp">---</span></p>
+        <p>Wind: <span id="wind">---</span></p>
+        <p>Sea Tide: <span id="tide">---</span></p>
+        <p>7-Day Forecast: <span id="forecast">---</span></p>
+        <p>Last Updated: <span id="lastUpdate">---</span></p>
+        <button onclick="loadWeather()">Refresh</button>
+      </div>
+      <div>
+        <h3>🔊 Sound Settings</h3>
+        <label>Volume: <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="1"/></label>
+        <button onclick="toggleMute()">Mute / Unmute</button>
+        <br><br>
+        <label>Upload Custom Sound: <input type="file" id="soundUpload" accept="audio/*" /></label>
+      </div>
+      <audio id="alarm1" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
+      <audio id="alarm2" src="https://www.soundjay.com/button/beep-10.mp3" preload="auto"></audio>
+    </div>
+  </div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.utility').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function toggleTheme() {
+  const body = document.body;
+  const theme = body.getAttribute("data-theme");
+  body.setAttribute("data-theme", theme === "dark" ? "light" : "dark");
+}
+
+function getSelectedSound(type) {
+  const selectId = type === 'alarm' ? 'alarmSoundSelect' : 'timerSoundSelect';
+  const soundId = document.getElementById(selectId).value;
+  return document.getElementById(soundId);
+}
+
+function playSound(type = 'alarm') {
+  const audio = getSelectedSound(type);
+  if (audio) {
+    audio.currentTime = 0;
+    audio.play().catch(e => console.warn("Autoplay blocked:", e));
+  }
+}
+
+function setAlarm() {
+  const alarmTime = document.getElementById("alarmTime").value;
+  if (!alarmTime) return;
+  localStorage.setItem("alarmTime", alarmTime);
+  document.getElementById("alarmStatus").innerText = "Alarm set for " + alarmTime;
+  checkAlarm(alarmTime);
+}
+
+function checkAlarm(alarmTime) {
+  if (window._alarmInterval) clearInterval(window._alarmInterval);
+  window._alarmInterval = setInterval(() => {
+    const now = new Date();
+    const current = now.toTimeString().slice(0, 5);
+    if (current === alarmTime) {
+      playSound('alarm');
+      alert("⏰ Alarm Time!");
+      localStorage.removeItem("alarmTime");
+      document.getElementById("alarmStatus").innerText = "";
+      clearInterval(window._alarmInterval);
+    }
+  }, 1000);
+}
+
+let swInterval, swTime = 0;
+function swStart() {
+  swInterval = setInterval(() => {
+    swTime++;
+    const mins = String(Math.floor(swTime / 60)).padStart(2, "0");
+    const secs = String(swTime % 60).padStart(2, "0");
+    document.getElementById("swDisplay").innerText = `00:${mins}:${secs}`;
+  }, 1000);
+}
+function swStop() { clearInterval(swInterval); }
+function swReset() { swStop(); swTime = 0; document.getElementById("swDisplay").innerText = "00:00:00"; }
+
+function startCountdown() {
+  let t = parseInt(document.getElementById("cdInput").value);
+  const out = document.getElementById("cdDisplay");
+  const interval = setInterval(() => {
+    out.innerText = t + "s";
+    t--;
+    if (t < 0) {
+      clearInterval(interval);
+      alert("Countdown done!");
+    }
+  }, 1000);
+}
+
+function startTimer() {
+  let mins = parseInt(document.getElementById("timerInput").value);
+  if (isNaN(mins)) return;
+  let total = mins * 60;
+  localStorage.setItem("timerRemaining", total);
+  updateTimerDisplay(total);
+  if (window._timerInterval) clearInterval(window._timerInterval);
+  window._timerInterval = setInterval(() => {
+    total--;
+    localStorage.setItem("timerRemaining", total);
+    updateTimerDisplay(total);
+    if (total <= 0) {
+      clearInterval(window._timerInterval);
+      localStorage.removeItem("timerRemaining");
+      playSound('timer');
+      alert("⏰ Timer done!");
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(seconds) {
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  document.getElementById("timerDisplay").innerText = `${m}:${s}`;
+}
+
+function mockSpeedTest() {
+  document.getElementById("ping").innerText = Math.floor(Math.random() * 100);
+  document.getElementById("down").innerText = (Math.random() * 100).toFixed(2);
+  document.getElementById("up").innerText = (Math.random() * 50).toFixed(2);
+}
+
+function generatePassword() {
+  const length = parseInt(document.getElementById("pwLength").value);
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  let pwd = "";
+  for (let i = 0; i < length; i++) {
+    pwd += chars[Math.floor(Math.random() * chars.length)];
+  }
+  document.getElementById("passwordResult").innerText = pwd;
+}
+
+function calc() {
+  const expr = document.getElementById("calcInput").value;
+  try {
+    const result = eval(expr);
+    document.getElementById("calcResult").innerText = result;
+  } catch {
+    document.getElementById("calcResult").innerText = "Error";
+  }
+}
+
+function encrypt() {
+  const text = document.getElementById("cryptoText").value;
+  const shift = parseInt(document.getElementById("shift").value);
+  const res = text.split("").map(c => String.fromCharCode(c.charCodeAt(0) + shift)).join("");
+  document.getElementById("cryptoResult").innerText = res;
+}
+
+function decrypt() {
+  const text = document.getElementById("cryptoText").value;
+  const shift = parseInt(document.getElementById("shift").value);
+  const res = text.split("").map(c => String.fromCharCode(c.charCodeAt(0) - shift)).join("");
+  document.getElementById("cryptoResult").innerText = res;
+}
+
+function loadWeather() {
+  document.getElementById("loc").innerText = "New York";
+  document.getElementById("temp").innerText = "21°C";
+  document.getElementById("wind").innerText = "12 km/h";
+  document.getElementById("tide").innerText = "Rising";
+  document.getElementById("forecast").innerText = "Sunny, Rain, Cloudy...";
+  document.getElementById("lastUpdate").innerText = new Date().toLocaleString();
+}
+
+// Volume controls
+document.getElementById("volumeControl").addEventListener("input", function () {
+  document.querySelectorAll("audio").forEach(a => a.volume = parseFloat(this.value));
+  localStorage.setItem("alarmVolume", this.value);
+});
+
+function toggleMute() {
+  document.querySelectorAll("audio").forEach(a => a.muted = !a.muted);
+  alert("🔊 Toggled mute");
+}
+
+document.getElementById("soundUpload").addEventListener("change", function () {
+  const file = this.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      document.getElementById("alarm1").src = e.target.result;
+      localStorage.setItem("customAlarmSound", e.target.result);
+      alert("Custom sound loaded.");
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+window.addEventListener("load", () => {
+  const savedAlarm = localStorage.getItem("alarmTime");
+  if (savedAlarm) {
+    document.getElementById("alarmTime").value = savedAlarm;
+    document.getElementById("alarmStatus").innerText = "Alarm set for " + savedAlarm;
+    checkAlarm(savedAlarm);
+  }
+
+  const savedTimer = localStorage.getItem("timerRemaining");
+  if (savedTimer && parseInt(savedTimer) > 0) {
+    let total = parseInt(savedTimer);
+    updateTimerDisplay(total);
+    if (window._timerInterval) clearInterval(window._timerInterval);
+    window._timerInterval = setInterval(() => {
+      total--;
+      localStorage.setItem("timerRemaining", total);
+      updateTimerDisplay(total);
+      if (total <= 0) {
+        clearInterval(window._timerInterval);
+        localStorage.removeItem("timerRemaining");
+        playSound('timer');
+        alert("⏰ Timer done!");
+      }
+    }, 1000);
+  }
+
+  const custom = localStorage.getItem("customAlarmSound");
+  if (custom) {
+    document.getElementById("alarm1").src = custom;
+  }
+
+  const vol = localStorage.getItem("alarmVolume");
+  if (vol) {
+    document.querySelectorAll("audio").forEach(a => a.volume = parseFloat(vol));
+    document.getElementById("volumeControl").value = vol;
+  }
+});
+</script>
+
+</body>
+</html>
