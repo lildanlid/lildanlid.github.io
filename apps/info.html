@@ -1,20 +1,4 @@
-# Generate the final HTML with:
-# - Working utilities (alarm, stopwatch, etc.)
-# - Collapsible folders with open/close animations
-# - Light blue text highlight on hover
-# - Light blue outline on active/selected buttons
-# - All CSS/JS in one file
-# - Deliverable as a .zip archive
-
-from zipfile import ZipFile
-from pathlib import Path
-
-# Define paths
-zip_path = "/mnt/data/utilities_app.zip"
-html_path = "/mnt/data/info.html"
-
-# HTML content with styling and animations
-html_code = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -294,14 +278,3 @@ html_code = """<!DOCTYPE html>
   </script>
 </body>
 </html>
-"""
-
-# Save to info.html
-with open(html_path, "w") as f:
-    f.write(html_code)
-
-# Create a ZIP archive
-with ZipFile(zip_path, "w") as zipf:
-    zipf.write(html_path, arcname="info.html")
-
-zip_path
