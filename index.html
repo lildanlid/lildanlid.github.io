@@ -27,8 +27,6 @@
             color: var(--text-color-dark);
             transition: background-color 0.3s, color 0.3s;
             overflow-x: hidden;
-            <button id="toggle-menu" class="close-btn">Close</button>
-
         }
 
         body.light-mode {
@@ -244,29 +242,6 @@
         .download-button:hover {
             background-color: #357ABD;
         }
-
-        #toggle-menu {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 999;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    display: none;
-}
-
-#toggle-menu.close-btn {
-    background-color: red;
-}
-
-#toggle-menu.menu-btn {
-    background-color: #4A90E2;
-}
-
     </style>
 </head>
 <body>
@@ -306,27 +281,6 @@
     </div>
 
     <script>
-
-        const toggleBtn = document.getElementById('toggle-menu');
-const sideMenu = document.querySelector('.side-menu');
-
-// Show button on load
-toggleBtn.style.display = 'block';
-
-toggleBtn.addEventListener('click', () => {
-    if (sideMenu.style.display === 'none') {
-        sideMenu.style.display = 'block';
-        toggleBtn.textContent = 'Close';
-        toggleBtn.classList.remove('menu-btn');
-        toggleBtn.classList.add('close-btn');
-    } else {
-        sideMenu.style.display = 'none';
-        toggleBtn.textContent = 'Menu';
-        toggleBtn.classList.remove('close-btn');
-        toggleBtn.classList.add('menu-btn');
-    }
-});
-
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
         const themeLabel = document.getElementById('theme-label');
