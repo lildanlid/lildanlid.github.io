@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Form System</title>
   <style>
     :root {
@@ -26,29 +27,36 @@
       --text: var(--text-light);
     }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
+    html, body {
       margin: 0;
-      padding: 60px 20px 20px;
+      padding: 0;
       background-color: var(--bg);
       color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      padding-top: 70px; /* reserve space for navbar */
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
     }
 
     .navbar {
       position: fixed;
       top: 0;
       width: 100%;
-      height: 50px;
+      height: 60px;
       background-color: var(--card);
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0 20px;
-      z-index: 10;
+      z-index: 1000;
     }
 
     .navbar h2 {
@@ -73,11 +81,9 @@
     .card {
       background: var(--card);
       padding: 25px;
-      margin-top: 25px;
+      margin-top: 20px;
       border-radius: 12px;
       box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
-      width: 100%;
-      max-width: 700px;
     }
 
     label {
@@ -101,7 +107,9 @@
       color: #111;
     }
 
-    textarea { height: 100px; }
+    textarea {
+      height: 100px;
+    }
 
     button {
       margin-top: 10px;
@@ -138,20 +146,28 @@
       margin: 5px 0;
     }
 
-    .status.approved { color: #00ff90; }
-    .status.declined { color: #ff6060; }
-    .status.pending { color: #aaa; }
+    .status.approved {
+      color: #00ff90;
+    }
+
+    .status.declined {
+      color: #ff6060;
+    }
+
+    .status.pending {
+      color: #aaa;
+    }
 
     #statusPopup {
       position: fixed;
-      top: 60px;
+      top: 70px;
       right: 20px;
       background: var(--card);
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
       display: none;
-      z-index: 99;
+      z-index: 999;
       width: 300px;
     }
 
@@ -159,11 +175,26 @@
       margin-bottom: 10px;
     }
 
-    .hidden { display: none; }
+    @media screen and (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+      }
+
+      .navbar-icons {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      #statusPopup {
+        width: 90%;
+        right: 5%;
+      }
+    }
   </style>
 </head>
 <body>
-
   <div class="navbar">
     <h2>📋 MyFormApp</h2>
     <div class="navbar-icons">
@@ -175,7 +206,9 @@
         <button onclick="login()">Login</button>
       </div>
 
-      <button onclick="logout()">Logout</button>
+      <div id="logoutButton" style="display: none;">
+        <button onclick="logout()">Logout</button>
+      </div>
     </div>
   </div>
 
@@ -186,50 +219,44 @@
     <div id="userForms"></div>
   </div>
 
-  <div class="card">
-    <form id="formInput">
-      <label for="username">Your Name or ID:</label>
-      <input type="text" id="username" required>
+  <div class="container">
+    <div class="card">
+      <form id="formInput">
+        <label for="username">Your Name or ID:</label>
+        <input type="text" id="username" required>
 
-      <label for="formType">Form Type:</label>
-      <select id="formType">
-        <option value="suggestion">Suggestion</option>
-        <option value="bug">Bug Report</option>
+        <label for="formType">Form Type:</label>
+        <select id="formType">
+          <option value="suggestion">Suggestion</option>
+          <option value="bug">Bug Report</option>
+        </select>
+
+        <label for="content">Your Message:</label>
+        <textarea id="content" required></textarea>
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <div class="card" id="dashboardSection" style="display:none;">
+      <h3>Admin Dashboard</h3>
+      <label for="filterType">Filter by type:</label>
+      <select id="filterType" onchange="renderForms()">
+        <option value="all">All</option>
+        <option value="suggestion">Suggestions</option>
+        <option value="bug">Bug Reports</option>
       </select>
-
-      <label for="content">Your Message:</label>
-      <textarea id="content" required></textarea>
-
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-
-  <div class="card" id="dashboardSection" style="display:none;">
-    <h3>Admin Dashboard</h3>
-    <label for="filterType">Filter by type:</label>
-    <select id="filterType" onchange="renderForms()">
-      <option value="all">All</option>
-      <option value="suggestion">Suggestions</option>
-      <option value="bug">Bug Reports</option>
-    </select>
-    <div id="formEntries"></div>
+      <div id="formEntries"></div>
+    </div>
   </div>
 
   <script>
     // Always log out on page reload
     localStorage.removeItem("adminLoggedIn");
 
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
-    }
-
-    function toggleStatusPopup() {
-      const popup = document.getElementById("statusPopup");
-      popup.style.display = popup.style.display === "block" ? "none" : "block";
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("logoutButton").style.display = "none";
+
       const form = document.getElementById("formInput");
       if (form) {
         form.addEventListener("submit", (e) => {
@@ -261,129 +288,138 @@
           form.reset();
         });
       }
+    });
 
-      if (localStorage.getItem("adminLoggedIn") === "true") {
-        showDashboard();
-      }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
 
-      window.login = function () {
-        const input = document.getElementById("adminPassword").value;
-        if (input === "admin123") {
-          localStorage.setItem("adminLoggedIn", "true");
-          showDashboard();
-        } else {
-          alert("Incorrect password!");
-        }
-      };
+    function toggleStatusPopup() {
+      const popup = document.getElementById("statusPopup");
+      popup.style.display = popup.style.display === "block" ? "none" : "block";
+    }
 
-      window.logout = function () {
-        localStorage.removeItem("adminLoggedIn");
-        location.reload();
-      };
-
-      function showDashboard() {
-        document.getElementById("dashboardSection").style.display = "block";
+    function login() {
+      const input = document.getElementById("adminPassword").value;
+      if (input === "admin123") {
+        localStorage.setItem("adminLoggedIn", "true");
         document.getElementById("adminAuth").style.display = "none";
-        renderForms();
+        document.getElementById("logoutButton").style.display = "block";
+        showDashboard();
+      } else {
+        alert("Incorrect password!");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("adminLoggedIn");
+      document.getElementById("dashboardSection").style.display = "none";
+      document.getElementById("adminAuth").style.display = "flex";
+      document.getElementById("logoutButton").style.display = "none";
+    }
+
+    function showDashboard() {
+      document.getElementById("dashboardSection").style.display = "block";
+      renderForms();
+    }
+
+    function renderForms() {
+      const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+      const filter = document.getElementById("filterType").value;
+      const filtered = filter === "all" ? entries : entries.filter(e => e.type === filter);
+      const container = document.getElementById("formEntries");
+      container.innerHTML = "";
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p>No submissions.</p>";
+        return;
       }
 
-      window.renderForms = function () {
-        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        const filter = document.getElementById("filterType").value;
-        const filtered = filter === "all" ? entries : entries.filter(e => e.type === filter);
-        const container = document.getElementById("formEntries");
-        container.innerHTML = "";
+      filtered.reverse().forEach((entry) => {
+        const div = document.createElement("div");
+        div.className = "formCard";
+        div.innerHTML = `
+          <strong>User:</strong> ${entry.user}<br>
+          <strong>Type:</strong> ${entry.type}<br>
+          <strong>Date:</strong> ${entry.date}<br>
+          <strong>Content:</strong><br><pre>${entry.content}</pre>
+          <div class="status ${entry.status}">Status: ${entry.status}</div>
+          ${entry.reply ? `<div><strong>Reply:</strong><pre>${entry.reply}</pre></div>` : ""}
+          <label>Reply:</label><textarea id="reply-${entry.id}">${entry.reply || ""}</textarea>
+          <button onclick="updateStatus(${entry.id}, 'approved')">✅ Approve</button>
+          <button onclick="updateStatus(${entry.id}, 'declined')">❌ Decline</button>
+          <button onclick="saveReply(${entry.id})">💬 Save Reply</button>
+          <button onclick="deleteForm(${entry.id})">🗑️ Delete</button>
+        `;
+        container.appendChild(div);
+      });
+    }
 
-        if (filtered.length === 0) {
-          container.innerHTML = "<p>No submissions.</p>";
-          return;
-        }
-
-        filtered.reverse().forEach((entry) => {
-          const div = document.createElement("div");
-          div.className = "formCard";
-          div.innerHTML = `
-            <strong>User:</strong> ${entry.user}<br>
-            <strong>Type:</strong> ${entry.type}<br>
-            <strong>Date:</strong> ${entry.date}<br>
-            <strong>Content:</strong><br><pre>${entry.content}</pre>
-            <div class="status ${entry.status}">Status: ${entry.status}</div>
-            ${entry.reply ? `<div><strong>Reply:</strong><pre>${entry.reply}</pre></div>` : ""}
-            <label>Reply:</label><textarea id="reply-${entry.id}">${entry.reply || ""}</textarea>
-            <button onclick="updateStatus(${entry.id}, 'approved')">✅ Approve</button>
-            <button onclick="updateStatus(${entry.id}, 'declined')">❌ Decline</button>
-            <button onclick="saveReply(${entry.id})">💬 Save Reply</button>
-            <button onclick="deleteForm(${entry.id})">🗑️ Delete</button>
-          `;
-          container.appendChild(div);
-        });
-      };
-
-      window.updateStatus = function (id, newStatus) {
-        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        const entry = entries.find(e => e.id === id);
-        if (entry) {
-          entry.status = newStatus;
-          localStorage.setItem("formEntries", JSON.stringify(entries));
-          renderForms();
-        }
-      };
-
-      window.saveReply = function (id) {
-        const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        const entry = entries.find(e => e.id === id);
-        const textarea = document.getElementById("reply-" + id);
-        if (entry && textarea) {
-          entry.reply = textarea.value;
-          localStorage.setItem("formEntries", JSON.stringify(entries));
-          renderForms();
-        }
-      };
-
-      window.deleteForm = function (id) {
-        let entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
-        entries = entries.filter(e => e.id !== id);
+    function updateStatus(id, newStatus) {
+      const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+      const entry = entries.find(e => e.id === id);
+      if (entry) {
+        entry.status = newStatus;
         localStorage.setItem("formEntries", JSON.stringify(entries));
         renderForms();
-        checkStatus();
-      };
+      }
+    }
 
-      window.checkStatus = function () {
-        const name = document.getElementById("checkUser").value.trim().toLowerCase();
-        const container = document.getElementById("userForms");
-        const userInboxKey = `userInbox_${name}`;
-        const userForms = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
+    function saveReply(id) {
+      const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+      const entry = entries.find(e => e.id === id);
+      const textarea = document.getElementById("reply-" + id);
+      if (entry && textarea) {
+        entry.reply = textarea.value;
+        localStorage.setItem("formEntries", JSON.stringify(entries));
+        renderForms();
+      }
+    }
 
-        container.innerHTML = "";
+    function deleteForm(id) {
+      let entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+      entries = entries.filter(e => e.id !== id);
+      localStorage.setItem("formEntries", JSON.stringify(entries));
+      renderForms();
+      checkStatus();
+    }
 
-        if (userForms.length === 0) {
-          container.innerHTML = "<p>No submissions found.</p>";
-          return;
-        }
+    function checkStatus() {
+      const name = document.getElementById("checkUser").value.trim().toLowerCase();
+      const container = document.getElementById("userForms");
+      const userInboxKey = `userInbox_${name}`;
+      const userForms = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
 
-        userForms.reverse().forEach(e => {
-          const div = document.createElement("div");
-          div.className = "formCard";
-          div.innerHTML = `
-            <strong>Type:</strong> ${e.type}<br>
-            <strong>Date:</strong> ${e.date}<br>
-            <strong>Content:</strong><pre>${e.content}</pre>
-            <div class="status ${e.status}">Status: ${e.status}</div>
-            ${e.reply ? `<div><strong>Reply:</strong><pre>${e.reply}</pre></div>` : ""}
-            <button onclick="deleteFromInbox(${e.id}, '${name}')">🗑️ Remove</button>
-          `;
-          container.appendChild(div);
-        });
-      };
+      container.innerHTML = "";
 
-      window.deleteFromInbox = function (id, username) {
-        const key = `userInbox_${username}`;
-        let inbox = JSON.parse(localStorage.getItem(key) || "[]");
-        inbox = inbox.filter(e => e.id !== id);
-        localStorage.setItem(key, JSON.stringify(inbox));
-        checkStatus();
-      };
-    });
+      if (userForms.length === 0) {
+        container.innerHTML = "<p>No submissions found.</p>";
+        return;
+      }
+
+      userForms.reverse().forEach(e => {
+        const div = document.createElement("div");
+        div.className = "formCard";
+        div.innerHTML = `
+          <strong>Type:</strong> ${e.type}<br>
+          <strong>Date:</strong> ${e.date}<br>
+          <strong>Content:</strong><pre>${e.content}</pre>
+          <div class="status ${e.status}">Status: ${e.status}</div>
+          ${e.reply ? `<div><strong>Reply:</strong><pre>${e.reply}</pre></div>` : ""}
+          <button onclick="deleteFromInbox(${e.id}, '${name}')">🗑️ Remove</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function deleteFromInbox(id, username) {
+      const key = `userInbox_${username}`;
+      let inbox = JSON.parse(localStorage.getItem(key) || "[]");
+      inbox = inbox.filter(e => e.id !== id);
+      localStorage.setItem(key, JSON.stringify(inbox));
+      checkStatus();
+    }
   </script>
 </body>
 </html>
