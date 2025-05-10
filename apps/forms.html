@@ -167,17 +167,19 @@
   <div class="navbar">
     <h2>📋 FormApp</h2>
     <div class="navbar-icons">
-      <button class="icon-btn" onclick="toggleTheme()">🌗</button>
-      <button class="icon-btn" onclick="toggleStatusPopup()">📨</button>
+  <button class="icon-btn" onclick="toggleTheme()">🌗</button>
+  <button class="icon-btn" onclick="toggleStatusPopup()">📨</button>
 
-      <div id="adminAuth" style="display: flex; gap: 8px;">
-        <input type="password" id="adminPassword" placeholder="Admin Password" style="height: 25px;">
-        <button onclick="login()">Login</button>
-      </div>
-
-      <button onclick="logout()">Logout</button>
-    </div>
+  <div id="adminAuth" style="display: flex; gap: 8px;">
+    <input type="password" id="adminPassword" placeholder="Admin Password" style="height: 25px;">
+    <button onclick="login()">Login</button>
   </div>
+
+  <div id="logoutButton" style="display: none;">
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
 
   <div id="statusPopup">
     <label>Check Your Status</label>
@@ -267,19 +269,24 @@
       }
 
       window.login = function () {
-        const input = document.getElementById("adminPassword").value;
-        if (input === "admin123") {
-          localStorage.setItem("adminLoggedIn", "true");
-          showDashboard();
-        } else {
-          alert("Incorrect password!");
-        }
-      };
+  const input = document.getElementById("adminPassword").value;
+  if (input === "admin123") {
+    localStorage.setItem("adminLoggedIn", "true");
+    document.getElementById("adminAuth").style.display = "none";
+    document.getElementById("logoutButton").style.display = "block";
+    showDashboard();
+  } else {
+    alert("Incorrect password!");
+  }
+};
 
-      window.logout = function () {
-        localStorage.removeItem("adminLoggedIn");
-        location.reload();
-      };
+window.logout = function () {
+  localStorage.removeItem("adminLoggedIn");
+  document.getElementById("dashboardSection").style.display = "none";
+  document.getElementById("adminAuth").style.display = "flex";
+  document.getElementById("logoutButton").style.display = "none";
+};
+
 
       function showDashboard() {
         document.getElementById("dashboardSection").style.display = "block";
