@@ -1,33 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <title>Form System</title>
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --bg-dark: #121212;
+      --bg-light: #f4f4f4;
+      --card-dark: #1e1e1e;
+      --card-light: #ffffff;
+      --text-dark: #e0e0e0;
+      --text-light: #111;
+      --accent: #00c8ff;
+    }
+
+    [data-theme="dark"] {
+      --bg: var(--bg-dark);
+      --card: var(--card-dark);
+      --text: var(--text-dark);
+    }
+
+    [data-theme="light"] {
+      --bg: var(--bg-light);
+      --card: var(--card-light);
+      --text: var(--text-light);
+    }
 
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 40px 20px;
-      background-color: #121212;
-      color: #e0e0e0;
+      padding: 60px 20px 20px;
+      background-color: var(--bg);
+      color: var(--text);
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    h1, h2, h3 {
-      color: #ffffff;
-      text-align: center;
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 50px;
+      background-color: var(--card);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 10;
+    }
+
+    .navbar h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .navbar-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text);
+      cursor: pointer;
     }
 
     .card {
-      background: #1e1e1e;
+      background: var(--card);
       padding: 25px;
       margin-top: 25px;
       border-radius: 12px;
-      box-shadow: 0 0 25px rgba(0, 200, 255, 0.4);
+      box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
       width: 100%;
       max-width: 700px;
     }
@@ -46,25 +95,31 @@
       color: #ffffff;
     }
 
+    [data-theme="light"] input,
+    [data-theme="light"] textarea,
+    [data-theme="light"] select {
+      background: #eee;
+      color: #111;
+    }
+
     textarea { height: 100px; }
     button {
       margin-top: 10px;
       padding: 10px 16px;
       border: none;
       border-radius: 6px;
-      background-color: #00c8ff;
+      background-color: var(--accent);
       color: #000;
       font-weight: bold;
       cursor: pointer;
     }
-    button:hover { background-color: #00b0e0; }
 
     .formCard {
-      background: #1a1a1a;
+      background: var(--card);
       margin: 10px 0;
       padding: 10px 15px;
       border-radius: 8px;
-      border-left: 4px solid #00c8ff;
+      border-left: 4px solid var(--accent);
     }
 
     pre {
@@ -73,20 +128,62 @@
       white-space: pre-wrap;
     }
 
+    [data-theme="light"] pre {
+      background: #eaeaea;
+      color: #222;
+    }
+
     .status {
       font-weight: bold;
-      padding: 5px;
       margin: 5px 0;
     }
 
     .status.approved { color: #00ff90; }
     .status.declined { color: #ff6060; }
-    .status.pending { color: #ccc; }
+    .status.pending { color: #aaa; }
+
+    #statusPopup {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background: var(--card);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 99;
+      width: 300px;
+    }
+
+    #statusPopup input {
+      margin-bottom: 10px;
+    }
+
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <h1>Submit a Form</h1>
+  <div class="navbar">
+    <h2>📋 MyFormApp</h2>
+    <div class="navbar-icons">
+      <button class="icon-btn" onclick="toggleTheme()">🌗</button>
+      <button class="icon-btn" onclick="toggleStatusPopup()">📨</button>
+      <input type="password" id="adminPassword" placeholder="Admin Password" style="height: 25px;">
+      <button onclick="login()">Login</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Status Popup -->
+  <div id="statusPopup">
+    <label>Check Your Status</label>
+    <input type="text" id="checkUser" placeholder="Enter your name or ID">
+    <button onclick="checkStatus()">Check</button>
+    <div id="userForms"></div>
+  </div>
+
+  <!-- Submit Form -->
   <div class="card">
     <form id="formInput">
       <label for="username">Your Name or ID:</label>
@@ -105,39 +202,32 @@
     </form>
   </div>
 
-  <div class="card">
-    <h2>Check Form Status</h2>
-    <input type="text" id="checkUser" placeholder="Enter your name or ID">
-    <button onclick="checkStatus()">Check</button>
-    <div id="userForms"></div>
-  </div>
+  <!-- Admin Dashboard -->
+  <div class="card" id="dashboardSection" style="display:none;">
+    <h3>Admin Dashboard</h3>
 
-  <div class="card">
-    <h2>Admin Dashboard</h2>
+    <label for="filterType">Filter by type:</label>
+    <select id="filterType" onchange="renderForms()">
+      <option value="all">All</option>
+      <option value="suggestion">Suggestions</option>
+      <option value="bug">Bug Reports</option>
+    </select>
 
-    <div id="loginSection">
-      <label>Admin Login:</label>
-      <input type="password" id="adminPassword" placeholder="Enter admin password">
-      <button onclick="login()">Login</button>
-      <p id="loginError" style="color:red;"></p>
-    </div>
-
-    <div id="dashboardSection" style="display:none;">
-      <button onclick="logout()">Logout</button>
-      <h3>Submitted Forms</h3>
-
-      <label for="filterType">Filter by type:</label>
-      <select id="filterType" onchange="renderForms()">
-        <option value="all">All</option>
-        <option value="suggestion">Suggestions</option>
-        <option value="bug">Bug Reports</option>
-      </select>
-
-      <div id="formEntries"></div>
-    </div>
+    <div id="formEntries"></div>
   </div>
 
   <script>
+    // Theme toggle
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    function toggleStatusPopup() {
+      const popup = document.getElementById("statusPopup");
+      popup.style.display = popup.style.display === "block" ? "none" : "block";
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.getElementById("formInput");
       if (form) {
@@ -176,7 +266,7 @@
           sessionStorage.setItem("adminLoggedIn", "true");
           showDashboard();
         } else {
-          document.getElementById("loginError").textContent = "Incorrect password!";
+          alert("Incorrect password!");
         }
       };
 
@@ -186,7 +276,6 @@
       };
 
       function showDashboard() {
-        document.getElementById("loginSection").style.display = "none";
         document.getElementById("dashboardSection").style.display = "block";
         renderForms();
       }
@@ -212,7 +301,7 @@
             <strong>Date:</strong> ${entry.date}<br>
             <strong>Content:</strong><br><pre>${entry.content}</pre>
             <div class="status ${entry.status}">Status: ${entry.status}</div>
-            ${entry.reply ? `<div><strong>Reply:</strong><br><pre>${entry.reply}</pre></div>` : ""}
+            ${entry.reply ? `<div><strong>Reply:</strong><pre>${entry.reply}</pre></div>` : ""}
             <label>Reply:</label><textarea id="reply-${entry.id}">${entry.reply || ""}</textarea>
             <button onclick="updateStatus(${entry.id}, 'approved')">✅ Approve</button>
             <button onclick="updateStatus(${entry.id}, 'declined')">❌ Decline</button>
@@ -252,7 +341,7 @@
         container.innerHTML = "";
 
         if (userForms.length === 0) {
-          container.innerHTML = "<p>No submissions found for this name.</p>";
+          container.innerHTML = "<p>No submissions found.</p>";
           return;
         }
 
@@ -262,9 +351,9 @@
           div.innerHTML = `
             <strong>Type:</strong> ${e.type}<br>
             <strong>Date:</strong> ${e.date}<br>
-            <strong>Content:</strong><br><pre>${e.content}</pre>
+            <strong>Content:</strong><pre>${e.content}</pre>
             <div class="status ${e.status}">Status: ${e.status}</div>
-            ${e.reply ? `<div><strong>Reply:</strong><br><pre>${e.reply}</pre></div>` : ""}
+            ${e.reply ? `<div><strong>Reply:</strong><pre>${e.reply}</pre></div>` : ""}
           `;
           container.appendChild(div);
         });
