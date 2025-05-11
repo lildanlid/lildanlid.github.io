@@ -1,95 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Advanced Website Builder</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pro Website Builder</title>
   <style>
+    /* === CSS STYLES (placeholder) === */
     body {
       font-family: Arial, sans-serif;
       margin: 40px;
       background-color: #121212;
       color: #f0f0f0;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    .light-mode {
-      background-color: #ffffff;
-      color: #222222;
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #444;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 12px;
-      cursor: pointer;
-      z-index: 999;
-    }
-
-    .light-mode .theme-toggle {
-      background: #ddd;
-      color: black;
     }
 
     .builder {
-      margin-bottom: 20px;
       background: #1e1e1e;
       padding: 15px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px #ccc;
-    }
-
-    .light-mode .builder {
-      background: #f9f9f9;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-    }
-
-    button {
-      margin-top: 10px;
-      margin-right: 10px;
-      padding: 10px 15px;
-      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 20px;
     }
 
     .preview-box {
       background: #1e1e1e;
-      padding: 15px;
+      padding: 20px;
       min-height: 300px;
       border: 1px solid #ccc;
       position: relative;
     }
 
-    .light-mode .preview-box {
-      background: white;
-    }
-
     .draggable {
       position: absolute;
-      display: inline-block;
       cursor: move;
       user-select: none;
-    }
-
-    .editable {
-      outline: 2px dashed transparent;
-    }
-
-    .editable:hover {
-      outline: 2px dashed #777;
+      resize: both;
+      overflow: auto;
     }
 
     .delete-btn {
@@ -98,129 +42,78 @@
       right: -10px;
       background: red;
       color: white;
-      border: none;
       border-radius: 50%;
+      border: none;
       width: 20px;
       height: 20px;
+      cursor: pointer;
       font-size: 14px;
       line-height: 20px;
-      text-align: center;
-      cursor: pointer;
-      z-index: 10;
     }
 
     textarea {
       width: 100%;
       font-family: monospace;
-      margin-top: 10px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-
-  <h1>Advanced Website Builder</h1>
-
+  <h1>Pro Website Builder</h1>
   <div class="builder">
-    <label>Element Type:</label>
+    <label>Select Element Type:</label>
     <select id="element-type">
-      <option value="h1">Heading (H1)</option>
+      <option value="h1">Heading</option>
       <option value="p">Paragraph</option>
-      <option value="img">Image</option>
+      <option value="img">Image (URL)</option>
       <option value="button">Button</option>
     </select>
-
-    <label>Content / URL:</label>
-    <input type="text" id="element-content" placeholder="Enter text or image URL">
-
-    <label>Text Color:</label>
-    <input type="color" id="text-color" value="#ffffff">
-
-    <label>Theme Style:</label>
-    <select id="button-style">
-      <option value="default">Default</option>
-      <option value="rounded">Rounded</option>
-      <option value="outline">Outline</option>
-    </select>
-
+    <input type="text" id="element-content" placeholder="Text or image URL" />
     <button onclick="addElement()">Add Element</button>
     <button onclick="generateCode()">Generate Code</button>
-    <button onclick="saveProject()">Save</button>
-    <button onclick="loadProject()">Load</button>
-    <button onclick="clearBuilder()">Clear</button>
+    <button onclick="clearPreview()">Clear</button>
   </div>
-
-  <h2>Live Preview (Click to Edit, Drag to Move):</h2>
-  <div id="preview" class="preview-box"></div>
-
-  <h2>Generated HTML Code:</h2>
-  <textarea id="output" rows="15" readonly></textarea>
+  <div class="preview-box" id="preview"></div>
+  <textarea id="output" rows="12" readonly></textarea>
 
   <script>
+    // === JS SCRIPT ===
     const preview = document.getElementById("preview");
     const output = document.getElementById("output");
-    let elementData = [];
 
-    function addElement(data = null) {
-      const type = data?.type || document.getElementById("element-type").value;
-      const content = data?.content || document.getElementById("element-content").value;
-      const color = data?.color || document.getElementById("text-color").value;
-      const btnStyle = data?.buttonStyle || document.getElementById("button-style").value;
-      const top = data?.top || "10px";
-      const left = data?.left || "10px";
+    function addElement() {
+      const type = document.getElementById("element-type").value;
+      const content = document.getElementById("element-content").value;
 
-      let wrapper = document.createElement("div");
+      const wrapper = document.createElement("div");
       wrapper.className = "draggable";
-      wrapper.style.top = top;
-      wrapper.style.left = left;
+      wrapper.style.top = "10px";
+      wrapper.style.left = "10px";
 
-      let el = document.createElement(type === "img" ? "img" : type);
-
+      let el;
       if (type === "img") {
+        el = document.createElement("img");
         el.src = content;
-        el.alt = "Image";
         el.style.width = "200px";
       } else {
+        el = document.createElement(type);
         el.textContent = content;
-        el.style.color = color;
         el.contentEditable = true;
       }
 
-      if (type === "button") {
-        el.style.color = color;
-        if (btnStyle === "rounded") {
-          el.style.borderRadius = "15px";
-          el.style.padding = "10px 20px";
-        } else if (btnStyle === "outline") {
-          el.style.background = "transparent";
-          el.style.border = `2px solid ${color}`;
-        }
-      }
-
-      el.classList.add("editable");
-      wrapper.appendChild(el);
-
       const delBtn = document.createElement("button");
-      delBtn.innerText = "×";
       delBtn.className = "delete-btn";
-      delBtn.onclick = () => {
-        const index = Array.from(preview.children).indexOf(wrapper);
-        wrapper.remove();
-        elementData.splice(index, 1);
-      };
-      wrapper.appendChild(delBtn);
+      delBtn.textContent = "×";
+      delBtn.onclick = () => wrapper.remove();
 
+      wrapper.appendChild(el);
+      wrapper.appendChild(delBtn);
       makeDraggable(wrapper);
       preview.appendChild(wrapper);
-
-      if (!data) {
-        elementData.push({ type, content, color, buttonStyle: btnStyle, top, left });
-      }
     }
 
     function makeDraggable(el) {
       let offsetX, offsetY;
-
       el.addEventListener("mousedown", (e) => {
         if (e.target.classList.contains("delete-btn")) return;
         offsetX = e.offsetX;
@@ -236,72 +129,27 @@
         }
 
         document.addEventListener("mousemove", onMouseMove);
-
         el.addEventListener("mouseup", () => {
           document.removeEventListener("mousemove", onMouseMove);
-          const index = Array.from(preview.children).indexOf(el);
-          if (elementData[index]) {
-            elementData[index].top = el.style.top;
-            elementData[index].left = el.style.left;
-          }
         }, { once: true });
       });
     }
 
     function generateCode() {
-      let html = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Generated Site</title>
-  <style>
-    body { position: relative; }
-    .draggable { position: absolute; }
-  </style>
-</head>
-<body>
-`;
-
-      preview.querySelectorAll('.draggable').forEach(wrapper => {
-        const copy = wrapper.cloneNode(true);
-        copy.querySelector('.delete-btn')?.remove();
-        copy.querySelectorAll('[contenteditable]').forEach(e => e.removeAttribute('contenteditable'));
-        html += `  ${copy.outerHTML}\n`;
+      let html = "<!DOCTYPE html>\n<html><head><style>body{position:relative;}.draggable{position:absolute;}</style></head><body>\n";
+      document.querySelectorAll(".preview-box .draggable").forEach(el => {
+        const copy = el.cloneNode(true);
+        copy.querySelector(".delete-btn").remove();
+        html += copy.outerHTML + "\n";
       });
-
-      html += `</body>\n</html>`;
-      output.value = html.trim();
+      html += "</body></html>";
+      output.value = html;
     }
 
-    function saveProject() {
-      localStorage.setItem("websiteBuilderData", JSON.stringify(elementData));
-      alert("Project saved!");
-    }
-
-    function loadProject() {
-      const saved = localStorage.getItem("websiteBuilderData");
-      if (!saved) return alert("No saved project found.");
-      clearBuilder();
-      elementData = JSON.parse(saved);
-      elementData.forEach(el => addElement(el));
-    }
-
-    function clearBuilder() {
+    function clearPreview() {
       preview.innerHTML = "";
       output.value = "";
-      elementData = [];
     }
-
-    function toggleTheme() {
-      document.body.classList.toggle("light-mode");
-      const toggleBtn = document.querySelector(".theme-toggle");
-      toggleBtn.innerText = document.body.classList.contains("light-mode") ? "☀️" : "🌙";
-    }
-
-    // Default to dark mode
-    toggleTheme();
-    toggleTheme();
   </script>
 </body>
 </html>
