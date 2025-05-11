@@ -2,54 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Website Code Builder</title>
-<style>
-  body {
-  font-family: Arial, sans-serif;
-  margin: 40px;
-  background: #f4f4f4;
-}
-
-.builder {
-  margin-bottom: 20px;
-  background: white;
-  padding: 15px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px #ccc;
-}
-
-label {
-  display: block;
-  margin-top: 10px;
-}
-
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-}
-
-button {
-  margin-top: 10px;
-  margin-right: 10px;
-  padding: 10px 15px;
-  cursor: pointer;
-}
-
-.preview-box {
-  background: white;
-  padding: 15px;
-  min-height: 100px;
-  border: 1px solid #ccc;
-}
-
-textarea {
-  width: 100%;
-  font-family: monospace;
-}
-
+  <title>Simple Website Builder</title>
   <style>
-  <head>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f4f4f4;
+    }
+
+    .builder {
+      margin-bottom: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px #ccc;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
+    .preview-box {
+      background: white;
+      padding: 15px;
+      min-height: 100px;
+      border: 1px solid #ccc;
+    }
+
+    textarea {
+      width: 100%;
+      font-family: monospace;
+      margin-top: 10px;
+    }
+  </style>
+</head>
 <body>
   <h1>Simple Website Builder</h1>
 
@@ -76,31 +76,30 @@ textarea {
   <textarea id="output" rows="15" readonly></textarea>
 
   <script>
+    const preview = document.getElementById("preview");
+    const output = document.getElementById("output");
+    let elements = [];
 
-const preview = document.getElementById("preview");
-const output = document.getElementById("output");
-let elements = [];
+    function addElement() {
+      const type = document.getElementById("element-type").value;
+      const content = document.getElementById("element-content").value;
 
-function addElement() {
-  const type = document.getElementById("element-type").value;
-  const content = document.getElementById("element-content").value;
+      let html = "";
 
-  let html = "";
+      if (type === "img") {
+        html = `<img src="${content}" alt="Image" />`;
+      } else if (type === "button") {
+        html = `<button>${content}</button>`;
+      } else {
+        html = `<${type}>${content}</${type}>`;
+      }
 
-  if (type === "img") {
-    html = `<img src="${content}" alt="Image" />`;
-  } else if (type === "button") {
-    html = `<button>${content}</button>`;
-  } else {
-    html = `<${type}>${content}</${type}>`;
-  }
+      elements.push(html);
+      preview.innerHTML += html;
+    }
 
-  elements.push(html);
-  preview.innerHTML += html;
-}
-
-function generateCode() {
-  const fullHTML = `
+    function generateCode() {
+      const fullHTML = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,9 +112,8 @@ function generateCode() {
 </html>
 `.trim();
 
-  output.value = fullHTML;
-}
-
-<script>
+      output.value = fullHTML;
+    }
+  </script>
 </body>
 </html>
