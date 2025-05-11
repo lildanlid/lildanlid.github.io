@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coding AI Chatbot</title>
+  <title>Coding AI Chatbot with File Upload</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Additional custom styles */
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f3f4f6;
@@ -65,6 +64,41 @@
       background-color: #cbd5e1;
       border-radius: 20px;
     }
+    
+    .file-upload-container {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    .file-upload-btn {
+      border: 1px dashed #9ca3af;
+      border-radius: 0.375rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .file-upload-btn:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .file-upload-input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .file-info {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
   </style>
 </head>
 <body>
@@ -77,12 +111,15 @@
       const [messages, setMessages] = useState([
         {
           id: '1',
-          text: 'Hello! I\'m your coding assistant. How can I help you today?',
+          text: 'Hello! I\'m your coding assistant. You can ask me coding questions or upload files for me to analyze.',
           sender: 'ai'
         }
       ]);
       const [inputValue, setInputValue] = useState('');
+      const [uploadedFile, setUploadedFile] = useState(null);
+      const [fileName, setFileName] = useState('');
       const messagesEndRef = useRef(null);
+      const fileInputRef = useRef(null);
 
       const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -93,32 +130,84 @@
       }, [messages]);
 
       const handleSendMessage = () => {
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() && !uploadedFile) return;
 
         // Add user message
         const userMessage = {
           id: Date.now().toString(),
-          text: inputValue,
-          sender: 'user'
+          text: inputValue || `[Uploaded file: ${fileName}]`,
+          sender: 'user',
+          isFile: !!uploadedFile,
+          fileName: fileName
         };
 
         setMessages(prev => [...prev, userMessage]);
         setInputValue('');
+        setUploadedFile(null);
+        setFileName('');
 
         // Simulate AI response after a short delay
         setTimeout(() => {
-          const aiResponse = generateAIResponse(inputValue);
+          const aiResponse = generateAIResponse(inputValue, uploadedFile, fileName);
           setMessages(prev => [...prev, aiResponse]);
-        }, 500);
+        }, 800);
       };
 
-      const generateAIResponse = (userInput) => {
-        const lowerInput = userInput.toLowerCase();
+      const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          setUploadedFile(file);
+          setFileName(file.name);
+          
+          // Read file content if it's a text file
+          if (file.type.startsWith('text/') || file.name.endsWith('.js') || 
+              file.name.endsWith('.html') || file.name.endsWith('.css')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              setInputValue(e.target.result);
+            };
+            reader.readAsText(file);
+          }
+        }
+      };
 
+      const generateAIResponse = (userInput, file, filename) => {
+        const lowerInput = userInput.toLowerCase();
+        
+        // If file was uploaded
+        if (file) {
+          if (filename.endsWith('.js')) {
+            return {
+              id: Date.now().toString(),
+              text: `I've analyzed your JavaScript file (${filename}). Here are some suggestions:\n\n1. Consider adding JSDoc comments for better documentation\n2. You might want to break this into smaller functions\n3. Remember to handle potential errors\n\nWould you like me to review any specific part in more detail?`,
+              sender: 'ai'
+            };
+          } else if (filename.endsWith('.html')) {
+            return {
+              id: Date.now().toString(),
+              text: `I've reviewed your HTML file (${filename}). Suggestions:\n\n1. Add meta tags for better SEO\n2. Consider semantic HTML5 elements\n3. Validate your HTML structure\n\nWould you like me to suggest specific improvements?`,
+              sender: 'ai'
+            };
+          } else if (filename.endsWith('.css')) {
+            return {
+              id: Date.now().toString(),
+              text: `Your CSS file (${filename}) looks good! Suggestions:\n\n1. Consider using CSS variables for theming\n2. You might want to organize your styles with BEM methodology\n3. Add responsive breakpoints if needed\n\nNeed help with anything specific?`,
+              sender: 'ai'
+            };
+          } else {
+            return {
+              id: Date.now().toString(),
+              text: `Thanks for uploading ${filename}! I can help analyze code files (.js, .html, .css). For other file types, please describe what you'd like me to review.`,
+              sender: 'ai'
+            };
+          }
+        }
+        
+        // Text responses
         if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
           return {
             id: Date.now().toString(),
-            text: 'Hello! How can I assist you with your coding today?',
+            text: 'Hello! You can ask me coding questions or upload files for review. How can I help?',
             sender: 'ai'
           };
         } else if (lowerInput.includes('function') || lowerInput.includes('code')) {
@@ -131,14 +220,14 @@
         } else if (lowerInput.includes('react') || lowerInput.includes('component')) {
           return {
             id: Date.now().toString(),
-            text: `// React component example\nfunction MyComponent() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <p>You clicked {count} times</p>\n      <button onClick={() => setCount(count + 1)}>\n        Click me\n      </button>\n    </div>\n  );\n}`,
+            text: `// React component example\nfunction Counter() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(count + 1)}>\n        Increment\n      </button>\n    </div>\n  );\n}`,
             sender: 'ai',
             isCode: true
           };
         } else if (lowerInput.includes('html') || lowerInput.includes('css')) {
           return {
             id: Date.now().toString(),
-            text: `<!-- HTML/CSS example -->\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    .container {\n      width: 100%;\n      max-width: 800px;\n      margin: 0 auto;\n      padding: 20px;\n    }\n    .btn {\n      background: #3b82f6;\n      color: white;\n      padding: 8px 16px;\n      border-radius: 4px;\n    }\n  </style>\n</head>\n<body>\n  <div class="container">\n    <h1>Welcome</h1>\n    <button class="btn">Click Me</button>\n  </div>\n</body>\n</html>`,
+            text: `<!-- HTML/CSS example -->\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    .card {\n      width: 300px;\n      padding: 20px;\n      border-radius: 8px;\n      box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n    }\n    .btn {\n      background: #3b82f6;\n      color: white;\n      padding: 8px 16px;\n      border-radius: 4px;\n      border: none;\n    }\n  </style>\n</head>\n<body>\n  <div class="card">\n    <h2>Card Title</h2>\n    <p>Card content goes here</p>\n    <button class="btn">Click Me</button>\n  </div>\n</body>\n</html>`,
             sender: 'ai',
             isCode: true
           };
@@ -152,13 +241,24 @@
         } else {
           return {
             id: Date.now().toString(),
-            text: 'I\'m not sure how to help with that. Could you provide more details about your coding question?',
+            text: 'I can help with coding questions or review uploaded files. Could you provide more details about what you need help with?',
             sender: 'ai'
           };
         }
       };
 
-      const formatMessage = (text, isCode) => {
+      const formatMessage = (text, isCode, isFile, fileName) => {
+        if (isFile) {
+          return (
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+              </svg>
+              <span>{fileName}</span>
+            </div>
+          );
+        }
+        
         if (!isCode) {
           return text.split('\n').map((line, i) => (
             <p key={i} className="mb-1">{line}</p>
@@ -178,6 +278,7 @@
         <div className="flex flex-col w-full max-w-2xl chat-container bg-white rounded-lg overflow-hidden">
           <div className="p-4 bg-blue-600 text-white">
             <h1 className="text-xl font-bold">Coding AI Assistant</h1>
+            <p className="text-sm opacity-80">Upload files or ask coding questions</p>
           </div>
 
           <div className="flex-1 p-4 overflow-y-auto message-container">
@@ -186,25 +287,47 @@
                 key={message.id}
                 className={`mb-4 p-3 rounded-lg max-w-[80%] ${message.sender === 'user' ? 'user-message' : 'ai-message'}`}
               >
-                {formatMessage(message.text, message.isCode)}
+                {formatMessage(message.text, message.isCode, message.isFile, message.fileName)}
               </div>
             ))}
             <div ref={messagesEndRef} />
           </div>
 
           <div className="p-4 border-t border-gray-200 bg-white">
+            <div className="file-upload-container mb-2">
+              <button className="file-upload-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                Upload File
+              </button>
+              <input 
+                type="file" 
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="file-upload-input"
+                accept=".js,.html,.css,.txt,.py,.java,.json"
+              />
+              {fileName && (
+                <div className="file-info">
+                  <span className="truncate max-w-xs inline-block">{fileName}</span>
+                </div>
+              )}
+            </div>
+            
             <div className="flex gap-2">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="Type your coding question..."
+                placeholder="Type your message or upload a file..."
                 className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 onClick={handleSendMessage}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={!inputValue && !uploadedFile}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Send
               </button>
