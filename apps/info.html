@@ -4,127 +4,161 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>All-in-One Utility Web App</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <style>
-    :root {
-      --bg-color: #1e1e1e;
-      --text-color: #ffffff;
-      --accent-color: #2196f3;
-      --card-color: #2c2c2c;
-      --radius: 12px;
-    }
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  :root {
+  --bg-color: #1e1e1e;
+  --text-color: #ffffff;
+  --accent-color: #2196f3;
+  --card-color: #2c2c2c;
+  --radius: 12px;
+}
 
-    body.light {
-      --bg-color: #f0f0f0;
-      --text-color: #000000;
-      --card-color: #ffffff;
-    }
+body.light {
+  --bg-color: #f0f0f0;
+  --text-color: #000000;
+  --card-color: #ffffff;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      height: 100vh;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  height: 100vh;
+  font-weight: bold;
+}
 
-    aside {
-      width: 200px;
-      background: var(--card-color);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      border-top-right-radius: var(--radius);
-      border-bottom-right-radius: var(--radius);
-    }
+/* Buttons */
+button {
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: bold;
+}
+button:hover {
+  background: #1976d2;
+}
 
-    main {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      border-radius: var(--radius);
-    }
+/* Sidebar */
+aside {
+  width: 200px;
+  background: var(--card-color);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  border-top-right-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+}
+aside button {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  text-align: left;
+  font-weight: bold;
+}
+aside button:hover {
+  color: var(--accent-color);
+}
+aside button.selected {
+  color: var(--accent-color);
+}
 
-    .app {
-      display: none;
-      background: var(--card-color);
-      padding: 15px;
-      border-radius: var(--radius);
-    }
+/* Theme Toggle Switch */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+  gap: 10px;
+  font-weight: bold;
+}
+.theme-toggle input {
+  width: 40px;
+  height: 20px;
+  position: relative;
+  appearance: none;
+  background: #888;
+  outline: none;
+  border-radius: 20px;
+  transition: background 0.3s;
+}
+.theme-toggle input::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  top: 1px;
+  left: 1px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+.theme-toggle input:checked::before {
+  transform: translateX(20px);
+}
+.theme-toggle input:checked {
+  background: var(--accent-color);
+}
 
-    .active {
-      display: block;
-    }
+/* App display */
+main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  border-radius: var(--radius);
+}
+.app {
+  display: none;
+  background: var(--card-color);
+  padding: 15px;
+  border-radius: var(--radius);
+}
+.app.active {
+  display: block;
+}
 
-    button {
-      background: var(--accent-color);
-      color: #fff;
-      border: none;
-      padding: 10px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
+/* Clock Folder */
+.clock-folder {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+  margin-left: 10px;
+}
+.clock-folder.active {
+  max-height: 500px;
+  margin-top: 8px;
+}
 
-    button:hover {
-      background: #1976d2;
-    }
+/* Calculator display expansion */
+#calc-display {
+  width: 100%;
+  font-size: 1.2em;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: var(--radius);
+}
+#calc-history {
+  background: var(--card-color);
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  white-space: pre-line;
+}
 
-    aside button {
-      background: transparent;
-      color: var(--text-color);
-      border: 2px solid transparent;
-      text-align: left;
-    }
-
-    aside button:hover {
-      color: var(--accent-color);
-    }
-
-    aside button.selected {
-      border: 2px solid var(--accent-color);
-      color: var(--accent-color);
-    }
-
-    .icon {
-      margin-right: 8px;
-    }
-
-    input, select, textarea {
-      padding: 8px;
-      margin-top: 5px;
-      background: var(--card-color);
-      color: var(--text-color);
-      border: 1px solid #ccc;
-      border-radius: var(--radius);
-    }
-
-    .calc-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .calc-grid button {
-      padding: 15px;
-      font-size: 1.2rem;
-    }
-
-    /* Clock Folder Animation */
-    .clock-folder {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.4s ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .clock-folder.active {
-      max-height: 500px;
-    }
-  </style>
+/* Icon spacing */
+.icon {
+  margin-right: 8px;
+}
+<style>
 </head>
 <body class="dark">
   <aside>
@@ -144,31 +178,31 @@
     <button class="theme-switch" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke icon"></i>Switch Theme</button>
   </aside>
 
-  <main>
-    <!-- Calculator -->
-    <div id="calculator" class="app active">
-      <h2><i class="fa-solid fa-calculator icon"></i>Calculator</h2>
-      <input type="text" id="calc-display" readonly />
-      <div class="calc-grid">
-        <button onclick="appendCalc('1')">1</button>
-        <button onclick="appendCalc('2')">2</button>
-        <button onclick="appendCalc('3')">3</button>
-        <button onclick="appendCalc('+')">+</button>
-        <button onclick="appendCalc('4')">4</button>
-        <button onclick="appendCalc('5')">5</button>
-        <button onclick="appendCalc('6')">6</button>
-        <button onclick="appendCalc('-')">-</button>
-        <button onclick="appendCalc('7')">7</button>
-        <button onclick="appendCalc('8')">8</button>
-        <button onclick="appendCalc('9')">9</button>
-        <button onclick="appendCalc('*')">*</button>
-        <button onclick="appendCalc('0')">0</button>
-        <button onclick="appendCalc('.')">.</button>
-        <button onclick="calculate()">=</button>
-        <button onclick="appendCalc('/')">/</button>
-        <button onclick="clearCalc()" style="grid-column: span 4;">Clear</button>
-      </div>
-    </div>
+  <div id="calculator" class="app active">
+  <h2><i class="fa-solid fa-calculator icon"></i>Calculator</h2>
+  <div id="calc-history"></div>
+  <input type="text" id="calc-display" readonly />
+  <div class="calc-grid">
+    <button onclick="appendCalc('1')">1</button>
+    <button onclick="appendCalc('2')">2</button>
+    <button onclick="appendCalc('3')">3</button>
+    <button onclick="appendCalc('+')">+</button>
+    <button onclick="appendCalc('4')">4</button>
+    <button onclick="appendCalc('5')">5</button>
+    <button onclick="appendCalc('6')">6</button>
+    <button onclick="appendCalc('-')">-</button>
+    <button onclick="appendCalc('7')">7</button>
+    <button onclick="appendCalc('8')">8</button>
+    <button onclick="appendCalc('9')">9</button>
+    <button onclick="appendCalc('*')">*</button>
+    <button onclick="appendCalc('0')">0</button>
+    <button onclick="appendCalc('.')">.</button>
+    <button onclick="calculate()">=</button>
+    <button onclick="appendCalc('/')">/</button>
+    <button onclick="clearCalc()" style="grid-column: span 4;">Clear</button>
+  </div>
+</div>
+
 
     <!-- Clock tools split -->
     <div id="clock" class="app"><h2><i class="fa-solid fa-clock icon"></i>Clock</h2><p id="clock-time">--:--:--</p></div>
@@ -201,10 +235,11 @@
       if (el) el.classList.add('selected');
     }
 
-    function toggleTheme() {
-      document.body.classList.toggle('light');
-      document.body.classList.toggle('dark');
-    }
+    <div class="theme-toggle">
+  <label for="theme-switch">Dark Mode</label>
+  <input type="checkbox" id="theme-switch" checked onchange="toggleTheme()" />
+</div>
+
 
     function toggleClockFolder(el) {
       const folder = document.getElementById('clock-folder');
