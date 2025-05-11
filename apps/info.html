@@ -1,276 +1,197 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Multi Tool Web App</title>
+  <title>All-in-One Utility Web App</title>
   <style>
     :root {
-      --bg-color: #121212;
-      --text-color: #eee;
-      --sidebar-bg: #2c3e50;
-      --button-bg: #34495e;
-      --button-hover-bg: #3d5a73;
-      --selected-outline: lightblue;
-      --selected-text: #3498db;
-      --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      --bg-color: #1e1e1e;
+      --text-color: #ffffff;
+      --accent-color: #4caf50;
+      --card-color: #2c2c2c;
     }
-
-    [data-theme="light"] {
+    body.light {
       --bg-color: #f0f0f0;
-      --text-color: #000;
-      --sidebar-bg: #ecf0f1;
-      --button-bg: #bdc3c7;
-      --button-hover-bg: #95a5a6;
-      --selected-outline: lightblue;
-      --selected-text: #3498db;
-      --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      --text-color: #000000;
+      --card-color: #ffffff;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     body {
+      margin: 0;
+      font-family: Arial, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .container {
       display: flex;
       height: 100vh;
     }
-
-    /* Sidebar */
-    .sidebar {
-      width: 250px;
-      background-color: var(--sidebar-bg);
-      padding: 1rem;
-      color: var(--text-color);
+    aside {
+      width: 200px;
+      background: var(--card-color);
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-      box-shadow: var(--shadow);
-      transition: background-color 0.3s;
     }
-
-    .sidebar button {
-      margin-bottom: 10px;
+    aside button {
+      margin: 10px 0;
       padding: 10px;
-      background-color: var(--button-bg);
-      color: var(--text-color);
+      background: var(--accent-color);
+      color: white;
       border: none;
       cursor: pointer;
-      transition: background 0.3s;
-      border-radius: 5px;
     }
-
-    .sidebar button:hover {
-      background-color: var(--button-hover-bg);
+    aside button:hover {
+      background: #66bb6a;
     }
-
-    .folder-header {
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .folder-content {
-      display: none;
-      flex-direction: column;
-      margin-top: 5px;
-      animation: slideDown 0.3s ease-in-out forwards;
-    }
-
-    .folder.open .folder-content {
-      display: flex;
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .tool-button.selected {
-      outline: 2px solid var(--selected-outline);
-      color: var(--selected-text);
-    }
-
-    /* Main Content */
     main {
       flex: 1;
-      padding: 2rem;
+      padding: 20px;
       overflow-y: auto;
-      border-radius: 10px;
     }
-
-    input, button {
-      padding: 5px;
-      margin: 5px 0;
-      border-radius: 5px;
+    .app {
+      display: none;
     }
-
-    /* Calculator Styles */
-    .calculator {
-      display: grid;
-      grid-template-columns: repeat(4, 60px);
-      gap: 10px;
-      margin-top: 20px;
+    .active {
+      display: block;
     }
-
-    .calculator button {
-      padding: 15px;
-      font-size: 18px;
-      border: none;
-      background-color: var(--button-bg);
+    .theme-switch {
+      margin-top: auto;
+      background: transparent;
       color: var(--text-color);
-      cursor: pointer;
-      border-radius: 5px;
+      border: 1px solid var(--accent-color);
     }
-
-    .calculator button:hover {
-      background-color: var(--button-hover-bg);
-    }
-
-    .calc-display {
-      width: 100%;
-      padding: 10px;
-      font-size: 24px;
-      margin-bottom: 10px;
-      border: none;
-      background-color: #ecf0f1;
-      border-radius: 5px;
-    }
-
-    /* Weather Forecast Styles */
-    .forecast {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .forecast-day {
-      background-color: var(--button-bg);
+    input, select {
+      padding: 8px;
+      margin-top: 5px;
+      background: var(--card-color);
       color: var(--text-color);
-      padding: 10px;
-      border-radius: 5px;
-      width: 150px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <aside class="sidebar">
-      <button id="themeToggle">Toggle Theme</button>
-
-      <div class="folder" data-folder="clock">
-        <div class="folder-header">🕒 Clock</div>
-        <div class="folder-content">
-          <button class="tool-button" data-tool="stopwatch">Stopwatch</button>
-          <button class="tool-button" data-tool="timer">Timer</button>
-          <button class="tool-button" data-tool="alarm">Alarm</button>
-          <button class="tool-button" data-tool="countdown">Countdown</button>
-        </div>
+<body class="dark">
+  <aside>
+    <button onclick="switchApp('calculator')">Calculator</button>
+    <button onclick="switchApp('clock')">Clock</button>
+    <button onclick="switchApp('weather')">Weather</button>
+    <button onclick="switchApp('speed')">Speed Test</button>
+    <button class="theme-switch" onclick="toggleTheme()">Switch Theme</button>
+  </aside>
+  <main>
+    <!-- Calculator -->
+    <div id="calculator" class="app active">
+      <h2>Calculator</h2>
+      <input type="text" id="calc-display" readonly />
+      <div>
+        <button onclick="appendCalc('1')">1</button>
+        <button onclick="appendCalc('2')">2</button>
+        <button onclick="appendCalc('3')">3</button>
+        <button onclick="appendCalc('+')">+</button><br>
+        <button onclick="appendCalc('4')">4</button>
+        <button onclick="appendCalc('5')">5</button>
+        <button onclick="appendCalc('6')">6</button>
+        <button onclick="appendCalc('-')">-</button><br>
+        <button onclick="appendCalc('7')">7</button>
+        <button onclick="appendCalc('8')">8</button>
+        <button onclick="appendCalc('9')">9</button>
+        <button onclick="appendCalc('*')">*</button><br>
+        <button onclick="appendCalc('0')">0</button>
+        <button onclick="appendCalc('.')">.</button>
+        <button onclick="calculate()">=</button>
+        <button onclick="appendCalc('/')">/</button><br>
+        <button onclick="clearCalc()">C</button>
       </div>
+    </div>
 
-      <div class="folder" data-folder="random">
-        <div class="folder-header">🎲 Random Stuff</div>
-        <div class="folder-content">
-          <button class="tool-button" data-tool="speed">Internet Speed</button>
-          <button class="tool-button" data-tool="calculator">Calculator</button>
-          <button class="tool-button" data-tool="weather">Weather</button>
-        </div>
-      </div>
-    </aside>
+    <!-- Clock -->
+    <div id="clock" class="app">
+      <h2>Current Time</h2>
+      <p id="clock-time">--:--:--</p>
+    </div>
 
-    <main id="main-content">
-      <h2>Welcome</h2>
-      <p>Select a tool from the sidebar.</p>
-    </main>
-  </div>
+    <!-- Weather -->
+    <div id="weather" class="app">
+      <h2>Check Weather</h2>
+      <input type="text" id="city" placeholder="Enter city" />
+      <button onclick="getWeather()">Get Weather</button>
+      <p id="weather-result"></p>
+    </div>
+
+    <!-- Speed Test -->
+    <div id="speed" class="app">
+      <h2>Internet Speed Test</h2>
+      <button onclick="testSpeed()">Run Speed Test</button>
+      <p id="speed-result">Speed: --</p>
+    </div>
+  </main>
 
   <script>
-    // Theme toggle with localStorage
-    const themeBtn = document.getElementById('themeToggle');
-    const htmlElement = document.documentElement;
-
-    function setTheme(theme) {
-      htmlElement.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+    // Sidebar App Switching
+    function switchApp(appId) {
+      document.querySelectorAll('.app').forEach(app => app.classList.remove('active'));
+      document.getElementById(appId).classList.add('active');
     }
 
-    // Initialize theme
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
+    // Theme Toggle
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+      document.body.classList.toggle('dark');
+    }
 
-    themeBtn.addEventListener('click', () => {
-      const currentTheme = htmlElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      setTheme(newTheme);
-    });
+    // Calculator
+    let calcExpression = '';
+    const calcDisplay = document.getElementById('calc-display');
+    function appendCalc(val) {
+      calcExpression += val;
+      calcDisplay.value = calcExpression;
+    }
+    function calculate() {
+      try {
+        calcExpression = eval(calcExpression).toString();
+        calcDisplay.value = calcExpression;
+      } catch (e) {
+        calcDisplay.value = "Error";
+      }
+    }
+    function clearCalc() {
+      calcExpression = '';
+      calcDisplay.value = '';
+    }
 
-    // Folder toggle
-    document.querySelectorAll('.folder-header').forEach(header => {
-      header.addEventListener('click', () => {
-        const folder = header.parentElement;
-        folder.classList.toggle('open');
-      });
-    });
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock-time').textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
 
-    // Tool switching
-    const buttons = document.querySelectorAll('.tool-button');
-    const main = document.getElementById('main-content');
+    // Weather Fetching
+    async function getWeather() {
+      const city = document.getElementById('city').value;
+      const apiKey = 'https://wttr.in/' + city + '?format=3';
+      try {
+        const res = await fetch(apiKey);
+        const data = await res.text();
+        document.getElementById('weather-result').textContent = data;
+      } catch {
+        document.getElementById('weather-result').textContent = "Failed to fetch weather.";
+      }
+    }
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        buttons.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-
-        const tool = btn.dataset.tool;
-        main.innerHTML = renderTool(tool);
-        runTool(tool);
-      });
-    });
-
-    function renderTool(tool) {
-      switch (tool) {
-        case "stopwatch":
-          return `<h2>Stopwatch</h2><div><span id="sw-time">00:00:00</span><br>
-            <button onclick="startSW()">Start</button>
-            <button onclick="stopSW()">Stop</button>
-            <button onclick="resetSW()">Reset</button></div>`;
-        case "timer":
-          return `<h2>Timer</h2><input id="timer-minutes" type="number" placeholder="Minutes"/>
-            <button onclick="startTimer()">Start Timer</button>
-            <div id="timer-display"></div>`;
-        case "alarm":
-          return `<h2>Alarm</h2><input id="alarm-time" type="time"/>
-            <button onclick="setAlarm()">Set Alarm</button><div id="alarm-status"></div>`;
-        case "countdown":
-          return `<h2>Countdown</h2><input type="datetime-local" id="cd-target"/>
-            <button onclick="startCountdown()">Start Countdown</button><div id="cd-display"></div>`;
-        case "speed":
-          return `<h2>Internet Speed</h2><button onclick="checkSpeed()">Check Speed</button>
-            <div id="speed-result"></div>`;
-        case "calculator":
-          return `<h2>Calculator</h2>
-            <input id="calc-display" class="calc-display" readonly />
-            <div class="calculator">
-              <button onclick="appendCalc('7')">7</button>
-              <button onclick="appendCalc('8')">8</button>
-              <button onclick="appendCalc('9')">9</button>
-              <button onclick="appendCalc('/')">÷</button>
-              <button onclick="appendCalc('4')">4</button>
-              <button onclick="appendCalc('5')">5</button>
-              <button onclick="appendCalc('6')">6</button>
-              <button onclick="appendCalc('*')">×</button>
-              <button onclick="appendCalc('1')">1</button>
-              <
-::contentReference[oaicite:28]{index=28}
- 
+    // Internet Speed Test (Simplified)
+    async function testSpeed() {
+      const start = new Date().getTime();
+      try {
+        await fetch("https://via.placeholder.com/1000x1000.png?random=" + Math.random());
+        const end = new Date().getTime();
+        const time = (end - start) / 1000;
+        const sizeMb = 0.1; // estimated image size
+        const speed = (sizeMb / time).toFixed(2);
+        document.getElementById('speed-result').textContent = `Speed: ${speed} MB/s (approx)`;
+      } catch {
+        document.getElementById('speed-result').textContent = "Speed test failed.";
+      }
+    }
+  </script>
+</body>
+</html>
