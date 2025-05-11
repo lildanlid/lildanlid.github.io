@@ -2,150 +2,142 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>README Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>README Generator Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-      color: #333;
+    body { font-family: sans-serif; background: #f5f5f5; color: #333; margin: 0; }
+    header { background: #24292e; color: white; padding: 1rem; text-align: center; }
+    nav {
+      background: #333; color: white; display: flex; justify-content: center;
+      gap: 2rem; padding: 0.5rem;
     }
-    header {
-      background: #24292e;
-      color: white;
-      padding: 1rem;
-      text-align: center;
+    nav button {
+      background: none; border: none; color: white; font-size: 1rem; cursor: pointer;
     }
-    main {
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    textarea, input {
-      width: 100%;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-    label {
-      font-weight: bold;
-    }
-    .output {
-      background: #eee;
-      padding: 1rem;
-      white-space: pre-wrap;
-      border: 1px solid #ccc;
-      margin-top: 1rem;
-    }
-    .button-row {
-      margin-top: 1rem;
-      display: flex;
-      gap: 1rem;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      cursor: pointer;
+    section { display: none; padding: 1rem; max-width: 900px; margin: auto; }
+    section.active { display: block; }
+    textarea, input { width: 100%; padding: 0.5rem; margin: 0.5rem 0; }
+    .output { background: #eee; padding: 1rem; white-space: pre-wrap; border: 1px solid #ccc; }
+    .button-row { margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+    button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+    h2 .material-icons {
+      vertical-align: middle;
+      margin-right: 0.3em;
+      font-size: 1.3em;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>📝 GitHub README Generator</h1>
-  </header>
-  <main>
-    <label>Name</label>
-    <input type="text" id="name" placeholder="Your Name" />
 
-    <label>Bio Lines (One per line)</label>
-    <textarea id="bio" rows="4" placeholder="I love coding!\nOpen source enthusiast"></textarea>
+<header>
+  <h1><span class="material-icons">article</span> GitHub README Generator</h1>
+</header>
 
-    <label>Contact Email</label>
-    <input type="email" id="email" placeholder="you@example.com" />
+<nav>
+  <button onclick="showPage('profile')">Profile</button>
+  <button onclick="showPage('stats')">Stats</button>
+  <button onclick="showPage('preview')">Preview</button>
+</nav>
 
-    <label>GitHub Username</label>
-    <input type="text" id="github" placeholder="yourgithub" />
+<section id="profile" class="active">
+  <h2><span class="material-icons">person</span> Profile Info</h2>
+  <input type="text" id="name" placeholder="Your Name" />
+  <textarea id="bio" rows="4" placeholder="Bio lines (one per line)"></textarea>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="text" id="github" placeholder="GitHub username" />
+  <input type="text" id="twitter" placeholder="Twitter handle" />
+  <input type="text" id="linkedin" placeholder="LinkedIn URL" />
+  <input type="text" id="languages" placeholder="Languages (comma separated)" />
+  <input type="text" id="patreon" placeholder="Patreon link" />
+  <input type="text" id="coffee" placeholder="BuyMeACoffee link" />
+</section>
 
-    <label>Twitter Handle</label>
-    <input type="text" id="twitter" placeholder="@yourhandle" />
+<section id="stats">
+  <h2><span class="material-icons">insights</span> GitHub Stats & Badges</h2>
+  <label><input type="checkbox" id="visitor" /> Add Visitor Count Badge</label><br/>
+  <label><input type="checkbox" id="trophies" /> Add GitHub Trophies</label><br/>
+  <label><input type="checkbox" id="langs" /> Add Most Used Languages</label>
+</section>
 
-    <label>LinkedIn URL</label>
-    <input type="text" id="linkedin" placeholder="https://linkedin.com/in/yourprofile" />
+<section id="preview">
+  <h2><span class="material-icons">preview</span> README Preview</h2>
+  <div class="button-row">
+    <button onclick="generateReadme()">Generate</button>
+    <button onclick="copyReadme()">Copy</button>
+    <button onclick="downloadReadme()">Download</button>
+  </div>
+  <div class="output" id="output">README.md content will appear here...</div>
+</section>
 
-    <label>Languages (comma separated)</label>
-    <input type="text" id="languages" placeholder="JavaScript, Python, Go" />
+<script>
+function showPage(id) {
+  document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
 
-    <label>Patreon Link</label>
-    <input type="text" id="patreon" placeholder="https://patreon.com/yourname" />
+function generateReadme() {
+  const name = document.getElementById('name').value;
+  const bioLines = document.getElementById('bio').value.trim().split('\n');
+  const email = document.getElementById('email').value;
+  const github = document.getElementById('github').value;
+  const twitter = document.getElementById('twitter').value;
+  const linkedin = document.getElementById('linkedin').value;
+  const languages = document.getElementById('languages').value.split(',').map(l => l.trim());
+  const patreon = document.getElementById('patreon').value;
+  const coffee = document.getElementById('coffee').value;
 
-    <label>BuyMeACoffee Link</label>
-    <input type="text" id="coffee" placeholder="https://buymeacoffee.com/yourname" />
+  const visitor = document.getElementById('visitor').checked;
+  const trophies = document.getElementById('trophies').checked;
+  const langs = document.getElementById('langs').checked;
 
-    <div class="button-row">
-      <button onclick="generateReadme()">Generate README</button>
-      <button onclick="copyReadme()">Copy to Clipboard</button>
-      <button onclick="downloadReadme()">Download README.md</button>
-    </div>
+  let readme = `# Hi, I'm ${name}\n\n`;
+  bioLines.forEach(line => readme += `- ${line}\n`);
 
-    <div class="output" id="output"></div>
-  </main>
+  readme += `\n## Contact Me\n`;
+  if (email) readme += `- Email: [${email}](mailto:${email})\n`;
+  if (github) readme += `- GitHub: [@${github}](https://github.com/${github})\n`;
+  if (twitter) readme += `- Twitter: [${twitter}](https://twitter.com/${twitter.replace('@', '')})\n`;
+  if (linkedin) readme += `- LinkedIn: [Profile](${linkedin})\n`;
 
-  <script>
-    function generateReadme() {
-      const name = document.getElementById('name').value;
-      const bioLines = document.getElementById('bio').value.trim().split('\n');
-      const email = document.getElementById('email').value;
-      const github = document.getElementById('github').value;
-      const twitter = document.getElementById('twitter').value;
-      const linkedin = document.getElementById('linkedin').value;
-      const languages = document.getElementById('languages').value.split(',').map(l => l.trim());
-      const patreon = document.getElementById('patreon').value;
-      const coffee = document.getElementById('coffee').value;
+  if (languages.length > 0 && languages[0] !== '') {
+    readme += `\n## Languages\n`;
+    languages.forEach(lang => readme += `- ${lang}\n`);
+  }
 
-      let readme = `# 👋 Hi, I'm ${name}\n\n`;
+  if (visitor || trophies || langs) {
+    readme += `\n## GitHub Stats\n`;
+    if (visitor && github)
+      readme += `![Visitor Badge](https://visitor-badge.laobi.icu/badge?page_id=${github}.${github})\n`;
+    if (trophies && github)
+      readme += `![Trophies](https://github-profile-trophy.vercel.app/?username=${github}&theme=flat&no-frame=true)\n`;
+    if (langs && github)
+      readme += `![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=${github}&layout=compact)\n`;
+  }
 
-      bioLines.forEach(line => {
-        readme += `- ${line}\n`;
-      });
+  if (patreon || coffee) {
+    readme += `\n## Support Me\n`;
+    if (patreon) readme += `- [Patreon](${patreon})\n`;
+    if (coffee) readme += `- [Buy Me a Coffee](${coffee})\n`;
+  }
 
-      readme += `\n## 📫 Contact Me\n`;
-      if (email) readme += `- Email: [${email}](mailto:${email})\n`;
-      if (github) readme += `- GitHub: [@${github}](https://github.com/${github})\n`;
-      if (twitter) readme += `- Twitter: [${twitter}](https://twitter.com/${twitter.replace('@', '')})\n`;
-      if (linkedin) readme += `- LinkedIn: [Profile](${linkedin})\n`;
+  document.getElementById("output").textContent = readme;
+}
 
-      if (languages.length > 0 && languages[0] !== '') {
-        readme += `\n## 🧠 Languages\n`;
-        languages.forEach(lang => {
-          readme += `- ${lang}\n`;
-        });
-      }
+function copyReadme() {
+  const text = document.getElementById('output').textContent;
+  navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
+}
 
-      if (patreon || coffee) {
-        readme += `\n## ☕ Support Me\n`;
-        if (patreon) readme += `- [Patreon](${patreon})\n`;
-        if (coffee) readme += `- [Buy Me a Coffee](${coffee})\n`;
-      }
+function downloadReadme() {
+  const blob = new Blob([document.getElementById('output').textContent], { type: 'text/markdown' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = "README.md";
+  link.click();
+}
+</script>
 
-      document.getElementById('output').textContent = readme;
-    }
-
-    function copyReadme() {
-      const text = document.getElementById('output').textContent;
-      navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
-    }
-
-    function downloadReadme() {
-      const blob = new Blob([document.getElementById('output').textContent], { type: 'text/markdown' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = "README.md";
-      link.click();
-    }
-  </script>
 </body>
 </html>
