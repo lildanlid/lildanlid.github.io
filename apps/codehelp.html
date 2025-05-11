@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coding AI Chatbot</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Additional custom styles */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .code-block {
+      font-family: 'Courier New', monospace;
+      background-color: #1e293b;
+      color: #86efac;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 8px 0;
+      tab-size: 2;
+    }
+    
+    .user-message {
+      background-color: #3b82f6;
+      color: white;
+      margin-left: auto;
+    }
+    
+    .ai-message {
+      background-color: #e5e7eb;
+      color: #111827;
+      margin-right: auto;
+    }
+    
+    .chat-container {
+      height: 600px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .message-container {
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f1f5f9;
+    }
+    
+    .message-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .message-container::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    
+    .message-container::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    function CodingChatbot() {
+      const [messages, setMessages] = useState([
+        {
+          id: '1',
+          text: 'Hello! I\'m your coding assistant. How can I help you today?',
+          sender: 'ai'
+        }
+      ]);
+      const [inputValue, setInputValue] = useState('');
+      const messagesEndRef = useRef(null);
+
+      const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      useEffect(() => {
+        scrollToBottom();
+      }, [messages]);
+
+      const handleSendMessage = () => {
+        if (!inputValue.trim()) return;
+
+        // Add user message
+        const userMessage = {
+          id: Date.now().toString(),
+          text: inputValue,
+          sender: 'user'
+        };
+
+        setMessages(prev => [...prev, userMessage]);
+        setInputValue('');
+
+        // Simulate AI response after a short delay
+        setTimeout(() => {
+          const aiResponse = generateAIResponse(inputValue);
+          setMessages(prev => [...prev, aiResponse]);
+        }, 500);
+      };
+
+      const generateAIResponse = (userInput) => {
+        const lowerInput = userInput.toLowerCase();
+
+        if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
+          return {
+            id: Date.now().toString(),
+            text: 'Hello! How can I assist you with your coding today?',
+            sender: 'ai'
+          };
+        } else if (lowerInput.includes('function') || lowerInput.includes('code')) {
+          return {
+            id: Date.now().toString(),
+            text: `// JavaScript function example\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\n// Usage:\nconsole.log(greet('World')); // Output: "Hello, World!"`,
+            sender: 'ai',
+            isCode: true
+          };
+        } else if (lowerInput.includes('react') || lowerInput.includes('component')) {
+          return {
+            id: Date.now().toString(),
+            text: `// React component example\nfunction MyComponent() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <p>You clicked {count} times</p>\n      <button onClick={() => setCount(count + 1)}>\n        Click me\n      </button>\n    </div>\n  );\n}`,
+            sender: 'ai',
+            isCode: true
+          };
+        } else if (lowerInput.includes('html') || lowerInput.includes('css')) {
+          return {
+            id: Date.now().toString(),
+            text: `<!-- HTML/CSS example -->\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    .container {\n      width: 100%;\n      max-width: 800px;\n      margin: 0 auto;\n      padding: 20px;\n    }\n    .btn {\n      background: #3b82f6;\n      color: white;\n      padding: 8px 16px;\n      border-radius: 4px;\n    }\n  </style>\n</head>\n<body>\n  <div class="container">\n    <h1>Welcome</h1>\n    <button class="btn">Click Me</button>\n  </div>\n</body>\n</html>`,
+            sender: 'ai',
+            isCode: true
+          };
+        } else if (lowerInput.includes('python')) {
+          return {
+            id: Date.now().toString(),
+            text: `# Python function example\ndef greet(name):\n    return f"Hello, {name}!"\n\n# Usage\nprint(greet("World"))  # Output: Hello, World!`,
+            sender: 'ai',
+            isCode: true
+          };
+        } else {
+          return {
+            id: Date.now().toString(),
+            text: 'I\'m not sure how to help with that. Could you provide more details about your coding question?',
+            sender: 'ai'
+          };
+        }
+      };
+
+      const formatMessage = (text, isCode) => {
+        if (!isCode) {
+          return text.split('\n').map((line, i) => (
+            <p key={i} className="mb-1">{line}</p>
+          ));
+        }
+        
+        return (
+          <pre className="code-block">
+            {text.split('\n').map((line, i) => (
+              <div key={i}>{line}</div>
+            ))}
+          </pre>
+        );
+      };
+
+      return (
+        <div className="flex flex-col w-full max-w-2xl chat-container bg-white rounded-lg overflow-hidden">
+          <div className="p-4 bg-blue-600 text-white">
+            <h1 className="text-xl font-bold">Coding AI Assistant</h1>
+          </div>
+
+          <div className="flex-1 p-4 overflow-y-auto message-container">
+            {messages.map(message => (
+              <div
+                key={message.id}
+                className={`mb-4 p-3 rounded-lg max-w-[80%] ${message.sender === 'user' ? 'user-message' : 'ai-message'}`}
+              >
+                {formatMessage(message.text, message.isCode)}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="p-4 border-t border-gray-200 bg-white">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Type your coding question..."
+                className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={handleSendMessage}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<CodingChatbot />);
+  </script>
+</body>
+</html>
