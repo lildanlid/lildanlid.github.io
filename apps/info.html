@@ -7,308 +7,265 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     :root {
-      --bg-color: #1e1e1e;
-      --text-color: #ffffff;
-      --accent-color: #2196f3;
-      --card-color: #2c2c2c;
-      --radius: 12px;
-    }
-    body.light {
-      --bg-color: #f0f0f0;
-      --text-color: #000000;
-      --card-color: #ffffff;
+      --bg: #1e1e1e;
+      --fg: #ffffff;
+      --card: #2c2c2c;
+      --accent: #2196f3;
     }
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      height: 100vh;
-      font-weight: bold;
+      margin: 0; font-family: sans-serif; background: var(--bg); color: var(--fg);
+      display: flex; height: 100vh; font-weight: bold;
+    }
+    body.light {
+      --bg: #f0f0f0; --fg: #000000; --card: #ffffff;
     }
     aside {
-      width: 200px;
-      background: var(--card-color);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      border-top-right-radius: var(--radius);
-      border-bottom-right-radius: var(--radius);
+      width: 200px; background: var(--card); padding: 20px;
+      display: flex; flex-direction: column;
     }
     aside button {
-      background: transparent;
-      border: none;
-      color: var(--text-color);
-      text-align: left;
-      font-weight: bold;
-      outline: none;
-    }
-    aside button:hover {
-      color: var(--text-color);
+      background: none; border: none; color: inherit;
+      text-align: left; margin: 5px 0; font-weight: bold; cursor: pointer;
     }
     aside button.selected {
-      color: var(--accent-color);
-      outline: none;
+      color: var(--accent);
     }
     .theme-toggle {
-      display: flex;
-      align-items: center;
-      margin-top: auto;
-      gap: 10px;
+      margin-top: auto; display: flex; align-items: center; gap: 10px;
     }
     .theme-toggle input {
-      width: 40px;
-      height: 20px;
-      appearance: none;
-      background: #888;
-      border-radius: 20px;
-      position: relative;
+      width: 40px; height: 20px; appearance: none;
+      background: #888; border-radius: 20px; position: relative;
     }
     .theme-toggle input::before {
-      content: '';
-      width: 18px;
-      height: 18px;
-      background: white;
-      border-radius: 50%;
-      position: absolute;
-      top: 1px;
-      left: 1px;
-      transition: transform 0.3s;
+      content: ''; width: 18px; height: 18px; background: white;
+      border-radius: 50%; position: absolute; top: 1px; left: 1px;
+      transition: 0.3s;
     }
-    .theme-toggle input:checked::before {
-      transform: translateX(20px);
-    }
-    .theme-toggle input:checked {
-      background: var(--accent-color);
-    }
+    .theme-toggle input:checked::before { transform: translateX(20px); }
+    .theme-toggle input:checked { background: var(--accent); }
     main {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      border-radius: var(--radius);
+      flex: 1; padding: 20px; overflow-y: auto;
     }
-    .app {
-      display: none;
-      background: var(--card-color);
-      padding: 15px;
-      border-radius: var(--radius);
-    }
-    .app.active {
-      display: block;
-    }
-    button {
-      background: var(--accent-color);
-      color: #fff;
-      border: none;
-      padding: 10px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s;
-    }
-    button:hover {
-      background: #1976d2;
-    }
-    .clock-folder {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.4s ease;
-      margin-left: 10px;
-    }
-    .clock-folder.active {
-      max-height: 500px;
-      margin-top: 8px;
-    }
-    .icon {
-      margin-right: 8px;
-    }
-    #calc-display {
-      width: 100%;
-      font-size: 1.2em;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: var(--radius);
-      background: var(--card-color);
-      color: var(--text-color);
-      border: 1px solid var(--accent-color);
-    }
-    #calc-history {
-      background: var(--card-color);
-      padding: 10px;
-      border: 1px solid #444;
-      border-radius: var(--radius);
-      margin-bottom: 10px;
-      font-size: 0.9em;
-      white-space: pre-line;
-    }
-    .calc-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
+    .app { display: none; }
+    .app.active { display: block; }
     .weather-box {
-      background: var(--card-color);
-      border: 1px solid #444;
-      border-radius: var(--radius);
-      padding: 10px;
-      margin-bottom: 10px;
+      background: var(--card); padding: 10px; margin-bottom: 10px; border-radius: 10px;
+    }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      aside { flex-direction: row; overflow-x: auto; width: 100%; }
     }
   </style>
 </head>
 <body class="dark">
   <aside>
-    <button onclick="switchApp('calculator', this)"><i class="fa-solid fa-calculator icon"></i>Calculator</button>
-    <button onclick="toggleClockFolder(this)"><i class="fa-solid fa-clock icon"></i>Clock</button>
-    <div id="clock-folder" class="clock-folder">
-      <button onclick="switchApp('clock', this)"><i class="fa-solid fa-clock-rotate-left icon"></i>Live Clock</button>
-      <button onclick="switchApp('timer', this)"><i class="fa-solid fa-hourglass-half icon"></i>Timer</button>
-      <button onclick="switchApp('stopwatch', this)"><i class="fa-solid fa-stopwatch icon"></i>Stopwatch</button>
-      <button onclick="switchApp('countdown', this)"><i class="fa-solid fa-calendar-check icon"></i>Countdown</button>
-      <button onclick="switchApp('alarm', this)"><i class="fa-solid fa-bell icon"></i>Alarm</button>
+    <button onclick="switchApp('calculator', this)">Calculator</button>
+    <button onclick="toggleClockFolder(this)">Clock</button>
+    <div id="clock-folder" style="display:none; margin-left:10px;">
+      <button onclick="switchApp('clock', this)">Live Clock</button>
+      <button onclick="switchApp('timer', this)">Timer</button>
+      <button onclick="switchApp('stopwatch', this)">Stopwatch</button>
+      <button onclick="switchApp('countdown', this)">Countdown</button>
+      <button onclick="switchApp('alarm', this)">Alarm</button>
     </div>
-    <button onclick="switchApp('weather', this)"><i class="fa-solid fa-cloud-sun icon"></i>Weather</button>
-    <button onclick="switchApp('speed', this)"><i class="fa-solid fa-tachometer-alt icon"></i>Speed Test</button>
+    <button onclick="switchApp('weather', this)">Weather</button>
+    <button onclick="switchApp('speed', this)">Speed Test</button>
     <div class="theme-toggle">
-      <label for="theme-switch">Dark Mode</label>
-      <input type="checkbox" id="theme-switch" checked onchange="toggleTheme()" />
+      <label>Dark Mode</label>
+      <input type="checkbox" id="theme-switch" checked onchange="toggleTheme()"/>
     </div>
   </aside>
   <main>
     <div id="calculator" class="app active">
       <h2>Calculator</h2>
-      <div id="calc-history"></div>
-      <input type="text" id="calc-display" readonly />
-      <div class="calc-grid">
+      <div id="calc-history" style="white-space:pre-wrap;"></div>
+      <input type="text" id="calc-display" readonly style="width:100%; margin-bottom:10px;" />
+      <div>
         <button onclick="appendCalc('1')">1</button>
         <button onclick="appendCalc('2')">2</button>
         <button onclick="appendCalc('3')">3</button>
-        <button onclick="appendCalc('+')">+</button>
+        <button onclick="appendCalc('+')">+</button><br>
         <button onclick="appendCalc('4')">4</button>
         <button onclick="appendCalc('5')">5</button>
         <button onclick="appendCalc('6')">6</button>
-        <button onclick="appendCalc('-')">-</button>
+        <button onclick="appendCalc('-')">-</button><br>
         <button onclick="appendCalc('7')">7</button>
         <button onclick="appendCalc('8')">8</button>
         <button onclick="appendCalc('9')">9</button>
-        <button onclick="appendCalc('*')">*</button>
+        <button onclick="appendCalc('*')">*</button><br>
         <button onclick="appendCalc('0')">0</button>
         <button onclick="appendCalc('.')">.</button>
         <button onclick="calculate()">=</button>
         <button onclick="appendCalc('/')">/</button>
-        <button onclick="clearCalc()" style="grid-column: span 4;">Clear</button>
+        <button onclick="clearCalc()">Clear</button>
       </div>
     </div>
-
-    <div id="weather" class="app">
-      <h2>Weather</h2>
-      <input type="text" id="city" placeholder="Enter city" />
-      <button onclick="getWeather()">Get Weather</button>
-      <div id="weather-result" class="weather-box"></div>
-      <div id="weather-forecast"></div>
-    </div>
+    <div id="clock" class="app"><h2>Clock</h2><p id="clock-time">--:--:--</p></div>
+    <div id="timer" class="app"><h2>Timer</h2><input id="timer-seconds" type="number"><button onclick="startTimer()">Start</button><p id="timer-display"></p></div>
+    <div id="stopwatch" class="app"><h2>Stopwatch</h2><p id="stopwatch-display">0.0</p><button onclick="startStopwatch()">Start</button><button onclick="stopStopwatch()">Stop</button><button onclick="resetStopwatch()">Reset</button></div>
+    <div id="countdown" class="app"><h2>Countdown</h2><input type="datetime-local" id="countdown-time"><button onclick="startCountdown()">Start</button><p id="countdown-display"></p></div>
+    <div id="alarm" class="app"><h2>Alarm</h2><input type="time" id="alarm-time"><input type="file" id="alarm-sound" accept="audio/*"><button onclick="setAlarm()">Set</button><p id="alarm-status"></p></div>
+    <div id="weather" class="app"><h2>Weather</h2><input id="city"><button onclick="getWeather()">Get Weather</button><div id="weather-result"></div><div id="weather-forecast"></div></div>
+    <div id="speed" class="app"><h2>Speed Test</h2><button onclick="testSpeed()">Test</button><p id="speed-result">Speed: --</p></div>
 
       </main>
   <script>
-    // App Switching & Tab Persistence
     function switchApp(appId, el) {
       document.querySelectorAll('.app').forEach(app => app.classList.remove('active'));
       document.getElementById(appId).classList.add('active');
-
-      document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('selected'));
+      document.querySelectorAll('aside button').forEach(b => b.classList.remove('selected'));
       if (el) el.classList.add('selected');
-
       localStorage.setItem('lastTab', appId);
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const last = localStorage.getItem('lastTab');
-      if (last) switchApp(last);
-    });
+    function toggleClockFolder(el) {
+      const folder = document.getElementById('clock-folder');
+      folder.style.display = folder.style.display === 'none' ? 'block' : 'none';
+    }
 
-    // Theme Switching
+    window.onload = () => {
+      const last = localStorage.getItem('lastTab');
+      if (last && document.getElementById(last)) switchApp(last, null);
+      updateClock();
+    };
+
     function toggleTheme() {
       document.body.classList.toggle('light');
       document.body.classList.toggle('dark');
-      document.getElementById('theme-switch').checked = document.body.classList.contains('dark');
     }
 
-    // Clock Folder Toggle
-    function toggleClockFolder(el) {
-      const folder = document.getElementById('clock-folder');
-      folder.classList.toggle('active');
-      el.classList.toggle('selected');
-    }
-
-    document.addEventListener('click', (e) => {
-      const folder = document.getElementById('clock-folder');
-      if (!folder.contains(e.target) && !e.target.closest('button')?.innerText.includes('Clock')) {
-        folder.classList.remove('active');
-        document.querySelectorAll('aside button').forEach(btn => {
-          if (btn.innerText.includes('Clock')) btn.classList.remove('selected');
-        });
-      }
-    });
-
-    // Calculator Functions
+    // Calculator
     let calcExpression = '';
-    const calcDisplay = document.getElementById('calc-display');
-    const calcHistory = document.getElementById('calc-history');
-
     function appendCalc(val) {
       calcExpression += val;
-      calcDisplay.value = calcExpression;
+      document.getElementById('calc-display').value = calcExpression;
     }
-
     function calculate() {
       try {
         const result = eval(calcExpression);
-        calcHistory.textContent += `${calcExpression} = ${result}\n`;
-        calcDisplay.value = result;
+        document.getElementById('calc-history').textContent += `${calcExpression} = ${result}\n`;
+        document.getElementById('calc-display').value = result;
         calcExpression = result.toString();
       } catch {
-        calcDisplay.value = "Error";
+        document.getElementById('calc-display').value = 'Error';
+      }
+    }
+    function clearCalc() {
+      calcExpression = '';
+      document.getElementById('calc-display').value = '';
+    }
+
+    // Clock
+    function updateClock() {
+      setInterval(() => {
+        document.getElementById('clock-time').textContent = new Date().toLocaleTimeString();
+      }, 1000);
+    }
+
+    // Timer
+    let timerInterval;
+    function startTimer() {
+      let seconds = parseInt(document.getElementById('timer-seconds').value);
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        document.getElementById('timer-display').textContent = `Time left: ${seconds}s`;
+        if (--seconds < 0) clearInterval(timerInterval);
+      }, 1000);
+    }
+
+    // Stopwatch
+    let swTime = 0, swInterval;
+    function startStopwatch() {
+      clearInterval(swInterval);
+      swInterval = setInterval(() => {
+        swTime += 0.1;
+        document.getElementById('stopwatch-display').textContent = swTime.toFixed(1);
+      }, 100);
+    }
+    function stopStopwatch() {
+      clearInterval(swInterval);
+    }
+    function resetStopwatch() {
+      swTime = 0;
+      document.getElementById('stopwatch-display').textContent = '0.0';
+    }
+
+    // Countdown
+    let countdownInterval;
+    function startCountdown() {
+      clearInterval(countdownInterval);
+      const target = new Date(document.getElementById('countdown-time').value);
+      countdownInterval = setInterval(() => {
+        const now = new Date();
+        const diff = target - now;
+        if (diff <= 0) {
+          clearInterval(countdownInterval);
+          document.getElementById('countdown-display').textContent = "Time is up!";
+          return;
+        }
+        const mins = Math.floor(diff / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        document.getElementById('countdown-display').textContent = `${mins}m ${secs}s`;
+      }, 1000);
+    }
+
+    // Alarm
+    let alarmAudio = new Audio();
+    function setAlarm() {
+      const alarmTime = document.getElementById('alarm-time').value;
+      const file = document.getElementById('alarm-sound').files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => alarmAudio.src = e.target.result;
+        reader.readAsDataURL(file);
+      }
+      document.getElementById('alarm-status').textContent = "Alarm set!";
+      setInterval(() => {
+        const now = new Date();
+        const nowTime = now.toTimeString().slice(0,5);
+        if (nowTime === alarmTime) alarmAudio.play();
+      }, 1000);
+    }
+
+    // Weather
+    async function getWeather() {
+      const city = document.getElementById('city').value;
+      try {
+        const res = await fetch(`https://wttr.in/${city}?format=j1`);
+        const data = await res.json();
+        const current = data.current_condition[0];
+        document.getElementById('weather-result').innerHTML = `
+          <div class="weather-box">
+            Temp: ${current.temp_C}°C<br>
+            Feels Like: ${current.FeelsLikeC}°C<br>
+            Wind: ${current.windspeedKmph} km/h<br>
+            Condition: ${current.weatherDesc[0].value}
+          </div>`;
+        const forecastHTML = data.weather.map(day => `
+          <div class="weather-box">
+            <strong>${day.date}</strong><br>
+            Max: ${day.maxtempC}°C<br>
+            Min: ${day.mintempC}°C<br>
+            ${day.hourly[4].weatherDesc[0].value}
+          </div>
+        `).join("");
+        document.getElementById('weather-forecast').innerHTML = forecastHTML;
+      } catch {
+        document.getElementById('weather-result').textContent = "Error fetching weather.";
       }
     }
 
-    function clearCalc() {
-      calcExpression = '';
-      calcDisplay.value = '';
-    }
-
-    // Weather API
-    async function getWeather() {
-      const city = document.getElementById('city').value;
-      const url = `https://wttr.in/${city}?format=j1`;
+    // Speed Test
+    async function testSpeed() {
+      const start = performance.now();
       try {
-        const res = await fetch(url);
-        const data = await res.json();
-        const current = data.current_condition[0];
-        const forecast = data.weather;
-
-        document.getElementById('weather-result').innerHTML = `
-          <strong>Current:</strong><br>
-          Temp: ${current.temp_C}°C<br>
-          Feels Like: ${current.FeelsLikeC}°C<br>
-          Wind: ${current.windspeedKmph} km/h<br>
-          Condition: ${current.weatherDesc[0].value}
-        `;
-
-        const forecastHTML = forecast.map(day => `
-          <div class="weather-box">
-            <strong>${day.date}</strong><br>
-            Max: ${day.maxtempC}°C, Min: ${day.mintempC}°C<br>
-            Condition: ${day.hourly[4].weatherDesc[0].value}
-          </div>
-        `).join("");
-
-        document.getElementById('weather-forecast').innerHTML = forecastHTML;
-
-      } catch (err) {
-        document.getElementById('weather-result').textContent = "Error fetching weather.";
+        await fetch("https://via.placeholder.com/1000x1000.png?rand=" + Math.random(), { cache: "no-store" });
+        const end = performance.now();
+        const speed = (0.1 / ((end - start) / 1000)).toFixed(2);
+        document.getElementById('speed-result').textContent = `Speed: ${speed} MB/s`;
+      } catch {
+        document.getElementById('speed-result').textContent = "Failed.";
       }
     }
   </script>
