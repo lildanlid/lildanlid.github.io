@@ -138,6 +138,42 @@
       border-radius: 4px;
       margin-bottom: 8px;
     }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background-color: #3b82f6;
+      color: white;
+      border-radius: 50%;
+      margin-right: 8px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -165,6 +201,7 @@
       const [isLoading, setIsLoading] = useState(false);
       const [showApiInput, setShowApiInput] = useState(!savedApiKey);
       const [error, setError] = useState('');
+      const [showTutorial, setShowTutorial] = useState(false);
       const messagesEndRef = useRef(null);
       const fileInputRef = useRef(null);
       const apiInputRef = useRef(null);
@@ -351,6 +388,7 @@
         if (apiKey.trim()) {
           setShowApiInput(false);
           localStorage.setItem('chatgpt-api-key', apiKey);
+          setError('');
         } else {
           setError('Please enter a valid API key');
         }
@@ -375,21 +413,108 @@
         }
       };
 
+      const TutorialModal = () => {
+        return (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">How to Get Your OpenAI API Key</h2>
+                <button 
+                  onClick={() => setShowTutorial(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <span className="step-number">1</span>
+                  <div>
+                    <h3 className="font-semibold">Go to OpenAI Platform</h3>
+                    <p>Visit <a href="https://platform.openai.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">platform.openai.com</a> and log in to your account.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <span className="step-number">2</span>
+                  <div>
+                    <h3 className="font-semibold">Navigate to API Keys</h3>
+                    <p>Click on your profile picture in the top-right corner, then select "View API keys".</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <span className="step-number">3</span>
+                  <div>
+                    <h3 className="font-semibold">Create a New Key</h3>
+                    <p>Click "Create new secret key" button. Give it a name if you want.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <span className="step-number">4</span>
+                  <div>
+                    <h3 className="font-semibold">Copy Your Key</h3>
+                    <p>Copy the API key that appears (you won't be able to see it again).</p>
+                    <div className="bg-yellow-100 p-2 rounded mt-2 text-sm">
+                      <strong>Important:</strong> Never share your API key with anyone or commit it to public repositories.
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <span className="step-number">5</span>
+                  <div>
+                    <h3 className="font-semibold">Paste It Here</h3>
+                    <p>Return to this page and paste your API key in the input field.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <button
+                  onClick={() => setShowTutorial(false)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Got It!
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
       return (
         <div className="flex flex-col w-full max-w-2xl chat-container bg-white rounded-lg overflow-hidden">
+          {showTutorial && <TutorialModal />}
+          
           <div className="p-4 bg-blue-600 text-white flex justify-between items-center">
             <div>
               <h1 className="text-xl font-bold">ChatGPT Coding Assistant</h1>
               <p className="text-sm opacity-80">Powered by OpenAI API</p>
             </div>
-            {!showApiInput && apiKey && (
+            <div className="flex gap-2">
+              {!showApiInput && apiKey && (
+                <button 
+                  onClick={handleChangeApiKey}
+                  className="text-sm bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded"
+                >
+                  Change API Key
+                </button>
+              )}
               <button 
-                onClick={handleChangeApiKey}
-                className="text-sm bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded"
+                onClick={() => setShowTutorial(true)}
+                className="text-sm bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded flex items-center gap-1"
               >
-                Change API Key
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1.17a3.001 3.001 0 01-1.995-2.33H5a1 1 0 010-2h.058A3 3 0 017 7h1a1 1 0 100-2H7z" clipRule="evenodd" />
+                </svg>
+                Help
               </button>
-            )}
+            </div>
           </div>
 
           {showApiInput && (
@@ -410,16 +535,11 @@
                 >
                   Save
                 </button>
-                <a 
-                  href="https://platform.openai.com/api-keys" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="ml-2 text-blue-600 hover:underline text-sm whitespace-nowrap"
-                >
-                  Get API key
-                </a>
               </div>
               {error && <div className="error-message mt-2">{error}</div>}
+              <div className="mt-2 text-sm text-gray-600">
+                Need an API key? <button onClick={() => setShowTutorial(true)} className="text-blue-600 hover:underline">Click here for help</button>
+              </div>
             </div>
           )}
 
@@ -427,6 +547,14 @@
             {error && !isLoading && (
               <div className="error-message mb-4">
                 {error}
+                {error.includes('Invalid API key') && (
+                  <button 
+                    onClick={handleChangeApiKey}
+                    className="ml-2 text-blue-600 hover:underline"
+                  >
+                    Change API Key
+                  </button>
+                )}
               </div>
             )}
             {messages.map(message => (
@@ -505,4 +633,4 @@
     root.render(<CodingChatbot />);
   </script>
 </body>
-</html
+</html>
