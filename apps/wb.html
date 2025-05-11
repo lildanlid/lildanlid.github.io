@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Simple Website Builder</title>
+  <title>Advanced Website Builder</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -39,8 +39,16 @@
     .preview-box {
       background: white;
       padding: 15px;
-      min-height: 100px;
+      min-height: 200px;
       border: 1px solid #ccc;
+      position: relative;
+    }
+
+    .draggable {
+      display: inline-block;
+      position: absolute;
+      cursor: move;
+      user-select: none;
     }
 
     textarea {
@@ -51,7 +59,7 @@
   </style>
 </head>
 <body>
-  <h1>Simple Website Builder</h1>
+  <h1>Advanced Website Builder</h1>
 
   <div class="builder">
     <label>Element Type:</label>
@@ -65,11 +73,24 @@
     <label>Content / URL:</label>
     <input type="text" id="element-content" placeholder="Enter text or image URL">
 
+    <label>Text Color:</label>
+    <input type="color" id="text-color" value="#000000">
+
+    <label>Button Style:</label>
+    <select id="button-style">
+      <option value="default">Default</option>
+      <option value="rounded">Rounded</option>
+      <option value="outline">Outline</option>
+    </select>
+
     <button onclick="addElement()">Add Element</button>
     <button onclick="generateCode()">Generate Code</button>
+    <button onclick="saveProject()">Save</button>
+    <button onclick="loadProject()">Load</button>
+    <button onclick="clearBuilder()">Clear</button>
   </div>
 
-  <h2>Live Preview:</h2>
+  <h2>Live Preview (Drag to Move):</h2>
   <div id="preview" class="preview-box"></div>
 
   <h2>Generated HTML Code:</h2>
@@ -78,41 +99,120 @@
   <script>
     const preview = document.getElementById("preview");
     const output = document.getElementById("output");
-    let elements = [];
+    let elementData = [];
 
-    function addElement() {
-      const type = document.getElementById("element-type").value;
-      const content = document.getElementById("element-content").value;
+    function addElement(data = null) {
+      const type = data?.type || document.getElementById("element-type").value;
+      const content = data?.content || document.getElementById("element-content").value;
+      const color = data?.color || document.getElementById("text-color").value;
+      const btnStyle = data?.buttonStyle || document.getElementById("button-style").value;
+      const top = data?.top || "10px";
+      const left = data?.left || "10px";
 
-      let html = "";
-
+      let el = document.createElement(type === "img" ? "img" : type);
       if (type === "img") {
-        html = `<img src="${content}" alt="Image" />`;
-      } else if (type === "button") {
-        html = `<button>${content}</button>`;
+        el.src = content;
+        el.alt = "Image";
+        el.style.width = "200px";
       } else {
-        html = `<${type}>${content}</${type}>`;
+        el.textContent = content;
+        el.style.color = color;
       }
 
-      elements.push(html);
-      preview.innerHTML += html;
+      if (type === "button") {
+        el.style.color = color;
+        if (btnStyle === "rounded") {
+          el.style.borderRadius = "15px";
+          el.style.padding = "10px 20px";
+        } else if (btnStyle === "outline") {
+          el.style.background = "transparent";
+          el.style.border = `2px solid ${color}`;
+        }
+      }
+
+      el.classList.add("draggable");
+      el.style.top = top;
+      el.style.left = left;
+      el.setAttribute("draggable", "false");
+      makeDraggable(el);
+      preview.appendChild(el);
+
+      if (!data) {
+        elementData.push({ type, content, color, buttonStyle: btnStyle, top, left });
+      }
+    }
+
+    function makeDraggable(el) {
+      let offsetX, offsetY;
+
+      el.addEventListener("mousedown", (e) => {
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+
+        function moveAt(ev) {
+          el.style.left = (ev.pageX - preview.offsetLeft - offsetX) + "px";
+          el.style.top = (ev.pageY - preview.offsetTop - offsetY) + "px";
+        }
+
+        function onMouseMove(ev) {
+          moveAt(ev);
+        }
+
+        document.addEventListener("mousemove", onMouseMove);
+
+        el.addEventListener("mouseup", () => {
+          document.removeEventListener("mousemove", onMouseMove);
+
+          // update saved position
+          const index = Array.from(preview.children).indexOf(el);
+          if (elementData[index]) {
+            elementData[index].top = el.style.top;
+            elementData[index].left = el.style.left;
+          }
+        }, { once: true });
+      });
     }
 
     function generateCode() {
-      const fullHTML = `
+      let html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Generated Site</title>
+  <style>
+    body { position: relative; }
+    .draggable { position: absolute; }
+  </style>
 </head>
 <body>
-  ${elements.join("\n  ")}
-</body>
-</html>
-`.trim();
+`;
 
-      output.value = fullHTML;
+      preview.querySelectorAll('.draggable').forEach(el => {
+        html += `  ${el.outerHTML}\n`;
+      });
+
+      html += `</body>\n</html>`;
+      output.value = html.trim();
+    }
+
+    function saveProject() {
+      localStorage.setItem("websiteBuilderData", JSON.stringify(elementData));
+      alert("Project saved!");
+    }
+
+    function loadProject() {
+      const saved = localStorage.getItem("websiteBuilderData");
+      if (!saved) return alert("No saved project found.");
+      clearBuilder();
+      elementData = JSON.parse(saved);
+      elementData.forEach(el => addElement(el));
+    }
+
+    function clearBuilder() {
+      preview.innerHTML = "";
+      output.value = "";
+      elementData = [];
     }
   </script>
 </body>
