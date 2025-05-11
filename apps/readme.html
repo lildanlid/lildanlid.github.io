@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GitHub ReadMe Inspired Website</title>
+  <title>README Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: sans-serif;
       margin: 0;
-      background: #f4f4f4;
+      padding: 0;
+      background: #f5f5f5;
       color: #333;
     }
     header {
@@ -17,135 +18,134 @@
       padding: 1rem;
       text-align: center;
     }
-    nav {
-      background: #333;
-      color: white;
-      padding: 0.5rem;
+    main {
       display: flex;
-      justify-content: center;
-      gap: 20px;
+      flex-direction: column;
+      padding: 1rem;
+      max-width: 900px;
+      margin: auto;
     }
-    nav a {
-      color: white;
-      text-decoration: none;
+    textarea, input {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      font-size: 1rem;
     }
-    section {
-      padding: 2rem;
-      display: none;
+    label {
+      font-weight: bold;
     }
-    section.active {
-      display: block;
-    }
-    .rotating-text {
-      font-size: 1.5rem;
-      margin: 1rem 0;
-      height: 2rem;
-      overflow: hidden;
-    }
-    .toggle-btn {
+    .output {
+      background: #eee;
+      padding: 1rem;
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
       margin-top: 1rem;
     }
-    .donation a {
-      display: inline-block;
-      margin-right: 10px;
-      text-decoration: none;
-      background: #ff424d;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
+    .button-row {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Hi 👋, I'm YourNameHere</h1>
-    <div class="rotating-text" id="rotatingText"></div>
-    <button class="toggle-btn" onclick="toggleRotation()">Toggle Animation</button>
+    <h1>📝 GitHub README Generator</h1>
   </header>
+  <main>
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Your Name" />
 
-  <nav>
-    <a href="#" onclick="showSection('contact')">Contact</a>
-    <a href="#" onclick="showSection('socials')">Socials</a>
-    <a href="#" onclick="showSection('languages')">Languages</a>
-    <a href="#" onclick="showSection('donation')">Donate</a>
-  </nav>
+    <label>Bio Lines (One per line)</label>
+    <textarea id="bio" rows="4" placeholder="I love coding!\nOpen source enthusiast"></textarea>
 
-  <section id="contact" class="active">
-    <h2>Contact Me</h2>
-    <p>Email: <a href="mailto:youremail@example.com">youremail@example.com</a></p>
-    <p>Message me on GitHub: <a href="https://github.com/yourgithub" target="_blank">@yourgithub</a></p>
-  </section>
+    <label>Contact Email</label>
+    <input type="email" id="email" placeholder="you@example.com" />
 
-  <section id="socials">
-    <h2>My Socials</h2>
-    <ul>
-      <li><a href="https://twitter.com/yourhandle" target="_blank">Twitter</a></li>
-      <li><a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a></li>
-      <li><a href="https://github.com/yourgithub" target="_blank">GitHub</a></li>
-    </ul>
-  </section>
+    <label>GitHub Username</label>
+    <input type="text" id="github" placeholder="yourgithub" />
 
-  <section id="languages">
-    <h2>Languages I Code In</h2>
-    <ul>
-      <li>JavaScript</li>
-      <li>Python</li>
-      <li>HTML/CSS</li>
-      <li>Java</li>
-      <li>C++</li>
-    </ul>
-  </section>
+    <label>Twitter Handle</label>
+    <input type="text" id="twitter" placeholder="@yourhandle" />
 
-  <section id="donation">
-    <h2>Support Me</h2>
-    <p>If you like my work, consider donating ❤️</p>
-    <div class="donation">
-      <a href="https://patreon.com/yourpatreon" target="_blank">Patreon</a>
-      <a href="https://buymeacoffee.com/yourcoffee" target="_blank">Buy Me a Coffee</a>
+    <label>LinkedIn URL</label>
+    <input type="text" id="linkedin" placeholder="https://linkedin.com/in/yourprofile" />
+
+    <label>Languages (comma separated)</label>
+    <input type="text" id="languages" placeholder="JavaScript, Python, Go" />
+
+    <label>Patreon Link</label>
+    <input type="text" id="patreon" placeholder="https://patreon.com/yourname" />
+
+    <label>BuyMeACoffee Link</label>
+    <input type="text" id="coffee" placeholder="https://buymeacoffee.com/yourname" />
+
+    <div class="button-row">
+      <button onclick="generateReadme()">Generate README</button>
+      <button onclick="copyReadme()">Copy to Clipboard</button>
+      <button onclick="downloadReadme()">Download README.md</button>
     </div>
-  </section>
+
+    <div class="output" id="output"></div>
+  </main>
 
   <script>
-    const texts = [
-      "I build web apps 🚀",
-      "I love open source ❤️",
-      "JavaScript is my jam 🧠",
-      "Let's create something cool!"
-    ];
-    let currentText = 0;
-    let interval = null;
-    const el = document.getElementById("rotatingText");
+    function generateReadme() {
+      const name = document.getElementById('name').value;
+      const bioLines = document.getElementById('bio').value.trim().split('\n');
+      const email = document.getElementById('email').value;
+      const github = document.getElementById('github').value;
+      const twitter = document.getElementById('twitter').value;
+      const linkedin = document.getElementById('linkedin').value;
+      const languages = document.getElementById('languages').value.split(',').map(l => l.trim());
+      const patreon = document.getElementById('patreon').value;
+      const coffee = document.getElementById('coffee').value;
 
-    function showText() {
-      el.innerText = texts[currentText];
-      currentText = (currentText + 1) % texts.length;
-    }
+      let readme = `# 👋 Hi, I'm ${name}\n\n`;
 
-    function startRotation() {
-      showText();
-      interval = setInterval(showText, 2000);
-    }
+      bioLines.forEach(line => {
+        readme += `- ${line}\n`;
+      });
 
-    function stopRotation() {
-      clearInterval(interval);
-      interval = null;
-    }
+      readme += `\n## 📫 Contact Me\n`;
+      if (email) readme += `- Email: [${email}](mailto:${email})\n`;
+      if (github) readme += `- GitHub: [@${github}](https://github.com/${github})\n`;
+      if (twitter) readme += `- Twitter: [${twitter}](https://twitter.com/${twitter.replace('@', '')})\n`;
+      if (linkedin) readme += `- LinkedIn: [Profile](${linkedin})\n`;
 
-    function toggleRotation() {
-      if (interval) {
-        stopRotation();
-      } else {
-        startRotation();
+      if (languages.length > 0 && languages[0] !== '') {
+        readme += `\n## 🧠 Languages\n`;
+        languages.forEach(lang => {
+          readme += `- ${lang}\n`;
+        });
       }
+
+      if (patreon || coffee) {
+        readme += `\n## ☕ Support Me\n`;
+        if (patreon) readme += `- [Patreon](${patreon})\n`;
+        if (coffee) readme += `- [Buy Me a Coffee](${coffee})\n`;
+      }
+
+      document.getElementById('output').textContent = readme;
     }
 
-    function showSection(id) {
-      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
+    function copyReadme() {
+      const text = document.getElementById('output').textContent;
+      navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
     }
 
-    // Start animation by default
-    startRotation();
+    function downloadReadme() {
+      const blob = new Blob([document.getElementById('output').textContent], { type: 'text/markdown' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "README.md";
+      link.click();
+    }
   </script>
 </body>
 </html>
