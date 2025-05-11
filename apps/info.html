@@ -10,6 +10,7 @@
       --text-color: #ffffff;
       --accent-color: #4caf50;
       --card-color: #2c2c2c;
+      --radius: 12px;
     }
     body.light {
       --bg-color: #f0f0f0;
@@ -30,6 +31,8 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
+      border-top-right-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
     }
     aside button {
       margin: 10px 0;
@@ -38,6 +41,7 @@
       color: white;
       border: none;
       cursor: pointer;
+      border-radius: var(--radius);
     }
     aside button:hover {
       background: #66bb6a;
@@ -46,9 +50,13 @@
       flex: 1;
       padding: 20px;
       overflow-y: auto;
+      border-radius: var(--radius);
     }
     .app {
       display: none;
+      background: var(--card-color);
+      padding: 15px;
+      border-radius: var(--radius);
     }
     .active {
       display: block;
@@ -59,12 +67,23 @@
       color: var(--text-color);
       border: 1px solid var(--accent-color);
     }
-    input, select {
+    input, select, textarea {
       padding: 8px;
       margin-top: 5px;
       background: var(--card-color);
       color: var(--text-color);
       border: 1px solid #ccc;
+      border-radius: var(--radius);
+    }
+    .dropdown {
+      margin-top: 10px;
+    }
+    .clock-subapp {
+      display: none;
+      margin-top: 10px;
+    }
+    .clock-subapp.active {
+      display: block;
     }
   </style>
 </head>
@@ -102,10 +121,46 @@
       </div>
     </div>
 
-    <!-- Clock -->
+    <!-- Clock with Dropdown Options -->
     <div id="clock" class="app">
-      <h2>Current Time</h2>
-      <p id="clock-time">--:--:--</p>
+      <h2>Clock & Time Tools</h2>
+      <select class="dropdown" onchange="switchClockSubApp(this.value)">
+        <option value="clock-show">Clock</option>
+        <option value="timer">Timer</option>
+        <option value="stopwatch">Stopwatch</option>
+        <option value="countdown">Countdown</option>
+        <option value="alarm">Alarm</option>
+      </select>
+
+      <div id="clock-show" class="clock-subapp active">
+        <p id="clock-time">--:--:--</p>
+      </div>
+
+      <div id="timer" class="clock-subapp">
+        <p>Timer: <input type="number" id="timer-seconds" placeholder="Seconds" /> 
+        <button onclick="startTimer()">Start</button></p>
+        <p id="timer-display"></p>
+      </div>
+
+      <div id="stopwatch" class="clock-subapp">
+        <p id="stopwatch-display">0.00</p>
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="stopStopwatch()">Stop</button>
+        <button onclick="resetStopwatch()">Reset</button>
+      </div>
+
+      <div id="countdown" class="clock-subapp">
+        <p>Countdown to: <input type="datetime-local" id="countdown-time" />
+        <button onclick="startCountdown()">Start</button></p>
+        <p id="countdown-display"></p>
+      </div>
+
+      <div id="alarm" class="clock-subapp">
+        <p>Set Alarm Time: <input type="time" id="alarm-time" /></p>
+        <p>Upload Alarm Sound: <input type="file" id="alarm-sound" accept="audio/*" /></p>
+        <button onclick="setAlarm()">Set Alarm</button>
+        <p id="alarm-status"></p>
+      </div>
     </div>
 
     <!-- Weather -->
@@ -125,13 +180,11 @@
   </main>
 
   <script>
-    // Sidebar App Switching
     function switchApp(appId) {
       document.querySelectorAll('.app').forEach(app => app.classList.remove('active'));
       document.getElementById(appId).classList.add('active');
     }
 
-    // Theme Toggle
     function toggleTheme() {
       document.body.classList.toggle('light');
       document.body.classList.toggle('dark');
@@ -165,7 +218,84 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Weather Fetching
+    function switchClockSubApp(id) {
+      document.querySelectorAll('.clock-subapp').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Timer
+    let timerInterval;
+    function startTimer() {
+      let seconds = parseInt(document.getElementById('timer-seconds').value);
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        document.getElementById('timer-display').textContent = `Time left: ${seconds}s`;
+        if (seconds <= 0) clearInterval(timerInterval);
+        seconds--;
+      }, 1000);
+    }
+
+    // Stopwatch
+    let stopwatchInterval;
+    let stopwatchTime = 0;
+    function startStopwatch() {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = setInterval(() => {
+        stopwatchTime += 0.1;
+        document.getElementById('stopwatch-display').textContent = stopwatchTime.toFixed(1);
+      }, 100);
+    }
+    function stopStopwatch() {
+      clearInterval(stopwatchInterval);
+    }
+    function resetStopwatch() {
+      stopwatchTime = 0;
+      document.getElementById('stopwatch-display').textContent = '0.0';
+    }
+
+    // Countdown
+    let countdownInterval;
+    function startCountdown() {
+      clearInterval(countdownInterval);
+      const target = new Date(document.getElementById('countdown-time').value);
+      countdownInterval = setInterval(() => {
+        const now = new Date();
+        const diff = target - now;
+        if (diff <= 0) {
+          clearInterval(countdownInterval);
+          document.getElementById('countdown-display').textContent = 'Time is up!';
+          return;
+        }
+        const mins = Math.floor(diff / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        document.getElementById('countdown-display').textContent = `${mins}m ${secs}s`;
+      }, 1000);
+    }
+
+    // Alarm
+    let alarmSound = new Audio();
+    function setAlarm() {
+      const alarmTime = document.getElementById('alarm-time').value;
+      const file = document.getElementById('alarm-sound').files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          alarmSound.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      document.getElementById('alarm-status').textContent = "Alarm set!";
+      setInterval(() => {
+        const now = new Date();
+        const nowTime = now.toTimeString().substr(0,5);
+        if (nowTime === alarmTime) {
+          alarmSound.play();
+        }
+      }, 1000);
+    }
+
+    // Weather
     async function getWeather() {
       const city = document.getElementById('city').value;
       const apiKey = 'https://wttr.in/' + city + '?format=3';
@@ -178,14 +308,14 @@
       }
     }
 
-    // Internet Speed Test (Simplified)
+    // Internet Speed Test
     async function testSpeed() {
       const start = new Date().getTime();
       try {
         await fetch("https://via.placeholder.com/1000x1000.png?random=" + Math.random());
         const end = new Date().getTime();
         const time = (end - start) / 1000;
-        const sizeMb = 0.1; // estimated image size
+        const sizeMb = 0.1;
         const speed = (sizeMb / time).toFixed(2);
         document.getElementById('speed-result').textContent = `Speed: ${speed} MB/s (approx)`;
       } catch {
