@@ -2,93 +2,306 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Website Builder</title>
+  <title>Advanced Website Builder</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 40px;
+      background-color: #121212;
+      color: #f0f0f0;
+      transition: background 0.3s, color 0.3s;
     }
+
+    .light-mode {
+      background-color: #ffffff;
+      color: #222222;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .light-mode .theme-toggle {
+      background: #ddd;
+      color: black;
+    }
+
     .builder {
       margin-bottom: 20px;
+      background: #1e1e1e;
       padding: 15px;
-      border: 1px solid #ddd;
       border-radius: 5px;
+      box-shadow: 0 0 5px #ccc;
     }
+
+    .light-mode .builder {
+      background: #f9f9f9;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+
     .preview-box {
-      border: 1px solid #ccc;
-      min-height: 300px;
+      background: #1e1e1e;
       padding: 15px;
+      min-height: 300px;
+      border: 1px solid #ccc;
       position: relative;
     }
+
+    .light-mode .preview-box {
+      background: white;
+    }
+
     .draggable {
       position: absolute;
+      display: inline-block;
       cursor: move;
+      user-select: none;
     }
+
+    .editable {
+      outline: 2px dashed transparent;
+    }
+
+    .editable:hover {
+      outline: 2px dashed #777;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 14px;
+      line-height: 20px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 10;
+    }
+
     textarea {
       width: 100%;
-      height: 200px;
+      font-family: monospace;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Website Builder</h1>
-  
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
+  <h1>Advanced Website Builder</h1>
+
   <div class="builder">
     <label>Element Type:</label>
     <select id="element-type">
-      <option value="h1">Heading</option>
+      <option value="h1">Heading (H1)</option>
       <option value="p">Paragraph</option>
+      <option value="img">Image</option>
       <option value="button">Button</option>
     </select>
-    
-    <label>Content:</label>
-    <input type="text" id="element-content" placeholder="Enter text">
-    
+
+    <label>Content / URL:</label>
+    <input type="text" id="element-content" placeholder="Enter text or image URL">
+
+    <label>Text Color:</label>
+    <input type="color" id="text-color" value="#ffffff">
+
+    <label>Theme Style:</label>
+    <select id="button-style">
+      <option value="default">Default</option>
+      <option value="rounded">Rounded</option>
+      <option value="outline">Outline</option>
+    </select>
+
     <button onclick="addElement()">Add Element</button>
     <button onclick="generateCode()">Generate Code</button>
+    <button onclick="saveProject()">Save</button>
+    <button onclick="loadProject()">Load</button>
+    <button onclick="clearBuilder()">Clear</button>
   </div>
-  
-  <div class="preview-box" id="preview"></div>
-  
-  <h2>Generated Code:</h2>
-  <textarea id="output" readonly></textarea>
+
+  <h2>Live Preview (Click to Edit, Drag to Move):</h2>
+  <div id="preview" class="preview-box"></div>
+
+  <h2>Generated HTML Code:</h2>
+  <textarea id="output" rows="15" readonly></textarea>
 
   <script>
-    function addElement() {
-      const type = document.getElementById('element-type').value;
-      const content = document.getElementById('element-content').value;
-      const preview = document.getElementById('preview');
-      
-      const element = document.createElement(type);
-      element.className = 'draggable';
-      element.textContent = content;
-      element.style.top = '10px';
-      element.style.left = '10px';
-      
-      // Make draggable
-      element.draggable = true;
-      element.addEventListener('dragstart', dragStart);
-      
-      preview.appendChild(element);
+    const preview = document.getElementById("preview");
+    const output = document.getElementById("output");
+    let elementData = [];
+
+    function addElement(data = null) {
+      const type = data?.type || document.getElementById("element-type").value;
+      const content = data?.content || document.getElementById("element-content").value;
+      const color = data?.color || document.getElementById("text-color").value;
+      const btnStyle = data?.buttonStyle || document.getElementById("button-style").value;
+      const top = data?.top || "10px";
+      const left = data?.left || "10px";
+
+      let wrapper = document.createElement("div");
+      wrapper.className = "draggable";
+      wrapper.style.top = top;
+      wrapper.style.left = left;
+
+      let el = document.createElement(type === "img" ? "img" : type);
+
+      if (type === "img") {
+        el.src = content;
+        el.alt = "Image";
+        el.style.width = "200px";
+      } else {
+        el.textContent = content;
+        el.style.color = color;
+        el.contentEditable = true;
+      }
+
+      if (type === "button") {
+        el.style.color = color;
+        if (btnStyle === "rounded") {
+          el.style.borderRadius = "15px";
+          el.style.padding = "10px 20px";
+        } else if (btnStyle === "outline") {
+          el.style.background = "transparent";
+          el.style.border = `2px solid ${color}`;
+        }
+      }
+
+      el.classList.add("editable");
+      wrapper.appendChild(el);
+
+      const delBtn = document.createElement("button");
+      delBtn.innerText = "×";
+      delBtn.className = "delete-btn";
+      delBtn.onclick = () => {
+        const index = Array.from(preview.children).indexOf(wrapper);
+        wrapper.remove();
+        elementData.splice(index, 1);
+      };
+      wrapper.appendChild(delBtn);
+
+      makeDraggable(wrapper);
+      preview.appendChild(wrapper);
+
+      if (!data) {
+        elementData.push({ type, content, color, buttonStyle: btnStyle, top, left });
+      }
     }
-    
-    function dragStart(e) {
-      e.dataTransfer.setData('text/plain', e.target.id);
-      e.target.style.opacity = '0.5';
-    }
-    
-    function generateCode() {
-      const preview = document.getElementById('preview');
-      const elements = preview.querySelectorAll('.draggable');
-      let html = '<!DOCTYPE html>\n<html>\n<body>\n';
-      
-      elements.forEach(el => {
-        html += `  <${el.tagName.toLowerCase()}>${el.textContent}</${el.tagName.toLowerCase()}>\n`;
+
+    function makeDraggable(el) {
+      let offsetX, offsetY;
+
+      el.addEventListener("mousedown", (e) => {
+        if (e.target.classList.contains("delete-btn")) return;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+
+        function moveAt(ev) {
+          el.style.left = (ev.pageX - preview.offsetLeft - offsetX) + "px";
+          el.style.top = (ev.pageY - preview.offsetTop - offsetY) + "px";
+        }
+
+        function onMouseMove(ev) {
+          moveAt(ev);
+        }
+
+        document.addEventListener("mousemove", onMouseMove);
+
+        el.addEventListener("mouseup", () => {
+          document.removeEventListener("mousemove", onMouseMove);
+          const index = Array.from(preview.children).indexOf(el);
+          if (elementData[index]) {
+            elementData[index].top = el.style.top;
+            elementData[index].left = el.style.left;
+          }
+        }, { once: true });
       });
-      
-      html += '</body>\n</html>';
-      document.getElementById('output').value = html;
     }
+
+    function generateCode() {
+      let html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generated Site</title>
+  <style>
+    body { position: relative; }
+    .draggable { position: absolute; }
+  </style>
+</head>
+<body>
+`;
+
+      preview.querySelectorAll('.draggable').forEach(wrapper => {
+        const copy = wrapper.cloneNode(true);
+        copy.querySelector('.delete-btn')?.remove();
+        copy.querySelectorAll('[contenteditable]').forEach(e => e.removeAttribute('contenteditable'));
+        html += `  ${copy.outerHTML}\n`;
+      });
+
+      html += `</body>\n</html>`;
+      output.value = html.trim();
+    }
+
+    function saveProject() {
+      localStorage.setItem("websiteBuilderData", JSON.stringify(elementData));
+      alert("Project saved!");
+    }
+
+    function loadProject() {
+      const saved = localStorage.getItem("websiteBuilderData");
+      if (!saved) return alert("No saved project found.");
+      clearBuilder();
+      elementData = JSON.parse(saved);
+      elementData.forEach(el => addElement(el));
+    }
+
+    function clearBuilder() {
+      preview.innerHTML = "";
+      output.value = "";
+      elementData = [];
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      const toggleBtn = document.querySelector(".theme-toggle");
+      toggleBtn.innerText = document.body.classList.contains("light-mode") ? "☀️" : "🌙";
+    }
+
+    // Default to dark mode
+    toggleTheme();
+    toggleTheme();
   </script>
 </body>
 </html>
