@@ -8,7 +8,7 @@
     :root {
       --bg-color: #1e1e1e;
       --text-color: #ffffff;
-      --accent-color: #4caf50;
+      --accent-color: #2196f3;
       --card-color: #2c2c2c;
       --radius: 12px;
     }
@@ -37,14 +37,19 @@
     aside button {
       margin: 10px 0;
       padding: 10px;
-      background: var(--accent-color);
-      color: white;
-      border: none;
+      background: transparent;
+      color: var(--text-color);
+      border: 2px solid transparent;
       cursor: pointer;
       border-radius: var(--radius);
+      transition: all 0.3s;
     }
     aside button:hover {
-      background: #66bb6a;
+      color: var(--accent-color);
+    }
+    aside button.selected {
+      border: 2px solid var(--accent-color);
+      color: var(--accent-color);
     }
     main {
       flex: 1;
@@ -63,8 +68,6 @@
     }
     .theme-switch {
       margin-top: auto;
-      background: transparent;
-      color: var(--text-color);
       border: 1px solid var(--accent-color);
     }
     input, select, textarea {
@@ -75,86 +78,106 @@
       border: 1px solid #ccc;
       border-radius: var(--radius);
     }
-    .dropdown {
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
       margin-top: 10px;
     }
-    .clock-subapp {
+    .calc-grid button {
+      padding: 15px;
+      font-size: 1.2rem;
+      background: var(--accent-color);
+      border: none;
+      color: #fff;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+    .calc-grid button:hover {
+      opacity: 0.85;
+    }
+
+    /* Clock Folder Toggle */
+    .clock-folder-header {
+      cursor: pointer;
+      padding: 10px;
+      background: var(--accent-color);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+    }
+    .clock-folder {
       display: none;
-      margin-top: 10px;
+      padding-left: 10px;
     }
-    .clock-subapp.active {
+    .clock-folder.active {
       display: block;
     }
   </style>
 </head>
 <body class="dark">
   <aside>
-    <button onclick="switchApp('calculator')">Calculator</button>
-    <button onclick="switchApp('clock')">Clock</button>
-    <button onclick="switchApp('weather')">Weather</button>
-    <button onclick="switchApp('speed')">Speed Test</button>
+    <button onclick="switchApp('calculator', this)">Calculator</button>
+    <button onclick="toggleClockFolder(this)">Clock</button>
+    <div id="clock-folder" class="clock-folder">
+      <button onclick="switchClockSubApp('clock-show')">Clock</button>
+      <button onclick="switchClockSubApp('timer')">Timer</button>
+      <button onclick="switchClockSubApp('stopwatch')">Stopwatch</button>
+      <button onclick="switchClockSubApp('countdown')">Countdown</button>
+      <button onclick="switchClockSubApp('alarm')">Alarm</button>
+    </div>
+    <button onclick="switchApp('weather', this)">Weather</button>
+    <button onclick="switchApp('speed', this)">Speed Test</button>
     <button class="theme-switch" onclick="toggleTheme()">Switch Theme</button>
   </aside>
+
   <main>
     <!-- Calculator -->
     <div id="calculator" class="app active">
       <h2>Calculator</h2>
       <input type="text" id="calc-display" readonly />
-      <div>
+      <div class="calc-grid">
         <button onclick="appendCalc('1')">1</button>
         <button onclick="appendCalc('2')">2</button>
         <button onclick="appendCalc('3')">3</button>
-        <button onclick="appendCalc('+')">+</button><br>
+        <button onclick="appendCalc('+')">+</button>
         <button onclick="appendCalc('4')">4</button>
         <button onclick="appendCalc('5')">5</button>
         <button onclick="appendCalc('6')">6</button>
-        <button onclick="appendCalc('-')">-</button><br>
+        <button onclick="appendCalc('-')">-</button>
         <button onclick="appendCalc('7')">7</button>
         <button onclick="appendCalc('8')">8</button>
         <button onclick="appendCalc('9')">9</button>
-        <button onclick="appendCalc('*')">*</button><br>
+        <button onclick="appendCalc('*')">*</button>
         <button onclick="appendCalc('0')">0</button>
         <button onclick="appendCalc('.')">.</button>
         <button onclick="calculate()">=</button>
-        <button onclick="appendCalc('/')">/</button><br>
-        <button onclick="clearCalc()">C</button>
+        <button onclick="appendCalc('/')">/</button>
+        <button onclick="clearCalc()" style="grid-column: span 4;">Clear</button>
       </div>
     </div>
 
-    <!-- Clock with Dropdown Options -->
+    <!-- Clock -->
     <div id="clock" class="app">
       <h2>Clock & Time Tools</h2>
-      <select class="dropdown" onchange="switchClockSubApp(this.value)">
-        <option value="clock-show">Clock</option>
-        <option value="timer">Timer</option>
-        <option value="stopwatch">Stopwatch</option>
-        <option value="countdown">Countdown</option>
-        <option value="alarm">Alarm</option>
-      </select>
-
       <div id="clock-show" class="clock-subapp active">
         <p id="clock-time">--:--:--</p>
       </div>
-
       <div id="timer" class="clock-subapp">
         <p>Timer: <input type="number" id="timer-seconds" placeholder="Seconds" /> 
         <button onclick="startTimer()">Start</button></p>
         <p id="timer-display"></p>
       </div>
-
       <div id="stopwatch" class="clock-subapp">
         <p id="stopwatch-display">0.00</p>
         <button onclick="startStopwatch()">Start</button>
         <button onclick="stopStopwatch()">Stop</button>
         <button onclick="resetStopwatch()">Reset</button>
       </div>
-
       <div id="countdown" class="clock-subapp">
         <p>Countdown to: <input type="datetime-local" id="countdown-time" />
         <button onclick="startCountdown()">Start</button></p>
         <p id="countdown-display"></p>
       </div>
-
       <div id="alarm" class="clock-subapp">
         <p>Set Alarm Time: <input type="time" id="alarm-time" /></p>
         <p>Upload Alarm Sound: <input type="file" id="alarm-sound" accept="audio/*" /></p>
@@ -180,9 +203,12 @@
   </main>
 
   <script>
-    function switchApp(appId) {
+    // Theme and App Switch
+    function switchApp(appId, el) {
       document.querySelectorAll('.app').forEach(app => app.classList.remove('active'));
       document.getElementById(appId).classList.add('active');
+      document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('selected'));
+      if (el) el.classList.add('selected');
     }
 
     function toggleTheme() {
@@ -190,7 +216,25 @@
       document.body.classList.toggle('dark');
     }
 
-    // Calculator
+    // Clock Folder Toggle
+    function toggleClockFolder(el) {
+      document.getElementById('clock-folder').classList.toggle('active');
+      el.classList.toggle('selected');
+      switchApp('clock', el);
+    }
+
+    // Hide clock folder if clicked outside
+    document.addEventListener('click', (e) => {
+      const folder = document.getElementById('clock-folder');
+      if (!folder.contains(e.target) && !e.target.innerText.includes('Clock')) {
+        folder.classList.remove('active');
+        document.querySelectorAll('aside button').forEach(btn => {
+          if (btn.innerText.includes('Clock')) btn.classList.remove('selected');
+        });
+      }
+    });
+
+    // Calculator Logic
     let calcExpression = '';
     const calcDisplay = document.getElementById('calc-display');
     function appendCalc(val) {
@@ -210,7 +254,7 @@
       calcDisplay.value = '';
     }
 
-    // Clock
+    // Clock Real-Time
     function updateClock() {
       const now = new Date();
       document.getElementById('clock-time').textContent = now.toLocaleTimeString();
@@ -284,7 +328,6 @@
         };
         reader.readAsDataURL(file);
       }
-
       document.getElementById('alarm-status').textContent = "Alarm set!";
       setInterval(() => {
         const now = new Date();
@@ -295,20 +338,20 @@
       }, 1000);
     }
 
-    // Weather
+    // Weather (auto-correct city via wttr.in redirect)
     async function getWeather() {
       const city = document.getElementById('city').value;
-      const apiKey = 'https://wttr.in/' + city + '?format=3';
+      const url = `https://wttr.in/${city.replace(/ /g, '+')}?format=3`;
       try {
-        const res = await fetch(apiKey);
-        const data = await res.text();
-        document.getElementById('weather-result').textContent = data;
+        const res = await fetch(url);
+        const text = await res.text();
+        document.getElementById('weather-result').textContent = text;
       } catch {
-        document.getElementById('weather-result').textContent = "Failed to fetch weather.";
+        document.getElementById('weather-result').textContent = "Weather lookup failed.";
       }
     }
 
-    // Internet Speed Test
+    // Speed Test
     async function testSpeed() {
       const start = new Date().getTime();
       try {
