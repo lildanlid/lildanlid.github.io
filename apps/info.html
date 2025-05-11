@@ -235,10 +235,10 @@ main {
       if (el) el.classList.add('selected');
     }
 
-    <div class="theme-toggle">
-  <label for="theme-switch">Dark Mode</label>
-  <input type="checkbox" id="theme-switch" checked onchange="toggleTheme()" />
-</div>
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+      document.body.classList.toggle('dark');
+    }
 
 
     function toggleClockFolder(el) {
