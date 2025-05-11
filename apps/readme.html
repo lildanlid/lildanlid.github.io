@@ -77,6 +77,34 @@ function showPage(id) {
   document.getElementById(id).classList.add("active");
 }
 
+// Persist input to localStorage
+function saveToLocalStorage() {
+  const allFields = document.querySelectorAll('input, textarea');
+  const data = {};
+  allFields.forEach(field => {
+    if (field.type === 'checkbox') {
+      data[field.name] = field.checked;
+    } else {
+      data[field.name] = field.value;
+    }
+  });
+  localStorage.setItem('readme-form', JSON.stringify(data));
+}
+
+// Restore on load
+function loadFromLocalStorage() {
+  const saved = JSON.parse(localStorage.getItem('readme-form') || '{}');
+  Object.entries(saved).forEach(([key, value]) => {
+    const el = document.querySelector(`[name="${key}"]`);
+    if (!el) return;
+    if (el.type === 'checkbox') {
+      el.checked = value;
+    } else {
+      el.value = value;
+    }
+  });
+}
+
 function generateReadme() {
   const name = document.getElementById('name').value;
   const bioLines = document.getElementById('bio').value.trim().split('\n');
@@ -125,11 +153,11 @@ function generateReadme() {
   document.getElementById("output").textContent = readme;
 }
 
+// Copy + Download unchanged
 function copyReadme() {
   const text = document.getElementById('output').textContent;
   navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
 }
-
 function downloadReadme() {
   const blob = new Blob([document.getElementById('output').textContent], { type: 'text/markdown' });
   const link = document.createElement('a');
@@ -137,7 +165,16 @@ function downloadReadme() {
   link.download = "README.md";
   link.click();
 }
+
+// Init on load
+loadFromLocalStorage();
+
+// Save input changes
+document.querySelectorAll('input, textarea').forEach(el =>
+  el.addEventListener('input', saveToLocalStorage)
+);
 </script>
+
 
 </body>
 </html>
