@@ -1,511 +1,94 @@
-import { useState, useRef, useEffect } from 'react';
-import { Moon, Sun } from 'lucide-react';
-
-type ElementType = 'h1' | 'p' | 'img' | 'button';
-type ButtonStyle = 'default' | 'rounded' | 'outline';
-type ThemePreset = 'default' | 'modern' | 'vintage' | 'minimal';
-type ColorMode = 'dark' | 'light';
-
-interface ElementData {
-  id: string;
-  type: ElementType;
-  content: string;
-  color: string;
-  buttonStyle?: ButtonStyle;
-  top: string;
-  left: string;
-  fontSize?: string;
-  fontFamily?: string;
-  borderRadius?: string;
-}
-
-export default function WebsiteBuilder() {
-  const [elementType, setElementType] = useState<ElementType>('h1');
-  const [content, setContent] = useState('');
-  const [color, setColor] = useState('#000000');
-  const [buttonStyle, setButtonStyle] = useState<ButtonStyle>('default');
-  const [elements, setElements] = useState<ElementData[]>([]);
-  const [generatedCode, setGeneratedCode] = useState('');
-  const [editingElementId, setEditingElementId] = useState<string | null>(null);
-  const [themePreset, setThemePreset] = useState<ThemePreset>('default');
-  const [colorMode, setColorMode] = useState<ColorMode>('dark');
-  const previewRef = useRef<HTMLDivElement>(null);
-
-  // Theme configuration with proper light/dark variants
-  const themeConfig = {
-    default: {
-      dark: {
-        bg: 'bg-gray-900',
-        container: 'bg-gray-800',
-        text: 'text-white',
-        border: 'border-gray-700',
-        button: 'bg-gray-700',
-      },
-      light: {
-        bg: 'bg-white',
-        container: 'bg-gray-100',
-        text: 'text-gray-900',
-        border: 'border-gray-300',
-        button: 'bg-gray-200',
-      }
-    },
-    modern: {
-      dark: {
-        bg: 'bg-slate-900',
-        container: 'bg-slate-800',
-        text: 'text-slate-100',
-        border: 'border-slate-700',
-        button: 'bg-slate-700',
-      },
-      light: {
-        bg: 'bg-white',
-        container: 'bg-slate-100',
-        text: 'text-slate-900',
-        border: 'border-slate-300',
-        button: 'bg-slate-200',
-      }
-    },
-    vintage: {
-      dark: {
-        bg: 'bg-amber-900',
-        container: 'bg-amber-800',
-        text: 'text-amber-100',
-        border: 'border-amber-700',
-        button: 'bg-amber-700',
-      },
-      light: {
-        bg: 'bg-amber-50',
-        container: 'bg-amber-100',
-        text: 'text-amber-900',
-        border: 'border-amber-300',
-        button: 'bg-amber-200',
-      }
-    },
-    minimal: {
-      dark: {
-        bg: 'bg-neutral-900',
-        container: 'bg-neutral-800',
-        text: 'text-neutral-100',
-        border: 'border-neutral-700',
-        button: 'bg-neutral-700',
-      },
-      light: {
-        bg: 'bg-white',
-        container: 'bg-neutral-100',
-        text: 'text-neutral-900',
-        border: 'border-neutral-300',
-        button: 'bg-neutral-200',
-      }
-    }
-  };
-
-  const currentTheme = themeConfig[themePreset][colorMode];
-
-  // Apply color mode to the document
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', colorMode === 'dark');
-  }, [colorMode]);
-
-  const addElement = (data?: Partial<ElementData>) => {
-    const newElement: ElementData = {
-      id: Date.now().toString(),
-      type: data?.type || elementType,
-      content: data?.content || content,
-      color: data?.color || color,
-      buttonStyle: data?.buttonStyle || buttonStyle,
-      top: data?.top || '10px',
-      left: data?.left || '10px',
-      fontSize: data?.fontSize || '16px',
-      fontFamily: data?.fontFamily || 'Arial',
-      borderRadius: data?.borderRadius || '0px',
-    };
-    setElements([...elements, newElement]);
-    setContent('');
-    setEditingElementId(null);
-  };
-
-  const deleteElement = (id: string) => {
-    setElements(elements.filter(el => el.id !== id));
-    if (editingElementId === id) {
-      setEditingElementId(null);
-    }
-  };
-
-  const startEditing = (id: string) => {
-    const element = elements.find(el => el.id === id);
-    if (element) {
-      setEditingElementId(id);
-      setElementType(element.type);
-      setContent(element.content);
-      setColor(element.color);
-      if (element.buttonStyle) setButtonStyle(element.buttonStyle);
-    }
-  };
-
-  const updateElement = () => {
-    if (!editingElementId) return;
-    
-    setElements(elements.map(el => {
-      if (el.id === editingElementId) {
-        return {
-          ...el,
-          type: elementType,
-          content,
-          color,
-          buttonStyle: elementType === 'button' ? buttonStyle : undefined,
-          fontSize: el.fontSize,
-          fontFamily: el.fontFamily,
-          borderRadius: el.borderRadius,
-        };
-      }
-      return el;
-    }));
-    setEditingElementId(null);
-    setContent('');
-  };
-
-  // Fixed: Added back the generateCode function
-  const generateCode = () => {
-    let html = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Generated Site</title>
+  <title>Website Builder</title>
   <style>
-    body { position: relative; }
-    .draggable { position: absolute; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .builder {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .preview-box {
+      border: 1px solid #ccc;
+      min-height: 300px;
+      padding: 15px;
+      position: relative;
+    }
+    .draggable {
+      position: absolute;
+      cursor: move;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+    }
   </style>
 </head>
 <body>
-`;
+  <h1>Website Builder</h1>
+  
+  <div class="builder">
+    <label>Element Type:</label>
+    <select id="element-type">
+      <option value="h1">Heading</option>
+      <option value="p">Paragraph</option>
+      <option value="button">Button</option>
+    </select>
+    
+    <label>Content:</label>
+    <input type="text" id="element-content" placeholder="Enter text">
+    
+    <button onclick="addElement()">Add Element</button>
+    <button onclick="generateCode()">Generate Code</button>
+  </div>
+  
+  <div class="preview-box" id="preview"></div>
+  
+  <h2>Generated Code:</h2>
+  <textarea id="output" readonly></textarea>
 
-    elements.forEach(el => {
-      if (el.type === 'img') {
-        html += `  <img src="${el.content}" alt="Image" class="draggable" style="top: ${el.top}; left: ${el.left}; color: ${el.color}; width: 200px;">\n`;
-      } else if (el.type === 'button') {
-        let buttonStyle = '';
-        if (el.buttonStyle === 'rounded') {
-          buttonStyle = `border-radius: ${el.borderRadius || '15px'}; padding: 10px 20px;`;
-        } else if (el.buttonStyle === 'outline') {
-          buttonStyle = `background: transparent; border: 2px solid ${el.color}; border-radius: ${el.borderRadius || '0px'};`;
-        }
-        html += `  <button class="draggable" style="top: ${el.top}; left: ${el.left}; color: ${el.color}; font-family: ${el.fontFamily}; font-size: ${el.fontSize}; ${buttonStyle}">${el.content}</button>\n`;
-      } else {
-        html += `  <${el.type} class="draggable" style="top: ${el.top}; left: ${el.left}; color: ${el.color}; font-family: ${el.fontFamily}; font-size: ${el.fontSize};">${el.content}</${el.type}>\n`;
-      }
-    });
-
-    html += `</body>\n</html>`;
-    setGeneratedCode(html.trim());
-  };
-
-  const saveProject = () => {
-    localStorage.setItem('websiteBuilderData', JSON.stringify({
-      elements,
-      themePreset,
-      colorMode
-    }));
-    alert('Project saved!');
-  };
-
-  const loadProject = () => {
-    const saved = localStorage.getItem('websiteBuilderData');
-    if (!saved) return alert('No saved project found.');
-    const data = JSON.parse(saved);
-    setElements(data.elements || []);
-    setThemePreset(data.themePreset || 'default');
-    setColorMode(data.colorMode || 'dark');
-    setGeneratedCode('');
-  };
-
-  const clearBuilder = () => {
-    setElements([]);
-    setGeneratedCode('');
-    setEditingElementId(null);
-  };
-
-  const handleDragStart = (e: React.DragEvent, id: string) => {
-    e.dataTransfer.setData('text/plain', id);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const id = e.dataTransfer.getData('text/plain');
-    const preview = previewRef.current;
-    if (!preview) return;
-
-    const rect = preview.getBoundingClientRect();
-    const left = e.clientX - rect.left - 50 + 'px';
-    const top = e.clientY - rect.top - 20 + 'px';
-
-    setElements(elements.map(el => 
-      el.id === id ? { ...el, left, top } : el
-    ));
-  };
-
-  return (
-    <div className={`min-h-screen ${currentTheme.bg} ${currentTheme.text} p-4 transition-colors duration-200`}>
-      <div className="container mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Advanced Website Builder</h1>
-          <button 
-            onClick={() => setColorMode(prev => prev === 'dark' ? 'light' : 'dark')}
-            className={`p-2 rounded-full ${currentTheme.button} hover:opacity-80 transition-opacity`}
-          >
-            {colorMode === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-        </div>
-
-        <div className={`rounded-lg shadow-md mb-6 p-4 ${currentTheme.container} ${currentTheme.border} border`}>
-          <h2 className="text-xl font-semibold mb-4">Builder Controls</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block mb-2">Element Type:</label>
-              <select 
-                value={elementType} 
-                onChange={(e) => setElementType(e.target.value as ElementType)}
-                className={`w-full p-2 rounded ${currentTheme.button} ${currentTheme.text} ${currentTheme.border} border`}
-              >
-                <option value="h1">Heading (H1)</option>
-                <option value="p">Paragraph</option>
-                <option value="img">Image</option>
-                <option value="button">Button</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-2">Theme Preset:</label>
-              <select 
-                value={themePreset} 
-                onChange={(e) => setThemePreset(e.target.value as ThemePreset)}
-                className={`w-full p-2 rounded ${currentTheme.button} ${currentTheme.text} ${currentTheme.border} border`}
-              >
-                <option value="default">Default</option>
-                <option value="modern">Modern</option>
-                <option value="vintage">Vintage</option>
-                <option value="minimal">Minimal</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <label className="block mb-2">Content / URL:</label>
-            <input
-              type="text"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Enter text or image URL"
-              className={`w-full p-2 rounded ${currentTheme.button} ${currentTheme.text} ${currentTheme.border} border`}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block mb-2">Text Color:</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className={`w-10 h-10 p-1 rounded ${currentTheme.button} ${currentTheme.border} border`}
-                />
-                <span>{color}</span>
-              </div>
-            </div>
-
-            {elementType === 'button' && (
-              <>
-                <div>
-                  <label className="block mb-2">Button Style:</label>
-                  <select 
-                    value={buttonStyle} 
-                    onChange={(e) => setButtonStyle(e.target.value as ButtonStyle)}
-                    className={`w-full p-2 rounded ${currentTheme.button} ${currentTheme.text} ${currentTheme.border} border`}
-                  >
-                    <option value="default">Default</option>
-                    <option value="rounded">Rounded</option>
-                    <option value="outline">Outline</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block mb-2">Border Radius (px):</label>
-                  <input
-                    type="number"
-                    value={buttonStyle === 'rounded' ? '15' : '0'}
-                    onChange={(e) => {
-                      setElements(elements.map(el => 
-                        el.type === 'button' ? {...el, borderRadius: `${e.target.value}px`} : el
-                      ))
-                    }}
-                    min="0"
-                    max="50"
-                    className={`w-full p-2 rounded ${currentTheme.button} ${currentTheme.text} ${currentTheme.border} border`}
-                  />
-                </div>
-              </>
-            )}
-
-            {elementType !== 'img' && (
-              <div>
-                <label className="block mb-2">Font Size (px):</label>
-                <input
-                  type="number"
-                  value="16"
-                  onChange={(e) => {
-                    setElements(elements.map(el => 
-                      el.type !== 'img' ? {...el, fontSize: `${e.target.value}px`} : el
-                    ))
-                  }}
-                  min="8"
-                  max="72"
-                  className={`w-full p-2 rounded ${currentTheme.button} ${currentTheme.text} ${currentTheme.border} border`}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-wrap gap-2 mt-4">
-            {editingElementId ? (
-              <>
-                <button 
-                  onClick={updateElement}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Update Element
-                </button>
-                <button 
-                  onClick={() => setEditingElementId(null)}
-                  className={`px-4 py-2 ${currentTheme.button} ${currentTheme.text} rounded hover:opacity-80`}
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <button 
-                onClick={() => addElement()}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Add Element
-              </button>
-            )}
-            <button 
-              onClick={generateCode}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Generate Code
-            </button>
-            <button 
-              onClick={saveProject}
-              className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
-            >
-              Save
-            </button>
-            <button 
-              onClick={loadProject}
-              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-            >
-              Load
-            </button>
-            <button 
-              onClick={clearBuilder}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-
-        <h2 className="text-xl font-semibold mb-2">Live Preview (Drag to Move):</h2>
-        <div
-          ref={previewRef}
-          className={`min-h-[200px] p-4 ${currentTheme.container} ${currentTheme.border} border rounded-md relative`}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          {elements.map((el) => (
-            <div
-              key={el.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, el.id)}
-              className="draggable absolute cursor-move select-none element-container"
-              style={{
-                top: el.top,
-                left: el.left,
-                color: el.color,
-                fontSize: el.fontSize,
-                fontFamily: el.fontFamily,
-              }}
-              onClick={() => startEditing(el.id)}
-            >
-              {el.type === 'img' ? (
-                <div className="relative group">
-                  <img src={el.content} alt="Image" className="w-48" />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteElement(el.id);
-                    }}
-                    className="delete-btn absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                  >
-                    X
-                  </button>
-                </div>
-              ) : el.type === 'button' ? (
-                <div className="relative group">
-                  <button
-                    className={`px-4 py-2 ${
-                      el.buttonStyle === 'rounded' ? 'rounded-full' : ''
-                    } ${
-                      el.buttonStyle === 'outline' ? 'bg-transparent border-2' : 'bg-gray-100'
-                    }`}
-                    style={{ 
-                      borderColor: el.color,
-                      borderRadius: el.borderRadius 
-                    }}
-                  >
-                    {el.content}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteElement(el.id);
-                    }}
-                    className="delete-btn absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                  >
-                    X
-                  </button>
-                </div>
-              ) : (
-                <div className="relative group">
-                  {React.createElement(el.type, null, el.content)}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteElement(el.id);
-                    }}
-                    className="delete-btn absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center"
-                  >
-                    X
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <h2 className="text-xl font-semibold mt-6 mb-2">Generated HTML Code:</h2>
-        <textarea
-          className={`w-full h-64 p-2 font-mono text-sm ${currentTheme.border} border rounded-md ${currentTheme.button} ${currentTheme.text}`}
-          value={generatedCode}
-          readOnly
-        />
-      </div>
-    </div>
-  );
-}
+  <script>
+    function addElement() {
+      const type = document.getElementById('element-type').value;
+      const content = document.getElementById('element-content').value;
+      const preview = document.getElementById('preview');
+      
+      const element = document.createElement(type);
+      element.className = 'draggable';
+      element.textContent = content;
+      element.style.top = '10px';
+      element.style.left = '10px';
+      
+      // Make draggable
+      element.draggable = true;
+      element.addEventListener('dragstart', dragStart);
+      
+      preview.appendChild(element);
+    }
+    
+    function dragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.id);
+      e.target.style.opacity = '0.5';
+    }
+    
+    function generateCode() {
+      const preview = document.getElementById('preview');
+      const elements = preview.querySelectorAll('.draggable');
+      let html = '<!DOCTYPE html>\n<html>\n<body>\n';
+      
+      elements.forEach(el => {
+        html += `  <${el.tagName.toLowerCase()}>${el.textContent}</${el.tagName.toLowerCase()}>\n`;
+      });
+      
+      html += '</body>\n</html>';
+      document.getElementById('output').value = html;
+    }
+  </script>
+</body>
+</html>
