@@ -29,36 +29,6 @@
       margin-right: 10px;
     }
 
-    /* The Matrix-style "hacker text" background */
-    .hacker-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: -1;
-    }
-
-    .line {
-      position: absolute;
-      top: -100%;
-      color: #0f0;
-      font-size: 20px;
-      white-space: nowrap;
-      animation: flowText 1.5s linear infinite;
-    }
-
-    /* Keyframe animation for the flowing text */
-    @keyframes flowText {
-      0% {
-        top: -100%;
-      }
-      100% {
-        top: 100%;
-      }
-    }
-
     /* Style for the textareas and buttons */
     textarea {
       width: 100%;
@@ -112,15 +82,6 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <!-- Hacker Text Background -->
-  <div class="hacker-background">
-    <!-- Random lines of text -->
-    <div class="line">01001010 10101010 11010101 01100101 10101010</div>
-    <div class="line">11001100 00101010 11100010 01010101 10100101</div>
-    <div class="line">01101001 11010100 10011100 00110101 01011010</div>
-    <div class="line">11001101 10101001 10011001 11100101 01001010</div>
-  </div>
-
   <h1>
     <span class="material-icons">laptop</span>
     JavaScript Deobfuscator
