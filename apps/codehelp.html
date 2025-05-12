@@ -3,35 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Coding Assistant</title>
+  <title>Local Coding Assistant</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Enhanced styles with offline mode support */
     body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-    .chat-container { width: 100%; max-width: 800px; height: 80vh; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .chat-container { width: 100%; max-width: 800px; height: 80vh; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; overflow: hidden; }
     .messages { flex: 1; overflow-y: auto; padding: 20px; }
     .user-message { background: #3b82f6; color: white; padding: 12px 16px; border-radius: 12px; margin-left: auto; max-width: 80%; margin-bottom: 12px; }
     .ai-message { background: #f3f4f6; color: #111827; padding: 12px 16px; border-radius: 12px; margin-right: auto; max-width: 80%; margin-bottom: 12px; }
-    .offline-message { background: #fef3c7; color: #92400e; padding: 12px 16px; border-radius: 12px; margin: 0 auto 12px; max-width: 80%; text-align: center; }
     .code-block { background: #1e293b; color: #86efac; padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; overflow-x: auto; margin: 8px 0; }
     .typing-indicator { display: flex; padding: 8px; }
     .typing-dot { width: 8px; height: 8px; margin: 0 2px; background-color: #6b7280; border-radius: 50%; animation: typingAnimation 1.4s infinite ease-in-out; }
     @keyframes typingAnimation { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
-    .error-message { background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 6px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .error-message { background: #fee2e2; color: #b91c1c; padding: 12px; border-radius: 6px; margin-bottom: 16px; }
     .input-area { padding: 16px; border-top: 1px solid #e5e7eb; background: white; }
     .confirmation-dialog { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; }
     .confirmation-box { background: white; padding: 24px; border-radius: 12px; max-width: 400px; width: 100%; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
-    .api-key-guide { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-top: 16px; }
-    .connection-status { position: absolute; top: 10px; right: 10px; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-    .connection-good { background: #dcfce7; color: #166534; }
-    .connection-bad { background: #fee2e2; color: #991b1b; }
-    .offline-mode { background: #fef3c7; color: #92400e; }
-    .local-cache-notice { background: #e0f2fe; color: #0369a1; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 14px; }
-    .retry-button { background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; }
-    .retry-button:hover { background: #2563eb; }
   </style>
 </head>
 <body>
@@ -40,75 +30,44 @@
   <script type="text/babel">
     const { useState, useRef, useEffect } = React;
 
-    function SmartCodingAssistant() {
+    function LocalCodingAssistant() {
       const [messages, setMessages] = useState([]);
       const [inputValue, setInputValue] = useState('');
       const [isLoading, setIsLoading] = useState(false);
-      const [error, setError] = useState('');
-      const [isOnline, setIsOnline] = useState(navigator.onLine);
-      const [usingLocalCache, setUsingLocalCache] = useState(false);
-      const [showConfirm, setShowConfirm] = useState(false);
       const messagesEndRef = useRef(null);
 
-      // Local cache for offline responses
-      const localCache = {
-        "hello": "Hello! I'm your coding assistant. I'm currently in offline mode with limited capabilities.",
-        "help": "Offline help: I can explain basic programming concepts and show simple code examples.",
-        "function": "Here's a simple function example:\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}",
-        "loop": "Basic loop example in JavaScript:\n\nfor (let i = 0; i < 5; i++) {\n  console.log(i);\n}",
-        "react": "Simple React component:\n\nfunction App() {\n  return (\n    <div>\n      <h1>Hello World</h1>\n    </div>\n  );\n}"
+      // Local knowledge base - no API needed
+      const codingKnowledge = {
+        "hello": "Hello! I'm your local coding assistant. I can help explain programming concepts and show code examples.",
+        "hi": "Hi there! Ask me about JavaScript, Python, React, or other programming topics.",
+        "function": "A function is a reusable block of code. Here's an example in JavaScript:\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\n// Usage:\ngreet('Alice'); // Returns 'Hello, Alice!'",
+        "loop": "Loops repeat actions. Common types:\n\n// For loop\nfor (let i = 0; i < 5; i++) {\n  console.log(i);\n}\n\n// While loop\nlet x = 0;\nwhile (x < 5) {\n  console.log(x);\n  x++;\n}",
+        "react": "Here's a basic React component:\n\nimport React from 'react';\n\nfunction App() {\n  return (\n    <div>\n      <h1>Hello World</h1>\n    </div>\n  );\n}\n\nexport default App;",
+        "python": "Python example:\n\ndef calculate_area(width, height):\n    return width * height\n\nprint(calculate_area(5, 3))  # Output: 15",
+        "array": "Working with arrays in JavaScript:\n\nconst fruits = ['apple', 'banana', 'orange'];\n\n// Add to end\nfruits.push('grape');\n\n// Remove last item\nfruits.pop();\n\n// Loop through\nfruits.forEach(fruit => {\n  console.log(fruit);\n});",
+        "object": "JavaScript objects store key-value pairs:\n\nconst person = {\n  name: 'Alice',\n  age: 30,\n  greet() {\n    console.log(`Hello, I'm ${this.name}`);\n  }\n};\n\nperson.greet(); // Logs 'Hello, I'm Alice'",
+        "promise": "Promises handle async operations:\n\nfunction fetchData() {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      resolve('Data received');\n    }, 1000);\n  });\n}\n\nfetchData().then(data => {\n  console.log(data); // Logs 'Data received' after 1 second\n});",
+        "help": "I can explain these programming concepts:\n- Functions\n- Loops\n- Variables\n- Arrays\n- Objects\n- React components\n- Python basics\n\nTry asking about any of these!"
       };
 
       // Initialize with welcome message
       useEffect(() => {
-        const savedMessages = localStorage.getItem('coding-assistant-messages');
+        const savedMessages = localStorage.getItem('local-coding-messages');
         if (savedMessages) {
           setMessages(JSON.parse(savedMessages));
         } else {
           setMessages([{
             id: '1',
-            text: 'Hello! I\'m your smart coding assistant. I can help with programming questions.',
+            text: 'Hello! I\'m your local coding assistant. I can explain programming concepts and show code examples - no internet required!',
             sender: 'ai'
           }]);
         }
-
-        // Set up network listeners
-        const handleOnline = () => {
-          setIsOnline(true);
-          if (usingLocalCache) {
-            setMessages(prev => [...prev, {
-              id: Date.now().toString(),
-              text: 'Connection restored! Switching back to online mode.',
-              sender: 'ai'
-            }]);
-            setUsingLocalCache(false);
-          }
-        };
-
-        const handleOffline = () => {
-          setIsOnline(false);
-          setMessages(prev => [...prev, {
-            id: Date.now().toString(),
-            text: 'You appear to be offline. Switching to limited local mode.',
-            sender: 'ai',
-            isOffline: true
-          }]);
-          setUsingLocalCache(true);
-        };
-
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
-
-        return () => {
-          window.removeEventListener('online', handleOnline);
-          window.removeEventListener('offline', handleOffline);
-        };
       }, []);
 
       // Save messages to localStorage
       useEffect(() => {
         if (messages.length > 0) {
-          localStorage.setItem('coding-assistant-messages', JSON.stringify(messages));
+          localStorage.setItem('local-coding-messages', JSON.stringify(messages));
         }
       }, [messages]);
 
@@ -117,21 +76,7 @@
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, [messages]);
 
-      const getLocalResponse = (prompt) => {
-        const lowerPrompt = prompt.toLowerCase();
-        
-        // Check for exact matches first
-        for (const [key, value] of Object.entries(localCache)) {
-          if (lowerPrompt.includes(key)) {
-            return value;
-          }
-        }
-        
-        // Fallback generic response
-        return "I'm currently offline. My offline knowledge is limited to basic programming concepts. Please try again when you're back online for more comprehensive help.";
-      };
-
-      const handleSendMessage = async () => {
+      const handleSendMessage = () => {
         if (!inputValue.trim()) return;
 
         // Add user message
@@ -142,169 +87,85 @@
         };
         setMessages(prev => [...prev, userMessage]);
         setInputValue('');
-        setError('');
 
-        // Get AI response
-        if (isOnline) {
-          try {
-            setIsLoading(true);
-            // Simulate API call (replace with actual API call)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            // This would be your actual API call:
-            // const response = await fetch('your-api-endpoint', {...});
-            // const data = await response.json();
-            
-            // For demo, we'll simulate sometimes failing
-            if (Math.random() > 0.3) { // 70% chance of success
-              const aiResponse = {
-                id: Date.now().toString() + 1,
-                text: `Online response to: "${inputValue}"\n\nHere's a sample solution:\n\nfunction example() {\n  return "This is a simulated online response";\n}`,
-                sender: 'ai',
-                isCode: true
-              };
-              setMessages(prev => [...prev, aiResponse]);
-            } else {
-              throw new Error('Failed to fetch');
-            }
-          } catch (err) {
-            handleError(err);
-          } finally {
-            setIsLoading(false);
-          }
-        } else {
-          // Offline mode - use local cache
-          const localResponse = getLocalResponse(inputValue);
-          setMessages(prev => [...prev, {
-            id: Date.now().toString() + 1,
-            text: localResponse,
-            sender: 'ai',
-            isCode: localResponse.includes('\n') && !usingLocalCache,
-            isOffline: true
-          }]);
-          setUsingLocalCache(true);
-        }
+        // Simulate typing delay
+        setIsLoading(true);
+        setTimeout(() => {
+          getLocalResponse(inputValue);
+          setIsLoading(false);
+        }, 500);
       };
 
-      const handleError = (error) => {
-        let errorMsg = error.message;
+      const getLocalResponse = (prompt) => {
+        const lowerPrompt = prompt.toLowerCase();
+        let response = "I can help with programming concepts like functions, loops, variables, arrays, and objects. Could you ask about something more specific?";
         
-        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-          errorMsg = 'Network error. Switching to offline mode.';
-          setUsingLocalCache(true);
-          setMessages(prev => [...prev, {
-            id: Date.now().toString(),
-            text: 'Network error detected. Using local knowledge base instead.',
-            sender: 'ai',
-            isOffline: true
-          }]);
+        // Check for matching keywords
+        for (const [keyword, answer] of Object.entries(codingKnowledge)) {
+          if (lowerPrompt.includes(keyword)) {
+            response = answer;
+            break;
+          }
         }
-        
-        setError(errorMsg);
+
+        // Add AI response
+        setMessages(prev => [...prev, {
+          id: Date.now().toString() + 1,
+          text: response,
+          sender: 'ai',
+          isCode: response.includes('\n') // Simple code detection
+        }]);
       };
 
       const clearHistory = () => {
         setMessages([{
           id: '1',
-          text: 'Hello! I\'m your smart coding assistant. I can help with programming questions.',
+          text: 'Hello! I\'m your local coding assistant. I can explain programming concepts and show code examples - no internet required!',
           sender: 'ai'
         }]);
-        localStorage.removeItem('coding-assistant-messages');
-        setShowConfirm(false);
+        localStorage.removeItem('local-coding-messages');
       };
 
-      const retryConnection = () => {
-        setError('');
-        setIsOnline(navigator.onLine);
-        if (navigator.onLine) {
-          setMessages(prev => [...prev, {
-            id: Date.now().toString(),
-            text: 'Retrying connection...',
-            sender: 'ai'
-          }]);
-        }
-      };
-
-      const formatMessage = (text, isCode, isOffline) => {
-        if (isOffline) {
+      const formatMessage = (text, isCode) => {
+        if (isCode) {
           return (
-            <div className="offline-message">
-              <p>{text}</p>
-            </div>
+            <pre className="code-block">
+              {text.split('\n').map((line, i) => (
+                <div key={i}>{line}</div>
+              ))}
+            </pre>
           );
         }
-        
-        if (isCode) {
-          const codeBlocks = text.match(/```[\s\S]*?```/g) || [];
-          let formattedText = text;
-          
-          codeBlocks.forEach((block, i) => {
-            formattedText = formattedText.replace(block, `CODEBLOCK${i}`);
-          });
-          
-          return formattedText.split('\n').map((paragraph, i) => (
-            paragraph.startsWith('CODEBLOCK') ? (
-              <pre key={i} className="code-block">
-                {codeBlocks[parseInt(paragraph.replace('CODEBLOCK', ''))]
-                  .replace(/```(\w*)\n?/, '')
-                  .replace(/```$/, '')}
-              </pre>
-            ) : (
-              <p key={i}>{paragraph}</p>
-            )
-          ));
-        }
-        
         return text.split('\n').map((line, i) => <p key={i}>{line}</p>);
       };
 
       return (
         <div className="chat-container">
-          {/* Connection Status */}
-          <div className={`connection-status ${isOnline ? 'connection-good' : 'connection-bad'}`}>
-            {isOnline ? 'Online' : 'Offline'}
-          </div>
-
           {/* Header */}
           <div className="bg-blue-600 text-white p-4">
             <div className="flex justify-between items-center">
-              <h1 className="text-xl font-bold">Smart Coding Assistant</h1>
+              <h1 className="text-xl font-bold">Local Coding Assistant</h1>
               <button 
-                onClick={() => setShowConfirm(true)}
+                onClick={() => {
+                  if (confirm('Clear all chat history?')) {
+                    clearHistory();
+                  }
+                }}
                 className="text-sm bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded"
               >
-                Clear History
+                Clear
               </button>
             </div>
           </div>
 
           {/* Messages */}
           <div className="messages">
-            {usingLocalCache && (
-              <div className="local-cache-notice">
-                Using local knowledge base - some features limited
-              </div>
-            )}
-
-            {error && (
-              <div className="error-message">
-                <span>{error}</span>
-                <button 
-                  onClick={retryConnection}
-                  className="retry-button"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
-
             {messages.map(message => (
               <div
                 key={message.id}
-                className={message.sender === 'user' ? 'user-message' : 
-                          message.isOffline ? 'offline-message' : 'ai-message'}
+                className={message.sender === 'user' ? 'user-message' : 'ai-message'}
               >
-                {formatMessage(message.text, message.isCode, message.isOffline)}
+                {formatMessage(message.text, message.isCode)}
               </div>
             ))}
 
@@ -328,7 +189,7 @@
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder={isOnline ? "Type your coding question..." : "Offline mode - basic questions only"}
+                placeholder="Ask about programming..."
                 className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={isLoading}
               />
@@ -341,36 +202,12 @@
               </button>
             </div>
           </div>
-
-          {/* Confirmation Dialog */}
-          {showConfirm && (
-            <div className="confirmation-dialog">
-              <div className="confirmation-box">
-                <h3 className="font-bold text-lg mb-4">Clear Chat History</h3>
-                <p className="mb-6">Are you sure you want to delete all chat history? This cannot be undone.</p>
-                <div className="flex justify-end gap-3">
-                  <button
-                    onClick={() => setShowConfirm(false)}
-                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={clearHistory}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       );
     }
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<SmartCodingAssistant />);
+    root.render(<LocalCodingAssistant />);
   </script>
 </body>
 </html>
