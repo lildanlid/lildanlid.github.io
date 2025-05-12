@@ -147,13 +147,13 @@
     function process() {
       let code = document.getElementById('input').value;
 
-      // Extract mappings and decode
+      // Step 1: Extract mappings and decode
       const mappings = extractMappings(code);
       if (mappings) {
         code = decodeMappingCalls(code, mappings);
       }
 
-      // Beautify the code
+      // Step 2: Beautify the decoded code
       const beautified = js_beautify(code, { indent_size: 2 });
       document.getElementById('output').value = beautified;
     }
@@ -167,7 +167,7 @@
       const arrayRaw = `[${mappingArrayMatch[2]}]`;
 
       try {
-        return eval(arrayRaw);
+        return eval(arrayRaw);  // This will evaluate the array and extract values
       } catch (e) {
         alert("❌ Failed to parse mapping array.");
         return null;
