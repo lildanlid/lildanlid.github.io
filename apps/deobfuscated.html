@@ -4,22 +4,71 @@
   <meta charset="UTF-8">
   <title>JavaScript Deobfuscator</title>
   <style>
+    /* Body and basic styling */
     body {
       background-color: #000;
       color: #0f0;
       font-family: monospace;
       padding: 20px;
+      margin: 0;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
     }
+
     h1 {
       color: #0f0;
       font-size: 24px;
       display: flex;
       align-items: center;
+      z-index: 10;
     }
+
     h1 img {
       width: 28px;
       margin-right: 10px;
     }
+
+    /* The Matrix-style "hacker text" background */
+    .hacker-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+      animation: hackerText 0.5s infinite;
+    }
+
+    @keyframes hackerText {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(100%);
+      }
+    }
+
+    .hacker-background span {
+      position: absolute;
+      top: -100%;
+      font-size: 20px;
+      color: #0f0;
+      white-space: nowrap;
+      animation: flowText 1s linear infinite;
+    }
+
+    @keyframes flowText {
+      0% {
+        top: -100%;
+      }
+      100% {
+        top: 100%;
+      }
+    }
+
+    /* Style for the textareas and buttons */
     textarea {
       width: 100%;
       height: 300px;
@@ -29,13 +78,17 @@
       padding: 10px;
       margin-bottom: 10px;
       font-family: monospace;
+      z-index: 10;
     }
+
     #dropZone {
       border: 2px dashed #0f0;
       padding: 30px;
       text-align: center;
       margin-bottom: 10px;
+      z-index: 10;
     }
+
     button {
       background: #000;
       border: 1px solid #0f0;
@@ -45,14 +98,22 @@
       margin-right: 10px;
       display: inline-flex;
       align-items: center;
+      z-index: 10;
     }
+
     button img {
       width: 20px;
       margin-right: 8px;
     }
+
     button:hover {
       background: #0f0;
       color: #000;
+    }
+
+    /* Adjust the spacing for buttons and textareas */
+    #output {
+      height: 200px;
     }
   </style>
 
@@ -60,6 +121,14 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+  <div class="hacker-background">
+    <!-- Create multiple lines of text for the background animation -->
+    <span>01001010 10101010 11010101 01100101 10101010</span>
+    <span>11001100 00101010 11100010 01010101 10100101</span>
+    <span>01101001 11010100 10011100 00110101 01011010</span>
+    <span>11001101 10101001 10011001 11100101 01001010</span>
+  </div>
+
   <h1>
     <span class="material-icons">laptop</span>
     JavaScript Deobfuscator
@@ -120,60 +189,41 @@
     function process() {
       let code = document.getElementById('input').value;
 
-      // Handle mappings like _0x5956() and _0x47a1(x)
-      const arrayMatch = code.match(/var (_0x\w+)\s*=\s*\[(.*?)\];/s);
-      if (arrayMatch) {
-        const arrayName = arrayMatch[1];
-        const arrayRaw = `[${arrayMatch[2]}]`;
-
-        let mappingArray;
-        try {
-          mappingArray = eval(arrayRaw);
-        } catch (e) {
-          alert("❌ Failed to parse mapping array.");
-          return;
-        }
-
-        // Find all the calls like _0x47a1(0x1a) and replace them
-        const callRegex = new RegExp(arrayName + '\\((0x[0-9a-f]+)\\)', 'gi');
-        code = code.replace(callRegex, (_, hex) => {
-          const index = parseInt(hex, 16);
-          const val = mappingArray[index];
-          return typeof val === 'string' ? `"${val}"` : '""';
-        });
-      }
-
-      // Handle nested function decoding like _0x47a1() with _0x5956()
-      const funcMatch = code.match(/function (\w+)\((.*?)\)\s*{[\s\S]*?return (\w+)\(\1\[\w+\]\)/);
-      if (funcMatch) {
-        const funcName = funcMatch[1];
-        const arrayName = funcMatch[3];
-
-        // Attempt to extract the array and decode it
-        const arrayMatch2 = code.match(new RegExp(`var (${arrayName})\\s*=\\s*\\[(.*?)\\];`));
-        if (arrayMatch2) {
-          const newArrayRaw = `[${arrayMatch2[2]}]`;
-          let newArray;
-          try {
-            newArray = eval(newArrayRaw);
-          } catch (e) {
-            alert("❌ Failed to parse nested mapping array.");
-            return;
-          }
-
-          // Replace all calls to the function with decoded values
-          const funcCallRegex = new RegExp(`${funcName}\\((0x[0-9a-f]+)\\)`, 'gi');
-          code = code.replace(funcCallRegex, (_, hex) => {
-            const index = parseInt(hex, 16);
-            const val = newArray[index];
-            return typeof val === 'string' ? `"${val}"` : '""';
-          });
-        }
+      // Deobfuscate function mappings like _0x5956()
+      const mappings = extractMappings(code);
+      if (mappings) {
+        code = decodeMappingCalls(code, mappings);
       }
 
       // Beautify the code after deobfuscation
       const beautified = js_beautify(code, { indent_size: 2 });
       document.getElementById('output').value = beautified;
+    }
+
+    // Function to extract mappings like _0x5956()
+    function extractMappings(code) {
+      const mappingArrayMatch = code.match(/var\s+(_0x\w+)\s*=\s*\[(.*?)\];/);
+      if (!mappingArrayMatch) return null;
+
+      const arrayName = mappingArrayMatch[1];
+      const arrayRaw = `[${mappingArrayMatch[2]}]`;
+
+      try {
+        return eval(arrayRaw);
+      } catch (e) {
+        alert("❌ Failed to parse mapping array.");
+        return null;
+      }
+    }
+
+    // Function to decode obfuscated calls using the extracted mappings
+    function decodeMappingCalls(code, mappings) {
+      // Replace _0x5956(0x1) style calls
+      const regex = /_0x\w+\((0x[0-9a-f]+)\)/g;
+      return code.replace(regex, (match, hex) => {
+        const index = parseInt(hex, 16);
+        return `"${mappings[index] || ''}"`; // Return the decoded value
+      });
     }
   </script>
 </body>
