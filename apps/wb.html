@@ -56,7 +56,7 @@
     }
     .theme-buttons button {
       width: 48%;
-      margin-right: 2%;
+      margin: 1%;
     }
     .preview {
       flex: 2;
@@ -109,9 +109,7 @@
   </style>
 </head>
 <body>
-  <header>
-    Pro Website Builder
-  </header>
+  <header>Pro Website Builder</header>
   <div class="builder-container">
     <div class="controls">
       <label>Element Type:</label>
@@ -120,22 +118,17 @@
         <option value="p">Paragraph</option>
         <option value="img">Image (URL)</option>
         <option value="button">Button</option>
+        <option value="theme-switcher">Theme Switcher</option>
       </select>
       <input type="text" id="element-content" placeholder="Text or image URL" />
+
+      <label>Set Background Color:</label>
+      <input type="color" id="site-bg-color" onchange="updateBackgroundColor()" value="#2a2a2a" />
+
       <button onclick="addElement()">Add Element</button>
       <button onclick="generateCode()">Generate Code</button>
       <button onclick="clearPreview()">Clear Preview</button>
-
-      <hr />
-      <div class="theme-buttons">
-        <label>Theme Changer:</label>
-        <button onclick="setTheme('dark')">Dark</button>
-        <button onclick="setTheme('light')">Light</button>
-        <button onclick="setTheme('ocean')">Ocean</button>
-        <button onclick="setTheme('retro')">Retro</button>
-      </div>
     </div>
-
     <div class="preview" id="preview"></div>
   </div>
 
@@ -153,14 +146,22 @@
       wrapper.className = "draggable";
       wrapper.style.top = "20px";
       wrapper.style.left = "20px";
-      wrapper.style.width = "150px";
+      wrapper.style.width = "200px";
 
       let el;
       if (type === "img") {
         el = document.createElement("img");
         el.src = content;
         el.style.width = "100%";
-        el.style.height = "auto";
+      } else if (type === "theme-switcher") {
+        el = document.createElement("div");
+        el.innerHTML = `
+          <strong>Switch Theme:</strong><br/>
+          <button onclick="document.body.style.backgroundColor='#121212';document.body.style.color='#f0f0f0'">Dark</button>
+          <button onclick="document.body.style.backgroundColor='#ffffff';document.body.style.color='#111111'">Light</button>
+          <button onclick="document.body.style.backgroundColor='#001f3f';document.body.style.color='white'">Ocean</button>
+        `;
+        el.style.display = "block";
       } else {
         el = document.createElement(type);
         el.textContent = content;
@@ -202,6 +203,11 @@
       });
     }
 
+    function updateBackgroundColor() {
+      const color = document.getElementById("site-bg-color").value;
+      preview.style.backgroundColor = color;
+    }
+
     function generateCode() {
       let html = "<!DOCTYPE html>\\n<html><head><style>body{position:relative;}.draggable{position:absolute;}</style></head><body>\\n";
       document.querySelectorAll(".preview .draggable").forEach(el => {
@@ -217,32 +223,6 @@
     function clearPreview() {
       preview.innerHTML = "";
       output.value = "";
-    }
-
-    function setTheme(theme) {
-      const root = document.documentElement;
-      switch (theme) {
-        case 'dark':
-          root.style.setProperty('--bg-color', '#121212');
-          root.style.setProperty('--text-color', '#f0f0f0');
-          root.style.setProperty('--accent', '#00ffe7');
-          break;
-        case 'light':
-          root.style.setProperty('--bg-color', '#ffffff');
-          root.style.setProperty('--text-color', '#111111');
-          root.style.setProperty('--accent', '#007acc');
-          break;
-        case 'ocean':
-          root.style.setProperty('--bg-color', '#001f3f');
-          root.style.setProperty('--text-color', '#ffffff');
-          root.style.setProperty('--accent', '#39CCCC');
-          break;
-        case 'retro':
-          root.style.setProperty('--bg-color', '#f4f1de');
-          root.style.setProperty('--text-color', '#3d405b');
-          root.style.setProperty('--accent', '#e07a5f');
-          break;
-      }
     }
   </script>
 </body>
