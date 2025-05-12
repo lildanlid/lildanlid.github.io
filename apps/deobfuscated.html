@@ -38,27 +38,18 @@
       height: 100%;
       overflow: hidden;
       z-index: -1;
-      animation: hackerText 0.5s infinite;
     }
 
-    @keyframes hackerText {
-      0% {
-        transform: translateY(0);
-      }
-      100% {
-        transform: translateY(100%);
-      }
-    }
-
-    .hacker-background span {
+    .line {
       position: absolute;
       top: -100%;
-      font-size: 20px;
       color: #0f0;
+      font-size: 20px;
       white-space: nowrap;
-      animation: flowText 1s linear infinite;
+      animation: flowText 1.5s linear infinite;
     }
 
+    /* Keyframe animation for the flowing text */
     @keyframes flowText {
       0% {
         top: -100%;
@@ -121,12 +112,13 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+  <!-- Hacker Text Background -->
   <div class="hacker-background">
-    <!-- Create multiple lines of text for the background animation -->
-    <span>01001010 10101010 11010101 01100101 10101010</span>
-    <span>11001100 00101010 11100010 01010101 10100101</span>
-    <span>01101001 11010100 10011100 00110101 01011010</span>
-    <span>11001101 10101001 10011001 11100101 01001010</span>
+    <!-- Random lines of text -->
+    <div class="line">01001010 10101010 11010101 01100101 10101010</div>
+    <div class="line">11001100 00101010 11100010 01010101 10100101</div>
+    <div class="line">01101001 11010100 10011100 00110101 01011010</div>
+    <div class="line">11001101 10101001 10011001 11100101 01001010</div>
   </div>
 
   <h1>
