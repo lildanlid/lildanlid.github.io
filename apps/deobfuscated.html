@@ -1,55 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>JS Deobfuscator & Beautifier</title>
+  <meta charset="UTF-8">
+  <title>JavaScript Deobfuscator</title>
   <style>
-    body { font-family: sans-serif; margin: 20px; background: #f0f0f0; }
-    textarea { width: 100%; height: 300px; font-family: monospace; font-size: 14px; margin-bottom: 10px; }
-    button { padding: 10px 20px; margin: 5px; }
-    h1 { font-size: 20px; }
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+    }
+    h1 {
+      color: #0f0;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+    }
+    h1 img {
+      width: 28px;
+      margin-right: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-family: monospace;
+    }
+    #dropZone {
+      border: 2px dashed #0f0;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #000;
+      border: 1px solid #0f0;
+      color: #0f0;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-right: 10px;
+      display: inline-flex;
+      align-items: center;
+    }
+    button img {
+      width: 20px;
+      margin-right: 8px;
+    }
+    button:hover {
+      background: #0f0;
+      color: #000;
+    }
   </style>
 </head>
 <body>
-  <h1>JavaScript Deobfuscator & Beautifier</h1>
-  <textarea id="input" placeholder="Paste obfuscated JS here..."></textarea>
-  <br />
-  <button onclick="processCode()">Deobfuscate + Beautify</button>
-  <button onclick="beautifyOnly()">Beautify Only</button>
-  <br />
+  <h1>
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f4bb.png" alt="💻" />
+    JavaScript Deobfuscator
+  </h1>
+
+  <div id="dropZone">
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f4c2.png" alt="📂" style="width:32px;vertical-align:middle;">
+    Drag & Drop a JS file here
+  </div>
+
+  <textarea id="input" placeholder="Or paste obfuscated code here..."></textarea>
+
+  <button onclick="process()">
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f9f9.png" alt="🧹" />
+    Deobfuscate + Beautify
+  </button>
+
+  <button onclick="beautifyOnly()">
+    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f3a8.png" alt="🎨" />
+    Beautify Only
+  </button>
+
   <textarea id="output" placeholder="Result appears here..."></textarea>
 
-  <!-- JS-Beautify CDN -->
+  <!-- Beautifier -->
   <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
-
   <script>
+    // Drag & Drop functionality
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#fff';
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.style.borderColor = '#0f0';
+    });
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#0f0';
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.js')) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          document.getElementById('input').value = ev.target.result;
+        };
+        reader.readAsText(file);
+      }
+    });
+
     function beautifyOnly() {
-      const input = document.getElementById("input").value;
+      const input = document.getElementById('input').value;
       const output = js_beautify(input, { indent_size: 2 });
-      document.getElementById("output").value = output;
+      document.getElementById('output').value = output;
     }
 
-    function processCode() {
-      let code = document.getElementById("input").value;
+    function process() {
+      let code = document.getElementById('input').value;
 
-      // Simple pattern-based deobfuscation (limited scope)
-      try {
-        // Unwrap common IIFE with string obfuscation
-        code = code.replace(/function\(_0x[a-f0-9]+,[\s\S]+?\)\(\);?/, "");
-        code = code.replace(/var _0x[a-f0-9]+ ?= ?_0x[a-f0-9]+;/g, "");
-        code = code.replace(/_0x[a-f0-9]+\((0x[0-9a-f]+)\)/gi, (m, p1) => {
-          try {
-            return '"' + eval(p1) + '"';
-          } catch (e) {
-            return m;
-          }
+      // Match var _0xabc = ['a','b','c'];
+      const arrayMatch = code.match(/var (_0x\w+)\s*=\s*\[(.*?)\];/s);
+      if (arrayMatch) {
+        const arrayName = arrayMatch[1];
+        const arrayRaw = `[${arrayMatch[2]}]`;
+
+        let mappingArray;
+        try {
+          mappingArray = eval(arrayRaw);
+        } catch (e) {
+          alert("❌ Failed to parse mapping array.");
+          return;
+        }
+
+        // Replace _0xabc(0x1a) with "decoded"
+        const callRegex = new RegExp(arrayName + '\\((0x[0-9a-f]+)\\)', 'gi');
+        code = code.replace(callRegex, (_, hex) => {
+          const index = parseInt(hex, 16);
+          const val = mappingArray[index];
+          return typeof val === 'string' ? `"${val}"` : '""';
         });
-      } catch (e) {
-        alert("Error during deobfuscation: " + e);
       }
 
       const beautified = js_beautify(code, { indent_size: 2 });
-      document.getElementById("output").value = beautified;
+      document.getElementById('output').value = beautified;
     }
   </script>
 </body>
