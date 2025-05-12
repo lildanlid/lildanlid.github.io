@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html><head><style>body{position:relative;}.draggable{position:absolute;}</style></head><body>
+<div class="draggable" style="top: 18.1495px; left: 21.9972px;"><h1>lildanlid</h1></div>
+<div class="draggable" style="top: 145.047px; left: 47.354px;"><button style="border-radius: 15px; padding: 10px 20px; background: rgb(0, 255, 231); color: rgb(0, 0, 0);">Button</button></div>
+<div class="draggable" style="top: 19.0414px; left: 737.745px;"><div><strong>Theme Switcher:</strong><br><button onclick="document.body.style.backgroundColor='#121212';document.body.style.color='#f0f0f0'">Dark</button> <button onclick="document.body.style.backgroundColor='#ffffff';document.body.style.color='#111111'">Light</button> </div></div>
+<div class="draggable" style="top: 19.1782px; left: 344.015px;"><img src="https://avatars.githubusercontent.com/u/144184259?v=4" style="width: 100%;"></div>
+</body></html>
