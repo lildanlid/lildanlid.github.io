@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JS Deobfuscator & Beautifier</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; background: #f0f0f0; }
+    textarea { width: 100%; height: 300px; font-family: monospace; font-size: 14px; margin-bottom: 10px; }
+    button { padding: 10px 20px; margin: 5px; }
+    h1 { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h1>JavaScript Deobfuscator & Beautifier</h1>
+  <textarea id="input" placeholder="Paste obfuscated JS here..."></textarea>
+  <br />
+  <button onclick="processCode()">Deobfuscate + Beautify</button>
+  <button onclick="beautifyOnly()">Beautify Only</button>
+  <br />
+  <textarea id="output" placeholder="Result appears here..."></textarea>
+
+  <!-- JS-Beautify CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
+
+  <script>
+    function beautifyOnly() {
+      const input = document.getElementById("input").value;
+      const output = js_beautify(input, { indent_size: 2 });
+      document.getElementById("output").value = output;
+    }
+
+    function processCode() {
+      let code = document.getElementById("input").value;
+
+      // Simple pattern-based deobfuscation (limited scope)
+      try {
+        // Unwrap common IIFE with string obfuscation
+        code = code.replace(/function\(_0x[a-f0-9]+,[\s\S]+?\)\(\);?/, "");
+        code = code.replace(/var _0x[a-f0-9]+ ?= ?_0x[a-f0-9]+;/g, "");
+        code = code.replace(/_0x[a-f0-9]+\((0x[0-9a-f]+)\)/gi, (m, p1) => {
+          try {
+            return '"' + eval(p1) + '"';
+          } catch (e) {
+            return m;
+          }
+        });
+      } catch (e) {
+        alert("Error during deobfuscation: " + e);
+      }
+
+      const beautified = js_beautify(code, { indent_size: 2 });
+      document.getElementById("output").value = beautified;
+    }
+  </script>
+</body>
+</html>
