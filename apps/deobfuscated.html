@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>JavaScript Deobfuscator</title>
   <style>
-    /* Body and basic styling */
     body {
       background-color: #000;
       color: #0f0;
@@ -29,7 +28,6 @@
       margin-right: 10px;
     }
 
-    /* Style for the textareas and buttons */
     textarea {
       width: 100%;
       height: 300px;
@@ -72,13 +70,11 @@
       color: #000;
     }
 
-    /* Adjust the spacing for buttons and textareas */
     #output {
       height: 200px;
     }
   </style>
 
-  <!-- Link to Google Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
@@ -106,10 +102,8 @@
 
   <textarea id="output" placeholder="Result appears here..."></textarea>
 
-  <!-- Beautifier -->
   <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
   <script>
-    // Drag & Drop functionality
     const dropZone = document.getElementById('dropZone');
     dropZone.addEventListener('dragover', e => {
       e.preventDefault();
@@ -131,24 +125,22 @@
       }
     });
 
-    // Beautify Only (without deobfuscation)
     function beautifyOnly() {
       const input = document.getElementById('input').value;
       const output = js_beautify(input, { indent_size: 2 });
       document.getElementById('output').value = output;
     }
 
-    // Deobfuscate and Beautify
     function process() {
       let code = document.getElementById('input').value;
 
-      // Deobfuscate function mappings like _0x5956()
+      // Extract mappings and decode
       const mappings = extractMappings(code);
       if (mappings) {
         code = decodeMappingCalls(code, mappings);
       }
 
-      // Beautify the code after deobfuscation
+      // Beautify the code
       const beautified = js_beautify(code, { indent_size: 2 });
       document.getElementById('output').value = beautified;
     }
@@ -169,15 +161,15 @@
       }
     }
 
-    // Function to decode obfuscated calls using the extracted mappings
+    // Decode the obfuscation calls such as _0x5956(0x1)
     function decodeMappingCalls(code, mappings) {
-      // Replace _0x5956(0x1) style calls
       const regex = /_0x\w+\((0x[0-9a-f]+)\)/g;
       return code.replace(regex, (match, hex) => {
         const index = parseInt(hex, 16);
-        return `"${mappings[index] || ''}"`; // Return the decoded value
+        return `"${mappings[index] || ''}"`;
       });
     }
+
   </script>
 </body>
 </html>
