@@ -186,16 +186,259 @@
   </style>
 </head>
 <body>
-  <!-- React app will be mounted here -->
   <div id="root"></div>
 
   <script type="text/babel">
-    // (The React component code remains exactly the same as in the previous example)
-    // Only the CSS has been reorganized for better readability
     const { useState, useRef, useEffect } = React;
 
     function CleanCodingAssistant() {
-      // ... [rest of the component code remains identical] ...
+      const [messages, setMessages] = useState([]);
+      const [inputValue, setInputValue] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
+      const [selectedLanguage, setSelectedLanguage] = useState('javascript');
+      const messagesEndRef = useRef(null);
+
+      // Enhanced knowledge base with file generation capability
+      const codingKnowledge = {
+        "hello": "Hello! I'm your advanced coding assistant. I can generate complete code files, explain concepts, and help with multiple programming languages.",
+        "help": "I can:\n- Generate complete code files (downloadable)\n- Explain programming concepts\n- Provide code examples in:\n  • JavaScript/TypeScript\n  • Python\n  • React\n  • HTML/CSS\n  • Node.js\n  • SQL\n\nTry: 'Create a React component' or 'Show me a Python Flask API'",
+        
+        // File generation templates
+        "react component": {
+          filename: "MyComponent.jsx",
+          content: `import React from 'react';\n\nfunction MyComponent({ title }) {\n  return (\n    <div className="p-4 border rounded-lg">\n      <h1 className="text-xl font-bold">{title}</h1>\n      <p>This is a reusable React component.</p>\n    </div>\n  );\n}\n\nexport default MyComponent;`,
+          language: "javascript"
+        },
+        "python api": {
+          filename: "api.py",
+          content: `from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.route('/api/hello')\ndef hello():\n    return jsonify({"message": "Hello from Python API!"})\n\nif __name__ == '__main__':\n    app.run(debug=True)`,
+          language: "python"
+        },
+        "node server": {
+          filename: "server.js",
+          content: `const express = require('express');\nconst app = express();\nconst PORT = 3000;\n\napp.get('/', (req, res) => {\n  res.send('Hello from Node.js server!');\n});\n\napp.listen(PORT, () => {\n  console.log(\`Server running on http://localhost:\${PORT}\`);\n});`,
+          language: "javascript"
+        },
+        "html template": {
+          filename: "index.html",
+          content: `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>My Page</title>\n  <script src="https://cdn.tailwindcss.com"></script>\n</head>\n<body class="bg-gray-100">\n  <div class="container mx-auto p-4">\n    <h1 class="text-3xl font-bold text-blue-600">Welcome!</h1>\n    <p class="mt-2">This is a responsive HTML template with Tailwind CSS.</p>\n  </div>\n</body>\n</html>`,
+          language: "html"
+        },
+        
+        // Code examples
+        "function": {
+          content: `// JavaScript function\nexample = (name) => {\n  return \`Hello, \${name}!\`;\n};\n\n// Python function\ndef example(name):\n    return f"Hello, {name}!"`,
+          language: "javascript"
+        },
+        "loop": {
+          content: `// JavaScript for loop\nfor (let i = 0; i < 5; i++) {\n  console.log(i);\n}\n\n// Python for loop\nfor i in range(5):\n    print(i)`,
+          language: "javascript"
+        },
+        "promise": {
+          content: `// JavaScript Promise\nfunction fetchData() {\n  return new Promise((resolve) => {\n    setTimeout(() => {\n      resolve('Data loaded');\n    }, 1000);\n  });\n}\n\n// Using async/await\nasync function getData() {\n  const data = await fetchData();\n  console.log(data);\n}`,
+          language: "javascript"
+        }
+      };
+
+      // Initialize with welcome message
+      useEffect(() => {
+        const savedMessages = localStorage.getItem('advanced-coding-messages');
+        if (savedMessages) {
+          setMessages(JSON.parse(savedMessages));
+        } else {
+          setMessages([{
+            id: '1',
+            text: 'Hello! I\'m your advanced coding assistant. I can generate complete code files and explain programming concepts.\n\nTry: "Create a React component" or "Show me a Python API example"',
+            sender: 'ai'
+          }]);
+        }
+      }, []);
+
+      // Save messages to localStorage
+      useEffect(() => {
+        if (messages.length > 0) {
+          localStorage.setItem('advanced-coding-messages', JSON.stringify(messages));
+        }
+      }, [messages]);
+
+      // Auto-scroll to bottom
+      useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, [messages]);
+
+      const handleSendMessage = () => {
+        if (!inputValue.trim()) return;
+
+        // Add user message
+        const userMessage = {
+          id: Date.now().toString(),
+          text: inputValue,
+          sender: 'user'
+        };
+        setMessages(prev => [...prev, userMessage]);
+        setInputValue('');
+
+        // Simulate typing delay
+        setIsLoading(true);
+        setTimeout(() => {
+          getResponse(inputValue);
+          setIsLoading(false);
+        }, 500);
+      };
+
+      const getResponse = (prompt) => {
+        const lowerPrompt = prompt.toLowerCase();
+        let response = {
+          text: "I can help with code generation and programming concepts. Try asking for a specific file or concept like 'Create a React component' or 'Explain promises'.",
+          isCode: false
+        };
+        
+        // Check for matching keywords
+        for (const [keyword, answer] of Object.entries(codingKnowledge)) {
+          if (lowerPrompt.includes(keyword)) {
+            response = typeof answer === 'string' 
+              ? { text: answer, isCode: answer.includes('\n') }
+              : { 
+                  text: answer.content, 
+                  isCode: true,
+                  isFile: true,
+                  filename: answer.filename,
+                  language: answer.language || selectedLanguage
+                };
+            break;
+          }
+        }
+
+        // Add AI response
+        setMessages(prev => [...prev, {
+          id: Date.now().toString() + 1,
+          ...response,
+          sender: 'ai'
+        }]);
+      };
+
+      const downloadFile = (filename, content) => {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      const clearHistory = () => {
+        if (confirm('Clear all chat history?')) {
+          setMessages([{
+            id: '1',
+            text: 'Hello! I\'m your advanced coding assistant. I can generate complete code files and explain programming concepts.\n\nTry: "Create a React component" or "Show me a Python API example"',
+            sender: 'ai'
+          }]);
+          localStorage.removeItem('advanced-coding-messages');
+        }
+      };
+
+      const formatMessage = (message) => {
+        if (message.isCode) {
+          return (
+            <div className="code-block">
+              {message.isFile && (
+                <div className="file-header">
+                  <span>{message.filename || 'code.txt'}</span>
+                  <button 
+                    onClick={() => downloadFile(
+                      message.filename || 'code.txt', 
+                      message.text
+                    )}
+                    className="download-btn"
+                  >
+                    Download
+                  </button>
+                </div>
+              )}
+              <pre>{message.text}</pre>
+            </div>
+          );
+        }
+        return message.text.split('\n').map((line, i) => <p key={i}>{line}</p>);
+      };
+
+      return (
+        <div className="chat-container">
+          {/* Header with tabs */}
+          <div className="chat-header">
+            <div className="header-content">
+              <h1 className="text-xl font-bold">Advanced Coding Assistant</h1>
+              <button 
+                onClick={clearHistory}
+                className="text-sm bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded transition"
+              >
+                Clear History
+              </button>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="messages">
+            {messages.map(message => (
+              <div
+                key={message.id}
+                className={message.sender === 'user' ? 'user-message' : 'ai-message'}
+              >
+                {formatMessage(message)}
+              </div>
+            ))}
+
+            {isLoading && (
+              <div className="ai-message">
+                <div className="typing-indicator">
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                  <div className="typing-dot"></div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="input-area">
+            <div className="flex gap-2 mb-2">
+              <select 
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="language-selector"
+              >
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="react">React</option>
+                <option value="html">HTML</option>
+                <option value="node">Node.js</option>
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder={`Ask for code (e.g. "Create a ${selectedLanguage} ${selectedLanguage === 'react' ? 'component' : selectedLanguage === 'python' ? 'API' : 'function'}")`}
+                className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                disabled={isLoading}
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={!inputValue.trim() || isLoading}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      );
     }
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
