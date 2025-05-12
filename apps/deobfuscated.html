@@ -39,6 +39,8 @@
       font-family: monospace;
       z-index: 10;
       resize: vertical;
+      overflow-y: auto;
+      white-space: pre-wrap;
     }
 
     #dropZone {
@@ -73,7 +75,7 @@
 
     #output {
       height: 200px;
-      overflow-y: scroll; /* Add scrolling to the output textarea */
+      overflow-y: auto;
     }
 
     #copyBtn {
@@ -141,7 +143,7 @@
     function beautifyOnly() {
       const input = document.getElementById('input').value;
       const output = js_beautify(input, { indent_size: 2 });
-      document.getElementById('output').value = output;
+      appendToOutput(output);
     }
 
     function process() {
@@ -155,7 +157,7 @@
 
       // Step 2: Beautify the decoded code
       const beautified = js_beautify(code, { indent_size: 2 });
-      document.getElementById('output').value = beautified;
+      appendToOutput(beautified);
     }
 
     // Function to extract mappings like _0x5956()
@@ -181,6 +183,13 @@
         const index = parseInt(hex, 16);
         return `"${mappings[index] || ''}"`;
       });
+    }
+
+    // Function to append output to the output textarea with infinite scrolling
+    function appendToOutput(newContent) {
+      const output = document.getElementById('output');
+      output.value += newContent + "\n";  // Append new content
+      output.scrollTop = output.scrollHeight;  // Auto-scroll to bottom
     }
 
     // Copy the deobfuscated code to clipboard
