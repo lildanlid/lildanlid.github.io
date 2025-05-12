@@ -35,7 +35,7 @@
     }
     .controls {
       flex: 1;
-      max-width: 300px;
+      max-width: 350px;
       background: #1e1e1e;
       padding: 20px;
       border-radius: 10px;
@@ -53,10 +53,6 @@
       color: black;
       font-weight: bold;
       cursor: pointer;
-    }
-    .theme-buttons button {
-      width: 48%;
-      margin: 1%;
     }
     .preview {
       flex: 2;
@@ -101,11 +97,7 @@
       margin: 20px;
       font-family: monospace;
     }
-    @media (max-width: 768px) {
-      .builder-container {
-        flex-direction: column;
-      }
-    }
+    .sub-options { display: none; }
   </style>
 </head>
 <body>
@@ -113,7 +105,7 @@
   <div class="builder-container">
     <div class="controls">
       <label>Element Type:</label>
-      <select id="element-type">
+      <select id="element-type" onchange="toggleSubOptions()">
         <option value="h1">Heading</option>
         <option value="p">Paragraph</option>
         <option value="img">Image (URL)</option>
@@ -121,33 +113,52 @@
         <option value="theme-switcher">Theme Switcher</option>
       </select>
       <input type="text" id="element-content" placeholder="Text or image URL" />
-
-      <label>Set Background Color:</label>
-      <input type="color" id="site-bg-color" onchange="updateBackgroundColor()" value="#2a2a2a" />
-
+      <div id="button-options" class="sub-options">
+        <label>Button Shape:</label>
+        <select id="button-shape">
+          <option value="rounded">Rounded</option>
+          <option value="sharp">Sharp</option>
+        </select>
+        <label>Button Size:</label>
+        <select id="button-size">
+          <option value="small">Small</option>
+          <option value="medium" selected>Medium</option>
+          <option value="large">Large</option>
+        </select>
+        <label>Background Color:</label>
+        <input type="color" id="button-bg" value="#00ffe7">
+        <label>Text Color:</label>
+        <input type="color" id="button-text" value="#000000">
+      </div>
+      <div id="theme-options" class="sub-options">
+        <label>Themes to Include:</label>
+        <input type="checkbox" id="theme-dark" checked /> Dark<br/>
+        <input type="checkbox" id="theme-light" checked /> Light<br/>
+        <input type="checkbox" id="theme-ocean" /> Ocean<br/>
+        <input type="checkbox" id="theme-retro" /> Retro<br/>
+      </div>
       <button onclick="addElement()">Add Element</button>
       <button onclick="generateCode()">Generate Code</button>
-      <button onclick="clearPreview()">Clear Preview</button>
+      <button onclick="clearPreview()">Clear</button>
     </div>
     <div class="preview" id="preview"></div>
   </div>
-
   <textarea id="output" rows="10" readonly placeholder="Generated HTML will appear here..."></textarea>
-
   <script>
     const preview = document.getElementById("preview");
     const output = document.getElementById("output");
-
+    function toggleSubOptions() {
+      const type = document.getElementById("element-type").value;
+      document.getElementById("button-options").style.display = type === "button" ? "block" : "none";
+      document.getElementById("theme-options").style.display = type === "theme-switcher" ? "block" : "none";
+    }
     function addElement() {
       const type = document.getElementById("element-type").value;
       const content = document.getElementById("element-content").value;
-
       const wrapper = document.createElement("div");
       wrapper.className = "draggable";
       wrapper.style.top = "20px";
       wrapper.style.left = "20px";
-      wrapper.style.width = "200px";
-
       let el;
       if (type === "img") {
         el = document.createElement("img");
@@ -155,30 +166,40 @@
         el.style.width = "100%";
       } else if (type === "theme-switcher") {
         el = document.createElement("div");
-        el.innerHTML = `
-          <strong>Switch Theme:</strong><br/>
-          <button onclick="document.body.style.backgroundColor='#121212';document.body.style.color='#f0f0f0'">Dark</button>
-          <button onclick="document.body.style.backgroundColor='#ffffff';document.body.style.color='#111111'">Light</button>
-          <button onclick="document.body.style.backgroundColor='#001f3f';document.body.style.color='white'">Ocean</button>
-        `;
-        el.style.display = "block";
+        el.innerHTML = `<strong>Theme Switcher:</strong><br/>`;
+        if (document.getElementById("theme-dark").checked)
+          el.innerHTML += `<button onclick="document.body.style.backgroundColor='#121212';document.body.style.color='#f0f0f0'">Dark</button> `;
+        if (document.getElementById("theme-light").checked)
+          el.innerHTML += `<button onclick="document.body.style.backgroundColor='#ffffff';document.body.style.color='#111111'">Light</button> `;
+        if (document.getElementById("theme-ocean").checked)
+          el.innerHTML += `<button onclick="document.body.style.backgroundColor='#001f3f';document.body.style.color='white'">Ocean</button> `;
+        if (document.getElementById("theme-retro").checked)
+          el.innerHTML += `<button onclick="document.body.style.backgroundColor='#f4f1de';document.body.style.color='#3d405b'">Retro</button> `;
+      } else if (type === "button") {
+        el = document.createElement("button");
+        el.textContent = content;
+        const shape = document.getElementById("button-shape").value;
+        const size = document.getElementById("button-size").value;
+        const bg = document.getElementById("button-bg").value;
+        const text = document.getElementById("button-text").value;
+        el.style.borderRadius = shape === "rounded" ? "15px" : "0px";
+        el.style.padding = size === "large" ? "14px 28px" : size === "small" ? "6px 12px" : "10px 20px";
+        el.style.background = bg;
+        el.style.color = text;
       } else {
         el = document.createElement(type);
         el.textContent = content;
         el.contentEditable = true;
       }
-
       const delBtn = document.createElement("button");
       delBtn.className = "delete-btn";
       delBtn.textContent = "×";
       delBtn.onclick = () => wrapper.remove();
-
       wrapper.appendChild(el);
       wrapper.appendChild(delBtn);
       makeDraggable(wrapper);
       preview.appendChild(wrapper);
     }
-
     function makeDraggable(el) {
       let offsetX, offsetY;
       el.addEventListener("pointerdown", (e) => {
@@ -186,44 +207,33 @@
         e.preventDefault();
         offsetX = e.offsetX;
         offsetY = e.offsetY;
-
         function moveAt(ev) {
           el.style.left = (ev.pageX - preview.offsetLeft - offsetX) + "px";
           el.style.top = (ev.pageY - preview.offsetTop - offsetY) + "px";
         }
-
-        function onPointerMove(ev) {
-          moveAt(ev);
-        }
-
+        function onPointerMove(ev) { moveAt(ev); }
         document.addEventListener("pointermove", onPointerMove);
         document.addEventListener("pointerup", () => {
           document.removeEventListener("pointermove", onPointerMove);
         }, { once: true });
       });
     }
-
-    function updateBackgroundColor() {
-      const color = document.getElementById("site-bg-color").value;
-      preview.style.backgroundColor = color;
-    }
-
     function generateCode() {
-      let html = "<!DOCTYPE html>\\n<html><head><style>body{position:relative;}.draggable{position:absolute;}</style></head><body>\\n";
+      let html = "<!DOCTYPE html>\n<html><head><style>body{position:relative;}.draggable{position:absolute;}</style></head><body>\n";
       document.querySelectorAll(".preview .draggable").forEach(el => {
         const copy = el.cloneNode(true);
         copy.querySelector(".delete-btn")?.remove();
         copy.querySelectorAll("[contenteditable]").forEach(e => e.removeAttribute("contenteditable"));
-        html += copy.outerHTML + "\\n";
+        html += copy.outerHTML + "\n";
       });
       html += "</body></html>";
       output.value = html;
     }
-
     function clearPreview() {
       preview.innerHTML = "";
       output.value = "";
     }
+    toggleSubOptions();
   </script>
 </body>
 </html>
