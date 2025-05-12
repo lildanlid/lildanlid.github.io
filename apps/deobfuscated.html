@@ -2,208 +2,152 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>JavaScript Deobfuscator</title>
+  <title>🔓 JS Deobfuscator</title>
   <style>
     body {
-      background-color: #000;
-      color: #0f0;
-      font-family: monospace;
-      padding: 20px;
-      margin: 0;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #f4f4f4;
+      padding: 2rem;
     }
 
     h1 {
-      color: #0f0;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      z-index: 10;
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
 
-    h1 img {
-      width: 28px;
-      margin-right: 10px;
-    }
-
-    textarea {
-      width: 100%;
-      height: 300px;
-      background: #000;
-      color: #0f0;
-      border: 1px solid #0f0;
-      padding: 10px;
-      margin-bottom: 10px;
-      font-family: monospace;
-      z-index: 10;
-      resize: vertical;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
-
-    #dropZone {
-      border: 2px dashed #0f0;
-      padding: 30px;
+    #drop-zone {
+      border: 2px dashed #ccc;
+      background: white;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 600px;
+      padding: 2rem;
       text-align: center;
-      margin-bottom: 10px;
-      z-index: 10;
+      transition: background 0.3s;
     }
 
-    button {
-      background: #000;
-      border: 1px solid #0f0;
-      color: #0f0;
-      padding: 10px 20px;
-      cursor: pointer;
-      margin-right: 10px;
-      display: inline-flex;
-      align-items: center;
-      z-index: 10;
-    }
-
-    button img {
-      width: 20px;
-      margin-right: 8px;
-    }
-
-    button:hover {
-      background: #0f0;
-      color: #000;
+    #drop-zone.dragover {
+      background: #e6ffe6;
+      border-color: #66bb6a;
     }
 
     #output {
-      height: 200px;
-      overflow-y: auto;
+      white-space: pre-wrap;
+      background: #1e1e1e;
+      color: #e0e0e0;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+      width: 100%;
+      overflow: auto;
+      max-height: 60vh;
     }
 
-    #copyBtn {
-      background: #0f0;
-      color: #000;
-      border: 1px solid #0f0;
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #388e3c;
     }
   </style>
-
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <h1>
-    <span class="material-icons">laptop</span>
-    JavaScript Deobfuscator
-  </h1>
 
-  <div id="dropZone">
-    <span class="material-icons" style="font-size: 32px;">folder_open</span>
-    Drag & Drop a JS file here
-  </div>
+<h1>🔓 JS Deobfuscator + Beautifier</h1>
+<div id="drop-zone">🗂️ Drag & drop a .js file here</div>
+<pre id="output">// Deobfuscated code will appear here...</pre>
+<a id="download-btn" style="display:none;">
+  <button>⬇️ Download Deobfuscated File</button>
+</a>
 
-  <textarea id="input" placeholder="Or paste obfuscated code here..."></textarea>
+<!-- js-beautify library -->
+<script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.11/js/lib/beautify.js"></script>
 
-  <button onclick="process()">
-    <span class="material-icons">cleaning_services</span>
-    Deobfuscate + Beautify
-  </button>
+<script>
+const dropZone = document.getElementById('drop-zone');
+const output = document.getElementById('output');
+const downloadBtn = document.getElementById('download-btn');
 
-  <button onclick="beautifyOnly()">
-    <span class="material-icons">brush</span>
-    Beautify Only
-  </button>
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');
+});
 
-  <textarea id="output" placeholder="Result appears here..."></textarea>
+dropZone.addEventListener('dragleave', () => {
+  dropZone.classList.remove('dragover');
+});
 
-  <button id="copyBtn" onclick="copyToClipboard()">
-    <span class="material-icons">content_copy</span>
-    Copy to Clipboard
-  </button>
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
 
-  <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
-  <script>
-    const dropZone = document.getElementById('dropZone');
-    dropZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      dropZone.style.borderColor = '#fff';
-    });
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.style.borderColor = '#0f0';
-    });
-    dropZone.addEventListener('drop', e => {
-      e.preventDefault();
-      dropZone.style.borderColor = '#0f0';
-      const file = e.dataTransfer.files[0];
-      if (file && file.name.endsWith('.js')) {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          document.getElementById('input').value = ev.target.result;
-        };
-        reader.readAsText(file);
-      }
-    });
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.js')) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const code = event.target.result;
+      const deobfuscated = deobfuscateCode(code);
+      const beautified = js_beautify(deobfuscated);
+      output.textContent = beautified;
+      createDownloadLink(beautified);
+    };
+    reader.readAsText(file);
+  } else {
+    alert('Please drop a valid .js file!');
+  }
+});
 
-    function beautifyOnly() {
-      const input = document.getElementById('input').value;
-      const output = js_beautify(input, { indent_size: 2 });
-      appendToOutput(output);
-    }
+function deobfuscateCode(code) {
+  // Match obfuscated string array
+  const arrayMatch = code.match(/var (_0x\w+)\s*=\s*\[(.*?)\];/s);
+  if (!arrayMatch) return '// Failed to find obfuscation array';
 
-    function process() {
-      let code = document.getElementById('input').value;
+  const arrayName = arrayMatch[1];
+  const rawArray = `[${arrayMatch[2]}]`;
 
-      // Step 1: Extract mappings and decode
-      const mappings = extractMappings(code);
-      if (mappings) {
-        code = decodeMappingCalls(code, mappings);
-      }
+  let stringArray;
+  try {
+    stringArray = eval(rawArray);
+  } catch {
+    return '// Error evaluating obfuscation array.';
+  }
 
-      // Step 2: Beautify the decoded code
-      const beautified = js_beautify(code, { indent_size: 2 });
-      appendToOutput(beautified);
-    }
+  // Match decoder function
+  const fnMatch = code.match(/function (_0x\w+)\(.*?\)\s*{.*?return .*?\[\w+\s*-\s*0x([a-f0-9]+)\];?}/s);
+  if (!fnMatch) return '// Failed to find decoder function';
 
-    // Function to extract mappings like _0x5956()
-    function extractMappings(code) {
-      const mappingArrayMatch = code.match(/var\s+(_0x\w+)\s*=\s*\[(.*?)\];/);
-      if (!mappingArrayMatch) return null;
+  const fnName = fnMatch[1];
+  const offset = parseInt(fnMatch[2], 16);
 
-      const arrayName = mappingArrayMatch[1];
-      const arrayRaw = `[${mappingArrayMatch[2]}]`;
+  // Replace function calls like _0xabc(0x123)
+  const regex = new RegExp(`${fnName}\\((0x[0-9a-f]+)\\)`, 'gi');
+  const replaced = code.replace(regex, (match, hex) => {
+    const index = parseInt(hex, 16) - offset;
+    return JSON.stringify(stringArray[index] || '[?]');
+  });
 
-      try {
-        return eval(arrayRaw);  // This will evaluate the array and extract values
-      } catch (e) {
-        alert("❌ Failed to parse mapping array.");
-        return null;
-      }
-    }
+  return replaced;
+}
 
-    // Decode the obfuscation calls such as _0x5956(0x1)
-    function decodeMappingCalls(code, mappings) {
-      const regex = /_0x\w+\((0x[0-9a-f]+)\)/g;
-      return code.replace(regex, (match, hex) => {
-        const index = parseInt(hex, 16);
-        return `"${mappings[index] || ''}"`;
-      });
-    }
+function createDownloadLink(text) {
+  const blob = new Blob([text], { type: 'text/javascript' });
+  const url = URL.createObjectURL(blob);
+  downloadBtn.href = url;
+  downloadBtn.download = 'deobfuscated.js';
+  downloadBtn.style.display = 'inline-block';
+  downloadBtn.onclick = () => setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+</script>
 
-    // Function to append output to the output textarea with infinite scrolling
-    function appendToOutput(newContent) {
-      const output = document.getElementById('output');
-      output.value += newContent + "\n";  // Append new content
-      output.scrollTop = output.scrollHeight;  // Auto-scroll to bottom
-    }
-
-    // Copy the deobfuscated code to clipboard
-    function copyToClipboard() {
-      const outputText = document.getElementById('output').value;
-      navigator.clipboard.writeText(outputText)
-        .then(() => {
-          alert("✅ Code copied to clipboard!");
-        })
-        .catch(err => {
-          alert("❌ Failed to copy text: " + err);
-        });
-    }
-
-  </script>
 </body>
 </html>
