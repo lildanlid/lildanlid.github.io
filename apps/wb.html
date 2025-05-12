@@ -5,79 +5,143 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pro Website Builder</title>
   <style>
-    /* === CSS STYLES (placeholder) === */
+    :root {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --accent: #00ffe7;
+    }
     body {
       font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #121212;
-      color: #f0f0f0;
+      margin: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-
-    .builder {
-      background: #1e1e1e;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #1f1f1f;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent);
     }
-
-    .preview-box {
+    .builder-container {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      padding: 20px;
+    }
+    .controls {
+      flex: 1;
+      max-width: 300px;
       background: #1e1e1e;
       padding: 20px;
-      min-height: 300px;
-      border: 1px solid #ccc;
-      position: relative;
+      border-radius: 10px;
     }
-
+    .controls label, .controls select, .controls input, .controls button {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .controls button {
+      padding: 10px;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .theme-buttons button {
+      width: 48%;
+      margin-right: 2%;
+    }
+    .preview {
+      flex: 2;
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+      min-height: 400px;
+      overflow: auto;
+    }
     .draggable {
       position: absolute;
       cursor: move;
       user-select: none;
       resize: both;
       overflow: auto;
+      padding: 10px;
+      border: 1px dashed #999;
+      background: #333;
+      color: white;
+      touch-action: none;
     }
-
     .delete-btn {
       position: absolute;
       top: -10px;
       right: -10px;
       background: red;
       color: white;
-      border-radius: 50%;
       border: none;
+      border-radius: 50%;
       width: 20px;
       height: 20px;
-      cursor: pointer;
       font-size: 14px;
       line-height: 20px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 10;
     }
-
     textarea {
       width: 100%;
+      padding: 10px;
+      margin: 20px;
       font-family: monospace;
-      margin-top: 20px;
+    }
+    @media (max-width: 768px) {
+      .builder-container {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Pro Website Builder</h1>
-  <div class="builder">
-    <label>Select Element Type:</label>
-    <select id="element-type">
-      <option value="h1">Heading</option>
-      <option value="p">Paragraph</option>
-      <option value="img">Image (URL)</option>
-      <option value="button">Button</option>
-    </select>
-    <input type="text" id="element-content" placeholder="Text or image URL" />
-    <button onclick="addElement()">Add Element</button>
-    <button onclick="generateCode()">Generate Code</button>
-    <button onclick="clearPreview()">Clear</button>
+  <header>
+    Pro Website Builder
+  </header>
+  <div class="builder-container">
+    <div class="controls">
+      <label>Element Type:</label>
+      <select id="element-type">
+        <option value="h1">Heading</option>
+        <option value="p">Paragraph</option>
+        <option value="img">Image (URL)</option>
+        <option value="button">Button</option>
+      </select>
+      <input type="text" id="element-content" placeholder="Text or image URL" />
+      <button onclick="addElement()">Add Element</button>
+      <button onclick="generateCode()">Generate Code</button>
+      <button onclick="clearPreview()">Clear Preview</button>
+
+      <hr />
+      <div class="theme-buttons">
+        <label>Theme Changer:</label>
+        <button onclick="setTheme('dark')">Dark</button>
+        <button onclick="setTheme('light')">Light</button>
+        <button onclick="setTheme('ocean')">Ocean</button>
+        <button onclick="setTheme('retro')">Retro</button>
+      </div>
+    </div>
+
+    <div class="preview" id="preview"></div>
   </div>
-  <div class="preview-box" id="preview"></div>
-  <textarea id="output" rows="12" readonly></textarea>
+
+  <textarea id="output" rows="10" readonly placeholder="Generated HTML will appear here..."></textarea>
 
   <script>
-    // === JS SCRIPT ===
     const preview = document.getElementById("preview");
     const output = document.getElementById("output");
 
@@ -87,14 +151,16 @@
 
       const wrapper = document.createElement("div");
       wrapper.className = "draggable";
-      wrapper.style.top = "10px";
-      wrapper.style.left = "10px";
+      wrapper.style.top = "20px";
+      wrapper.style.left = "20px";
+      wrapper.style.width = "150px";
 
       let el;
       if (type === "img") {
         el = document.createElement("img");
         el.src = content;
-        el.style.width = "200px";
+        el.style.width = "100%";
+        el.style.height = "auto";
       } else {
         el = document.createElement(type);
         el.textContent = content;
@@ -114,8 +180,9 @@
 
     function makeDraggable(el) {
       let offsetX, offsetY;
-      el.addEventListener("mousedown", (e) => {
+      el.addEventListener("pointerdown", (e) => {
         if (e.target.classList.contains("delete-btn")) return;
+        e.preventDefault();
         offsetX = e.offsetX;
         offsetY = e.offsetY;
 
@@ -124,23 +191,24 @@
           el.style.top = (ev.pageY - preview.offsetTop - offsetY) + "px";
         }
 
-        function onMouseMove(ev) {
+        function onPointerMove(ev) {
           moveAt(ev);
         }
 
-        document.addEventListener("mousemove", onMouseMove);
-        el.addEventListener("mouseup", () => {
-          document.removeEventListener("mousemove", onMouseMove);
+        document.addEventListener("pointermove", onPointerMove);
+        document.addEventListener("pointerup", () => {
+          document.removeEventListener("pointermove", onPointerMove);
         }, { once: true });
       });
     }
 
     function generateCode() {
-      let html = "<!DOCTYPE html>\n<html><head><style>body{position:relative;}.draggable{position:absolute;}</style></head><body>\n";
-      document.querySelectorAll(".preview-box .draggable").forEach(el => {
+      let html = "<!DOCTYPE html>\\n<html><head><style>body{position:relative;}.draggable{position:absolute;}</style></head><body>\\n";
+      document.querySelectorAll(".preview .draggable").forEach(el => {
         const copy = el.cloneNode(true);
-        copy.querySelector(".delete-btn").remove();
-        html += copy.outerHTML + "\n";
+        copy.querySelector(".delete-btn")?.remove();
+        copy.querySelectorAll("[contenteditable]").forEach(e => e.removeAttribute("contenteditable"));
+        html += copy.outerHTML + "\\n";
       });
       html += "</body></html>";
       output.value = html;
@@ -149,6 +217,32 @@
     function clearPreview() {
       preview.innerHTML = "";
       output.value = "";
+    }
+
+    function setTheme(theme) {
+      const root = document.documentElement;
+      switch (theme) {
+        case 'dark':
+          root.style.setProperty('--bg-color', '#121212');
+          root.style.setProperty('--text-color', '#f0f0f0');
+          root.style.setProperty('--accent', '#00ffe7');
+          break;
+        case 'light':
+          root.style.setProperty('--bg-color', '#ffffff');
+          root.style.setProperty('--text-color', '#111111');
+          root.style.setProperty('--accent', '#007acc');
+          break;
+        case 'ocean':
+          root.style.setProperty('--bg-color', '#001f3f');
+          root.style.setProperty('--text-color', '#ffffff');
+          root.style.setProperty('--accent', '#39CCCC');
+          break;
+        case 'retro':
+          root.style.setProperty('--bg-color', '#f4f1de');
+          root.style.setProperty('--text-color', '#3d405b');
+          root.style.setProperty('--accent', '#e07a5f');
+          break;
+      }
     }
   </script>
 </body>
