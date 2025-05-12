@@ -55,27 +55,30 @@
       color: #000;
     }
   </style>
+
+  <!-- Link to Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
   <h1>
-    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f4bb.png" alt="💻" />
+    <span class="material-icons">laptop</span>
     JavaScript Deobfuscator
   </h1>
 
   <div id="dropZone">
-    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f4c2.png" alt="📂" style="width:32px;vertical-align:middle;">
+    <span class="material-icons" style="font-size: 32px;">folder_open</span>
     Drag & Drop a JS file here
   </div>
 
   <textarea id="input" placeholder="Or paste obfuscated code here..."></textarea>
 
   <button onclick="process()">
-    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f9f9.png" alt="🧹" />
+    <span class="material-icons">cleaning_services</span>
     Deobfuscate + Beautify
   </button>
 
   <button onclick="beautifyOnly()">
-    <img src="https://twemoji.maxcdn.com/v/latest/72x72/1f3a8.png" alt="🎨" />
+    <span class="material-icons">brush</span>
     Beautify Only
   </button>
 
@@ -106,16 +109,18 @@
       }
     });
 
+    // Beautify Only (without deobfuscation)
     function beautifyOnly() {
       const input = document.getElementById('input').value;
       const output = js_beautify(input, { indent_size: 2 });
       document.getElementById('output').value = output;
     }
 
+    // Deobfuscate and Beautify
     function process() {
       let code = document.getElementById('input').value;
 
-      // Match var _0xabc = ['a','b','c'];
+      // Handle mappings like _0x5956() and _0x47a1(x)
       const arrayMatch = code.match(/var (_0x\w+)\s*=\s*\[(.*?)\];/s);
       if (arrayMatch) {
         const arrayName = arrayMatch[1];
@@ -129,7 +134,7 @@
           return;
         }
 
-        // Replace _0xabc(0x1a) with "decoded"
+        // Find all the calls like _0x47a1(0x1a) and replace them
         const callRegex = new RegExp(arrayName + '\\((0x[0-9a-f]+)\\)', 'gi');
         code = code.replace(callRegex, (_, hex) => {
           const index = parseInt(hex, 16);
@@ -138,6 +143,35 @@
         });
       }
 
+      // Handle nested function decoding like _0x47a1() with _0x5956()
+      const funcMatch = code.match(/function (\w+)\((.*?)\)\s*{[\s\S]*?return (\w+)\(\1\[\w+\]\)/);
+      if (funcMatch) {
+        const funcName = funcMatch[1];
+        const arrayName = funcMatch[3];
+
+        // Attempt to extract the array and decode it
+        const arrayMatch2 = code.match(new RegExp(`var (${arrayName})\\s*=\\s*\\[(.*?)\\];`));
+        if (arrayMatch2) {
+          const newArrayRaw = `[${arrayMatch2[2]}]`;
+          let newArray;
+          try {
+            newArray = eval(newArrayRaw);
+          } catch (e) {
+            alert("❌ Failed to parse nested mapping array.");
+            return;
+          }
+
+          // Replace all calls to the function with decoded values
+          const funcCallRegex = new RegExp(`${funcName}\\((0x[0-9a-f]+)\\)`, 'gi');
+          code = code.replace(funcCallRegex, (_, hex) => {
+            const index = parseInt(hex, 16);
+            const val = newArray[index];
+            return typeof val === 'string' ? `"${val}"` : '""';
+          });
+        }
+      }
+
+      // Beautify the code after deobfuscation
       const beautified = js_beautify(code, { indent_size: 2 });
       document.getElementById('output').value = beautified;
     }
