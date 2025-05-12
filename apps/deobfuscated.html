@@ -38,6 +38,7 @@
       margin-bottom: 10px;
       font-family: monospace;
       z-index: 10;
+      resize: vertical;
     }
 
     #dropZone {
@@ -72,6 +73,13 @@
 
     #output {
       height: 200px;
+      overflow-y: scroll; /* Add scrolling to the output textarea */
+    }
+
+    #copyBtn {
+      background: #0f0;
+      color: #000;
+      border: 1px solid #0f0;
     }
   </style>
 
@@ -101,6 +109,11 @@
   </button>
 
   <textarea id="output" placeholder="Result appears here..."></textarea>
+
+  <button id="copyBtn" onclick="copyToClipboard()">
+    <span class="material-icons">content_copy</span>
+    Copy to Clipboard
+  </button>
 
   <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.0/js/lib/beautify.js"></script>
   <script>
@@ -168,6 +181,18 @@
         const index = parseInt(hex, 16);
         return `"${mappings[index] || ''}"`;
       });
+    }
+
+    // Copy the deobfuscated code to clipboard
+    function copyToClipboard() {
+      const outputText = document.getElementById('output').value;
+      navigator.clipboard.writeText(outputText)
+        .then(() => {
+          alert("✅ Code copied to clipboard!");
+        })
+        .catch(err => {
+          alert("❌ Failed to copy text: " + err);
+        });
     }
 
   </script>
