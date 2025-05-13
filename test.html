@@ -79,6 +79,9 @@
 
     .sidebar a.active {
       color: var(--accent);
+      outline: 1px solid var(--accent);
+      outline-offset: -2px;
+      background-color: transparent;
     }
 
     .sidebar a.active .material-icons {
@@ -207,7 +210,9 @@
     <a href="#" onclick="showSection('projects')" data-section="projects"><span class="material-icons">folder</span>Projects</a>
     <a href="#" onclick="showSection('apps')" data-section="apps"><span class="material-icons">apps</span>Apps</a>
     <a href="#" onclick="showSection('links')" data-section="links"><span class="material-icons">link</span>Links</a>
-    <a href="#" onclick="showSection('forms')" data-section="forms"><span class="material-icons">description</span>Forms</a>
+    <a href="https://lildanlid.github.io/apps/forms" target="_blank" rel="noopener">
+      <span class="material-icons">description</span>Forms
+    </a>
   </div>
 
   <!-- Menu Button -->
@@ -283,11 +288,6 @@
         <a href="https://lildanlid.github.io/" target="_blank">WEBSITE</a>
       </div>
     </section>
-
-    <section id="forms">
-      <h2>Forms</h2>
-      <p><a href="https://lildanlid.github.io/apps/forms" target="_blank">Go to Forms Page</a></p>
-    </section>
   </div>
 
   <script>
@@ -307,7 +307,8 @@
       localStorage.setItem("activeSection", id);
 
       document.querySelectorAll('.sidebar a').forEach(link => {
-        link.classList.toggle("active", link.dataset.section === id);
+        const isMatch = link.dataset.section === id;
+        link.classList.toggle("active", isMatch);
       });
     }
 
