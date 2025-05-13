@@ -11,26 +11,27 @@
       --text: #ffffff;
       --card-bg: #1e1e1e;
       --accent: #1e88e5;
+      --radius: 12px;
     }
 
     [data-theme="light"] {
       --bg: #f4f4f4;
       --text: #121212;
       --card-bg: #ffffff;
-      --accent: #1e88e5;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      border-radius: var(--radius);
     }
 
     body {
       font-family: Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      transition: all 0.3s ease;
+      transition: background 0.3s, color 0.3s;
     }
 
     a {
@@ -44,7 +45,8 @@
       position: fixed;
       top: 0;
       left: -250px;
-      background-color: var(--card-bg);
+      background-color: rgba(30, 30, 30, 0.2);
+      backdrop-filter: blur(10px);
       overflow-x: hidden;
       transition: left 0.3s ease;
       padding-top: 60px;
@@ -57,7 +59,9 @@
 
     .sidebar a {
       padding: 15px 25px;
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       color: var(--text);
       font-weight: bold;
     }
@@ -126,8 +130,7 @@
 
     .card {
       background-color: var(--card-bg);
-      border-radius: 0;
-      box-shadow: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
       width: calc(33.333% - 20px);
       padding: 20px;
       display: flex;
@@ -137,7 +140,6 @@
 
     .card img {
       width: 100%;
-      border-radius: 0;
       margin-bottom: 15px;
     }
 
@@ -155,7 +157,6 @@
       padding: 10px 15px;
       background-color: var(--accent);
       color: #fff;
-      border-radius: 0;
       transition: background 0.3s;
     }
 
@@ -173,7 +174,6 @@
       padding: 10px 20px;
       background-color: var(--accent);
       color: #fff;
-      border-radius: 0;
     }
 
     @media (max-width: 768px) {
@@ -186,11 +186,11 @@
 <body data-theme="dark">
   <!-- Sidebar -->
   <div id="mySidebar" class="sidebar">
-    <a href="#" onclick="showSection('home')">🏠 Home</a>
-    <a href="#" onclick="showSection('projects')">📦 Projects</a>
-    <a href="#" onclick="showSection('apps')">📱 Apps</a>
-    <a href="#" onclick="showSection('links')">🔗 Links</a>
-    <a href="#" onclick="showSection('forms')">📝 Forms</a>
+    <a href="#" onclick="showSection('home')"><span class="material-icons">home</span>Home</a>
+    <a href="#" onclick="showSection('projects')"><span class="material-icons">folder</span>Projects</a>
+    <a href="#" onclick="showSection('apps')"><span class="material-icons">apps</span>Apps</a>
+    <a href="#" onclick="showSection('links')"><span class="material-icons">link</span>Links</a>
+    <a href="#" onclick="showSection('forms')"><span class="material-icons">description</span>Forms</a>
   </div>
 
   <!-- Menu Button -->
@@ -199,7 +199,9 @@
   </button>
 
   <!-- Theme Toggle -->
-  <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <span class="material-icons">dark_mode</span>
+  </button>
 
   <!-- Main Content -->
   <div id="main" class="main">
@@ -280,18 +282,14 @@
     }
 
     function showSection(id) {
-      document.querySelectorAll("section").forEach(sec => {
-        sec.classList.remove("active");
-      });
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
       document.getElementById(id).classList.add("active");
-      toggleSidebar();
     }
 
     function toggleTheme() {
       const body = document.body;
-      const currentTheme = body.getAttribute("data-theme");
-      const newTheme = currentTheme === "dark" ? "light" : "dark";
-      body.setAttribute("data-theme", newTheme);
+      const current = body.getAttribute("data-theme");
+      body.setAttribute("data-theme", current === "dark" ? "light" : "dark");
     }
   </script>
 </body>
