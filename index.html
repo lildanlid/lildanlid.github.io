@@ -1,474 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>lildanlid</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            /* Dark mode colors */
-            --bg-color-dark: #121212;
-            --text-color-dark: #ffffff;
-            --hover-bg-dark: #1c1c1c;
-            --accent-color: #4A90E2;
-            --purple-color: #6a0dad;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>lildanlid</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #121212;
+      --text: #ffffff;
+      --card-bg: #1e1e1e;
+      --accent: #1e88e5;
+      --radius: 6px;
+    }
 
-            /* Light mode colors */
-            --bg-color-light: #f5f5f5;
-            --text-color-light: #000000;
-            --hover-bg-light: #e0e0e0;
-        }
+    [data-theme="light"] {
+      --bg: #f4f4f4;
+      --text: #121212;
+      --card-bg: #ffffff;
+    }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color-dark);
-            color: var(--text-color-dark);
-            transition: background-color 0.3s, color 0.3s;
-            overflow-x: hidden;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: var(--radius);
+    }
 
-        body.light-mode {
-            background-color: var(--bg-color-light);
-            color: var(--text-color-light);
-        }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
 
-        .side-menu {
-            width: 250px;
-            height: 100vh;
-            background-color: var(--bg-color-dark);
-            color: var(--text-color-dark);
-            padding: 20px;
-            position: fixed;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            overflow-y: auto;
-            padding-bottom: 50px;
-            transition: background-color 0.3s, color 0.3s;
-        }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
 
-        body.light-mode .side-menu {
-            background-color: var(--bg-color-light);
-            color: var(--text-color-light);
-        }
+    ::selection {
+      background-color: var(--accent);
+      color: white;
+    }
 
-        .side-menu ul {
-            list-style: none;
-            padding: 0;
-        }
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: -250px;
+      background-color: rgba(30, 30, 30, 0.2);
+      backdrop-filter: blur(10px);
+      overflow-x: hidden;
+      transition: left 0.3s ease;
+      padding-top: 60px;
+      z-index: 1000;
+      border-radius: var(--radius);
+    }
 
-        .side-menu ul li {
-            margin-bottom: 15px;
-        }
+    .sidebar.open {
+      left: 0;
+    }
 
-        .side-menu ul li a {
-            text-decoration: none;
-            color: var(--text-color-dark);
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-        }
+    .sidebar a {
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-weight: bold;
+      position: relative;
+      transition: color 0.3s;
+      border-radius: var(--radius);
+    }
 
-        .side-menu ul li a:hover {
-            color: var(--accent-color);
-            background-color: var(--hover-bg-dark);
-        }
+    .sidebar a::after {
+      content: "";
+      position: absolute;
+      left: 25px;
+      bottom: 10px;
+      height: 2px;
+      width: 0;
+      background-color: var(--accent);
+      transition: width 0.3s ease;
+      border-radius: var(--radius);
+    }
 
-        body.light-mode .side-menu ul li a {
-            color: var(--text-color-light);
-        }
+    .sidebar a.active::after {
+      width: calc(100% - 50px);
+    }
 
-        body.light-mode .side-menu ul li a:hover {
-            background-color: var(--hover-bg-light);
-        }
+    .sidebar a.active {
+      color: var(--accent);
+    }
 
-        .side-menu ul li a i {
-            margin-right: 15px;
-            font-size: 18px;
-        }
+    .sidebar a:hover:not(.active)::after {
+      width: 0; /* Prevent hover from showing an underline */
+    }
 
-        .side-menu ul li a.selected {
-            border: 2px solid var(--accent-color);
-            box-shadow: 0 0 8px var(--accent-color);
-        }
+    .sidebar a:hover {
+      color: var(--accent);
+    }
 
-        .side-menu ul li a.donate {
-            background-color: var(--purple-color);
-            color: #ffffff;
-            text-align: center;
-            border-radius: 10px;
-            padding: 10px;
-        }
+    .sidebar a .material-icons {
+      transition: color 0.3s;
+    }
 
-        .side-menu ul li a.donate:hover {
-            background-color: #520c9b;
-        }
+    .sidebar a.active .material-icons,
+    .sidebar a:hover .material-icons {
+      color: var(--accent);
+    }
 
-        .theme-switch-box {
-            margin-top: 20px;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background-color: var(--hover-bg-dark);
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s, color 0.3s;
-        }
+    .main {
+      margin-left: 0;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
 
-        .theme-switch-box label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: var(--text-color-dark);
-        }
+    .main.shift {
+      margin-left: 250px;
+    }
 
-        .theme-switch-box input {
-            appearance: none;
-            width: 40px;
-            height: 20px;
-            background: var(--hover-bg-dark);
-            border-radius: 10px;
-            position: relative;
-            outline: none;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+    .openbtn {
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      color: var(--text);
+      border: none;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1001;
+    }
 
-        .theme-switch-box input:checked {
-            background: var(--accent-color);
-        }
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: none;
+      color: var(--text);
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      z-index: 1001;
+    }
 
-        .theme-switch-box input::before {
-            content: '';
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            background: var(--text-color-dark);
-            border-radius: 50%;
-            top: 1px;
-            left: 1px;
-            transition: 0.3s;
-        }
+    section {
+      margin: 40px 0;
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
 
-        .theme-switch-box input:checked::before {
-            left: 21px;
-        }
+    section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-        body.light-mode .theme-switch-box {
-            background-color: var(--hover-bg-light);
-            color: var(--text-color-light);
-        }
+    h2 {
+      margin-bottom: 20px;
+      color: var(--text);
+    }
 
-        body.light-mode .theme-switch-box label {
-            color: var(--text-color-light);
-        }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
 
-        body.light-mode .theme-switch-box input::before {
-            background: var(--text-color-light);
-        }
+    .card {
+      background-color: var(--card-bg);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      width: calc(33.333% - 20px);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s;
+      border-radius: var(--radius);
+    }
 
-        .content {
-            margin-left: 270px;
-            padding: 20px;
-        }
+    .card img {
+      width: 100%;
+      margin-bottom: 15px;
+      border-radius: var(--radius);
+    }
 
-        .projects-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
-            flex-wrap: wrap;
-        }
+    .card h3 {
+      margin-bottom: 10px;
+    }
 
-        .project-box {
-            width: 300px;
-            background-color: var(--bg-color-dark);
-            color: var(--text-color-dark);
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            margin: 20px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
+    .card p {
+      flex-grow: 1;
+      margin-bottom: 15px;
+    }
 
-        body.light-mode .project-box {
-            background-color: var(--bg-color-light);
-            color: var(--text-color-light);
-        }
+    .card a.button {
+      align-self: flex-start;
+      padding: 10px 15px;
+      background-color: var(--accent);
+      color: #fff;
+      transition: background 0.3s;
+      border-radius: var(--radius);
+    }
 
-.project-image {
-    width: 100%;
-    height: auto;
-    max-height: 150px;
-    object-fit: cover;
-}
+    .card a.button:hover {
+      background-color: #1565c0;
+    }
 
-        .project-content {
-            padding: 15px;
-        }
+    .links {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
 
-        .project-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
+    .links a {
+      padding: 10px 20px;
+      background-color: var(--accent);
+      color: #fff;
+      border-radius: var(--radius);
+    }
 
-        .project-description {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .download-button {
-            background-color: var(--accent-color);
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            text-transform: uppercase;
-            transition: background-color 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .download-button:hover {
-            background-color: #357ABD;
-        }
-
-        @media (max-width: 768px) {
-    .side-menu {
-        position: relative;
+    @media (max-width: 768px) {
+      .card {
         width: 100%;
-        height: auto;
-        border-radius: 0;
-        box-shadow: none;
+      }
     }
-
-    .content {
-        margin-left: 0;
-        padding: 15px;
-    }
-
-    .projects-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .project-box {
-        width: 90%;
-    }
-}
-
-@media (min-width: 769px) {
-    .side-menu {
-        position: fixed;
-        width: 250px;
-        height: 100vh;
-    }
-
-    .content {
-        margin-left: 270px;
-    }
-}
-
-    </style>
+  </style>
 </head>
 <body>
-    <div class="side-menu">
-        <div class="header">
-            <h1>lildanlid</h1>
+  <!-- Sidebar -->
+  <div id="mySidebar" class="sidebar">
+    <a href="#" onclick="showSection('home')" data-section="home"><span class="material-icons">home</span>Home</a>
+    <a href="#" onclick="showSection('projects')" data-section="projects"><span class="material-icons">folder</span>Projects</a>
+    <a href="#" onclick="showSection('apps')" data-section="apps"><span class="material-icons">apps</span>Apps</a>
+    <a href="#" onclick="showSection('links')" data-section="links"><span class="material-icons">link</span>Links</a>
+    <a href="https://lildanlid.github.io/apps/forms" target="_blank" rel="noopener">
+      <span class="material-icons">description</span>Forms
+    </a>
+  </div>
+
+  <!-- Menu Button -->
+  <button class="openbtn" onclick="toggleSidebar()">
+    <span class="material-icons">menu</span>
+  </button>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <span class="material-icons">dark_mode</span>
+  </button>
+
+  <!-- Main Content -->
+  <div id="main" class="main">
+    <section id="home" class="active">
+      <h2>Welcome to the Home Page</h2>
+      <p>Use the menu to navigate to other pages.</p>
+    </section>
+
+    <section id="projects">
+      <h2>Projects</h2>
+      <div class="card-container">
+        <div class="card">
+          <img src="https://api.mcpedl.com/storage/submissions/129160/100/minecrafttitle-5_1-520x245.png" alt="Project 1">
+          <h3>Rank Managment</h3>
+          <p>Easy to use and manage your ranks. /scriptevent open:rankmenu (Beta API)</p>
+          <a href="https://lootdest.org/s?D5nydiaR" class="button">Download</a>
         </div>
-        <ul>
-            <li>
-                <a href="#home" class="selected"><i class="fas fa-home"></i> Home</a>
-            </li>
-            <li>
-                <a href="#projects"><i class="fas fa-th-large"></i> Projects</a>
-            </li>
-            <li>
-                <a href="#apps"><i class="fas fa-mobile-alt"></i> Apps</a>
-            </li>
-            <li>
-                <a href="#links"><i class="fas fa-folder"></i> Links</a>
-            </li>
-            <li>
-                <a href="#forms"><i class="fas fa-tasks"></i> Forms</a>
-            </li>
-            <li>
-                <a href="#donate" class="donate"><i class="fas fa-calendar-alt"></i> Donate</a>
-            </li>
-        </ul>
-        <div class="theme-switch-box">
-            <label for="theme-toggle" id="theme-label">Light Mode</label>
-            <input type="checkbox" id="theme-toggle">
+        <div class="card">
+          <img src="https://api.mcpedl.com/storage/submissions/119028/104/minecrafttitle_1-520x245.png" alt="Project 2">
+          <h3>Personal sidebar</h3>
+          <p>Alternate the title in titleraw to go on the side</p>
+          <a href="https://loot-link.com/s?pDzGQukq" class="button">Download</a>
         </div>
-    </div>
+        <div class="card">
+          <img src="https://api.mcpedl.com/storage/submissions/129126/103/minecrafttitle-4_1-520x245.png" alt="Project 3">
+          <h3>CPS Counter</h3>
+          <p>Hit a entity for it to work (Beta API)</p>
+          <a href="https://lootdest.org/s?BesIpU4N" class="button">Download</a>
+        </div>
+      </div>
+    </section>
 
-    <div class="content" id="content">
-        <h2>Welcome to the Home Page</h2>
-        <p>Use the menu to navigate to other pages.</ (For downloading projects you do not have to complete the tasks)p>
-    </div>
+    <section id="apps">
+      <h2>Apps</h2>
+      <div class="card-container">
+        <div class="card">
+          <img src="https://cdn.jim-nielsen.com/ios/512/weather-2019-02-07.png?rf=1024" alt="App 1">
+          <h3>Weather App</h3>
+          <p>Check your weather</p>
+          <a href="https://lildanlid.github.io/apps/weather" class="button">View</a>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="App 2">
+          <h3>App 2</h3>
+          <p>App 2.</p>
+          <a href="#" class="button">View</a>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="App 3">
+          <h3>App 3</h3>
+          <p>3.</p>
+          <a href="#" class="button">View</a>
+        </div>
+      </div>
+    </section>
 
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-        const themeLabel = document.getElementById('theme-label');
-        const content = document.getElementById('content');
-        const menuLinks = document.querySelectorAll('.side-menu ul li a');
+    <section id="links">
+      <h2>Links</h2>
+      <div class="links">
+        <a href="https://mcpedl.com/user/llildanlid/" target="_blank">MCPEDL</a>
+        <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank">CURSEFORGE</a>
+        <a href="https://lildanlid.github.io/" target="_blank">WEBSITE</a>
+      </div>
+    </section>
+  </div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            const savedTab = localStorage.getItem('activeTab') || 'home';
+  <script>
+    const body = document.body;
+    const sidebar = document.getElementById("mySidebar");
+    const main = document.getElementById("main");
 
-            if (savedTheme === 'light') {
-                body.classList.add('light-mode');
-                themeToggle.checked = true;
-                themeLabel.textContent = 'Dark Mode';
-            }
+    function toggleSidebar() {
+      const isOpen = sidebar.classList.toggle("open");
+      main.classList.toggle("shift");
+      localStorage.setItem("sidebarOpen", isOpen);
+    }
 
-            loadPage(savedTab);
+    function showSection(id) {
+      // Save the selected section in localStorage
+      localStorage.setItem("activeSection", id);
 
-            menuLinks.forEach(link => link.classList.remove('selected'));
-            const activeLink = document.querySelector(`.side-menu ul li a[href="#${savedTab}"]`);
-            if (activeLink) activeLink.classList.add('selected');
-        });
+      // Remove active class from all sections and buttons
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove("active"));
 
-        themeToggle.addEventListener('change', () => {
-            if (themeToggle.checked) {
-                body.classList.add('light-mode');
-                themeLabel.textContent = 'Dark Mode';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.remove('light-mode');
-                themeLabel.textContent = 'Light Mode';
-                localStorage.setItem('theme', 'dark');
-            }
-        });
+      // Add active class to the selected section and button
+      document.getElementById(id).classList.add("active");
+      const activeLink = document.querySelector(`.sidebar a[data-section="${id}"]`);
+      if (activeLink) {
+        activeLink.classList.add("active");
+      }
+    }
 
-        menuLinks.forEach(link => {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const selectedTab = link.getAttribute('href').substring(1);
-                localStorage.setItem('activeTab', selectedTab);
+    function toggleTheme() {
+      const newTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      body.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
 
-                menuLinks.forEach(link => link.classList.remove('selected'));
-                link.classList.add('selected');
-                loadPage(selectedTab);
-            });
-        });
+    window.onload = () => {
+      // Load saved theme
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      body.setAttribute("data-theme", savedTheme);
 
-        function loadPage(page) {
-            if (page === 'home') {
-                content.innerHTML = `
-                    <h2>Welcome to the Home Page</h2>
-                    <p>Use the menu to navigate to other pages.</p>
-                `;
-            } else if (page === 'projects') {
-                content.innerHTML = `
-                    <h2>Projects</h2>
-                    <div class="projects-container">
-                        <div class="project-box">
-                            <img class="project-image" src="https://api.mcpedl.com/storage/submissions/129160/100/minecrafttitle-5_1-520x245.png" alt="Project 1">
-                            <div class="project-content">
-                                <div class="project-title">Rank Managment</div>
-                                <div class="project-description">Easy to use and manage your ranks.  /scriptevent open:rankmenu (Beta API)</div>
-                                <a class="download-button" href="https://lootdest.org/s?D5nydiaR" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://api.mcpedl.com/storage/submissions/119028/104/minecrafttitle_1-520x245.png" alt="Project 2">
-                            <div class="project-content">
-                                <div class="project-title">Personald Sidebar</div>
-                                <div class="project-description">Alternate the title in titleraw to go on the side</div>
-                                <a class="download-button" href="https://loot-link.com/s?pDzGQukq" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://api.mcpedl.com/storage/submissions/129126/103/minecrafttitle-4_1-520x245.png" alt="Project 3">
-                            <div class="project-content">
-                                <div class="project-title">CPS Counter</div>
-                                <div class="project-description">Hit a entity for it to work (Beta API)</div>
-                                <a class="download-button" href="https://lootdest.org/s?BesIpU4N" target="_blank">
-                                    Download
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (page === 'apps') {
-                content.innerHTML = `
-                    <h2>Apps</h2>
-                    <div class="projects-container">
-                        <div class="project-box">
-                            <img class="project-image" src="https://cdn.jim-nielsen.com/ios/512/weather-2019-02-07.png?rf=1024" alt="App 1">
-                            <div class="project-content">
-                                <div class="project-title">Weather</div>
-                                <div class="project-description">Show the weather</div>
-                                <a class="download-button" href="https://lildanlid.github.io/apps/weather" target="_blank">
-                                    Visit
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src=" " alt="App 2">
-                            <div class="project-content">
-                                <div class="project-title">Clock App</div>
-                                <div class="project-description">Timer & Alarm, etc</div>
-                                <a class="download-button" href="https://lildanlid.github.io/apps/timer" target="_blank">
-                                    Visit
-                                </a>
-                            </div>
-                        </div>
-                        <div class="project-box">
-                            <img class="project-image" src="https://via.placeholder.com/300x150" alt="App 3">
-                            <div class="project-content">
-                                <div class="project-title">App Three</div>
-                                <div class="project-description">App Three.</div>
-                                <a class="download-button" href="https://example.com/app-three" target="_blank">
-                                    Visit
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (page === 'links') {
-                content.innerHTML = `
-                    <h2>Links</h2>
-                    <p>This is the Links page.</p>
-                `;
-            } else if (page === 'forms') {
-                content.innerHTML = `
-                    <h2>Forms</h2>
-                    <p>Submit a suggestion or report a but</p>
-                    <p>Click the button below</p>
-                        <a href="https://lildanlid.github.io/apps/forms" target="_blank" class="download-button">
-                            Go to Forms
-                `;
-            } else if (page === 'donate') {
-                content.innerHTML = `
-                    <div class="purple-box">
-                        <h2>Donate</h2>
-                        <p>Support our work by donating today.</p>
-                        <a href="https://www.patreon.com/c/lildanlid/membership" target="_blank" class="download-button">
-                            Go to Patreon
-                        </a>
-                    </div>
-                `;
-            }
-        }
-    </script>
+      // Load saved section
+      const savedSection = localStorage.getItem("activeSection") || "home";
+      showSection(savedSection);
+
+      // Check if the sidebar was open previously
+      const isSidebarOpen = localStorage.getItem("sidebarOpen") === "true";
+      if (isSidebarOpen) {
+        sidebar.classList.add("open");
+        main.classList.add("shift");
+      }
+    };
+  </script>
 </body>
 </html>
