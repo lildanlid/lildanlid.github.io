@@ -11,7 +11,7 @@
       --text: #ffffff;
       --card-bg: #1e1e1e;
       --accent: #1e88e5;
-      --radius: 4px;
+      --radius: 6px;
     }
 
     [data-theme="light"] {
@@ -56,6 +56,7 @@
       transition: left 0.3s ease;
       padding-top: 60px;
       z-index: 1000;
+      border-radius: var(--radius);
     }
 
     .sidebar.open {
@@ -69,29 +70,50 @@
       gap: 10px;
       color: var(--text);
       font-weight: bold;
+      position: relative;
       transition: color 0.3s;
+      border-radius: var(--radius);
+    }
+
+    .sidebar a::after {
+      content: "";
+      position: absolute;
+      left: 25px;
+      bottom: 10px;
+      height: 2px;
+      width: 0%;
+      background-color: var(--accent);
+      transition: width 0.3s ease;
+      border-radius: var(--radius);
     }
 
     .sidebar a:hover {
-      background-color: var(--accent);
-      color: #fff;
+      color: var(--accent);
+    }
+
+    .sidebar a:hover::after {
+      width: calc(100% - 50px);
     }
 
     .sidebar a.active {
       color: var(--accent);
-      outline: 1px solid var(--accent);
-      outline-offset: -2px;
-      background-color: transparent;
     }
 
-    .sidebar a.active .material-icons {
-      color: var(--accent);
-      outline: none;
+    .sidebar a.active::after {
+      width: calc(100% - 50px);
     }
 
-    /* ✅ Remove default blue focus outline */
     .sidebar a:focus:not(:focus-visible) {
       outline: none;
+    }
+
+    .sidebar a .material-icons {
+      transition: color 0.3s;
+    }
+
+    .sidebar a.active .material-icons,
+    .sidebar a:hover .material-icons {
+      color: var(--accent);
     }
 
     .main {
@@ -161,11 +183,13 @@
       display: flex;
       flex-direction: column;
       transition: background 0.3s;
+      border-radius: var(--radius);
     }
 
     .card img {
       width: 100%;
       margin-bottom: 15px;
+      border-radius: var(--radius);
     }
 
     .card h3 {
@@ -183,6 +207,7 @@
       background-color: var(--accent);
       color: #fff;
       transition: background 0.3s;
+      border-radius: var(--radius);
     }
 
     .card a.button:hover {
@@ -199,6 +224,7 @@
       padding: 10px 20px;
       background-color: var(--accent);
       color: #fff;
+      border-radius: var(--radius);
     }
 
     @media (max-width: 768px) {
@@ -312,8 +338,7 @@
       localStorage.setItem("activeSection", id);
 
       document.querySelectorAll('.sidebar a').forEach(link => {
-        const isMatch = link.dataset.section === id;
-        link.classList.toggle("active", isMatch);
+        link.classList.toggle("active", link.dataset.section === id);
       });
     }
 
