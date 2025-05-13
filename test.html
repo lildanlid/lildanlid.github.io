@@ -329,12 +329,19 @@
     }
 
     function showSection(id) {
-      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
+      // Save the selected section in localStorage
+      localStorage.setItem("activeSection", id);
 
-      document.querySelectorAll('.sidebar a').forEach(link => {
-        link.classList.toggle("active", link.dataset.section === id);
-      });
+      // Remove active class from all sections and buttons
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove("active"));
+
+      // Add active class to the selected section and button
+      document.getElementById(id).classList.add("active");
+      const activeLink = document.querySelector(`.sidebar a[data-section="${id}"]`);
+      if (activeLink) {
+        activeLink.classList.add("active");
+      }
     }
 
     function toggleTheme() {
@@ -344,12 +351,15 @@
     }
 
     window.onload = () => {
+      // Load saved theme
       const savedTheme = localStorage.getItem("theme") || "dark";
       body.setAttribute("data-theme", savedTheme);
 
+      // Load saved section
       const savedSection = localStorage.getItem("activeSection") || "home";
       showSection(savedSection);
 
+      // Check if the sidebar was open previously
       const isSidebarOpen = localStorage.getItem("sidebarOpen") === "true";
       if (isSidebarOpen) {
         sidebar.classList.add("open");
