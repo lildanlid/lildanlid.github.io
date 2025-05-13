@@ -87,18 +87,24 @@
       border-radius: var(--radius);
     }
 
-    /* Ensure underline only appears for selected/active button */
     .sidebar a.active::after {
-      width: calc(100% - 50px);
-    }
-
-    /* Hover does not override the active state */
-    .sidebar a:hover:not(.active)::after {
       width: calc(100% - 50px);
     }
 
     .sidebar a.active {
       color: var(--accent);
+    }
+
+    .sidebar a:hover:not(.active)::after {
+      width: 0; /* Prevent hover from showing an underline */
+    }
+
+    .sidebar a:hover {
+      color: var(--accent);
+    }
+
+    .sidebar a .material-icons {
+      transition: color 0.3s;
     }
 
     .sidebar a.active .material-icons,
@@ -253,10 +259,75 @@
       <p>Use the menu to navigate to other pages.</p>
     </section>
 
-    <!-- Other sections -->
+    <section id="projects">
+      <h2>Projects</h2>
+      <div class="card-container">
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="Project 1">
+          <h3>Project 1</h3>
+          <p>Description of Project 1.</p>
+          <a href="#" class="button">Download</a>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="Project 2">
+          <h3>Project 2</h3>
+          <p>Description of Project 2.</p>
+          <a href="#" class="button">Download</a>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="Project 3">
+          <h3>Project 3</h3>
+          <p>Description of Project 3.</p>
+          <a href="#" class="button">Download</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="apps">
+      <h2>Apps</h2>
+      <div class="card-container">
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="App 1">
+          <h3>App 1</h3>
+          <p>Description of App 1.</p>
+          <a href="#" class="button">View</a>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="App 2">
+          <h3>App 2</h3>
+          <p>Description of App 2.</p>
+          <a href="#" class="button">View</a>
+        </div>
+        <div class="card">
+          <img src="https://via.placeholder.com/300x150" alt="App 3">
+          <h3>App 3</h3>
+          <p>Description of App 3.</p>
+          <a href="#" class="button">View</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="links">
+      <h2>Links</h2>
+      <div class="links">
+        <a href="https://mcpedl.com/user/llildanlid/" target="_blank">MCPEDL</a>
+        <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank">CURSEFORGE</a>
+        <a href="https://lildanlid.github.io/" target="_blank">WEBSITE</a>
+      </div>
+    </section>
   </div>
 
   <script>
+    const body = document.body;
+    const sidebar = document.getElementById("mySidebar");
+    const main = document.getElementById("main");
+
+    function toggleSidebar() {
+      const isOpen = sidebar.classList.toggle("open");
+      main.classList.toggle("shift");
+      localStorage.setItem("sidebarOpen", isOpen);
+    }
+
     function showSection(id) {
       document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
       document.getElementById(id).classList.add("active");
@@ -265,6 +336,26 @@
         link.classList.toggle("active", link.dataset.section === id);
       });
     }
+
+    function toggleTheme() {
+      const newTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      body.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      body.setAttribute("data-theme", savedTheme);
+
+      const savedSection = localStorage.getItem("activeSection") || "home";
+      showSection(savedSection);
+
+      const isSidebarOpen = localStorage.getItem("sidebarOpen") === "true";
+      if (isSidebarOpen) {
+        sidebar.classList.add("open");
+        main.classList.add("shift");
+      }
+    };
   </script>
 </body>
 </html>
