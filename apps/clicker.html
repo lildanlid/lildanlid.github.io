@@ -131,7 +131,8 @@
 
       <div class="planet">
         <h4>Current Planet: <span id="planetName">Earth</span></h4>
-        <button onclick="nextPlanet()">Next Planet 🌍</button>
+        <button onclick="prevPlanet()">⬅️ Previous Planet</button>
+        <button onclick="nextPlanet()">Next Planet ➡️ (Cost: <span id="planetCost">100</span>)</button>
       </div>
     </div>
   </div>
@@ -146,26 +147,25 @@
     let planets = ['Earth', 'Mars', 'Jupiter', 'Saturn'];
     let planetIndex = 0;
 
-    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    let leaderboard = [];
 
     function startGame() {
       const input = document.getElementById('usernameInput');
       const name = input.value.trim();
       if (!name) return alert('Please enter a username.');
-      if (leaderboard.find(player => player.name === name)) {
-        return alert('Username already taken. Please choose another.');
-      }
+
       username = name;
       document.getElementById('usernameDisplay').textContent = username;
       document.getElementById('login').style.display = 'none';
       document.getElementById('game').style.display = 'block';
-      saveData();
-      updateLeaderboard();
+
+      loadData();
+      updateUI();
     }
 
     function clickEnergy() {
       energy += clickPower;
-      updateEnergy();
+      updateUI();
     }
 
     function buyUpgrade(type) {
@@ -173,39 +173,45 @@
         energy -= clickUpgradeCost;
         clickPower++;
         clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5);
-        document.getElementById('clickCost').textContent = clickUpgradeCost;
       } else if (type === 'passive' && energy >= passiveUpgradeCost) {
         energy -= passiveUpgradeCost;
         passivePower++;
         passiveUpgradeCost = Math.floor(passiveUpgradeCost * 1.8);
-        document.getElementById('passiveCost').textContent = passiveUpgradeCost;
       }
-      updateEnergy();
+      updateUI();
     }
 
     function nextPlanet() {
-      if (planetIndex < planets.length - 1 && energy >= 100 * (planetIndex + 1)) {
-        energy -= 100 * (planetIndex + 1);
+      const cost = 100 * (planetIndex + 1);
+      if (planetIndex < planets.length - 1 && energy >= cost) {
+        energy -= cost;
         planetIndex++;
-        document.getElementById('planetName').textContent = planets[planetIndex];
-        updateEnergy();
+        updateUI();
       }
     }
 
-    function updateEnergy() {
+    function prevPlanet() {
+      if (planetIndex > 0) {
+        planetIndex--;
+        updateUI();
+      }
+    }
+
+    function updateUI() {
       document.getElementById('energy').textContent = energy;
-      updateLeaderboard();
+      document.getElementById('clickCost').textContent = clickUpgradeCost;
+      document.getElementById('passiveCost').textContent = passiveUpgradeCost;
+      document.getElementById('planetName').textContent = planets[planetIndex];
+      document.getElementById('planetCost').textContent = 100 * (planetIndex + 1);
       saveData();
+      updateLeaderboard();
     }
 
     function updateLeaderboard() {
-      const existing = leaderboard.find(p => p.name === username);
-      if (existing) {
-        existing.energy = energy;
-      } else if (username) {
-        leaderboard.push({ name: username, energy });
-      }
-      leaderboard = leaderboard.sort((a, b) => b.energy - a.energy);
+      const storedLeaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+      const filtered = storedLeaderboard.filter(p => p.name !== username);
+      filtered.push({ name: username, energy });
+      leaderboard = filtered.sort((a, b) => b.energy - a.energy);
       localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
 
       const list = document.getElementById('leaderboardList');
@@ -230,10 +236,25 @@
       }));
     }
 
+    function loadData() {
+      const saved = JSON.parse(localStorage.getItem(`player_${username}`));
+      if (saved) {
+        energy = saved.energy;
+        clickPower = saved.clickPower;
+        passivePower = saved.passivePower;
+        clickUpgradeCost = saved.clickUpgradeCost;
+        passiveUpgradeCost = saved.passiveUpgradeCost;
+        planetIndex = saved.planetIndex;
+      }
+    }
+
     setInterval(() => {
       energy += passivePower;
-      updateEnergy();
+      updateUI();
     }, 1000);
+
+    // Reset leaderboard usernames for clean start
+    localStorage.setItem('leaderboard', JSON.stringify([]));
   </script>
 </body>
 </html>
