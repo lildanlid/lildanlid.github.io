@@ -1,208 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planet Clicker</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: #fff;
-      overflow-x: hidden;
-    }
-    .center {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
-    .hidden {
-      display: none;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      border: none;
-      border-radius: 10px;
-    }
-    input {
-      width: 200px;
-    }
-    button {
-      cursor: pointer;
-      background-color: #3498db;
-      color: white;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    #menu-button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 2;
-    }
-    #side-menu {
-      width: 250px;
-      height: 100vh;
-      background-color: #1c1c1c;
-      position: fixed;
-      left: -250px;
-      top: 0;
-      transition: left 0.3s;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-      border-radius: 0 20px 20px 0;
-    }
-    #side-menu.open {
-      left: 0;
-    }
-    #side-menu ul {
-      list-style: none;
       padding: 0;
-      margin: 0;
-    }
-    #side-menu ul li {
-      padding: 15px 20px;
-      border-bottom: 1px solid #333;
-    }
-    #side-menu ul li a {
-      color: white;
-      text-decoration: none;
-      display: block;
-    }
-    #side-menu ul li a:hover,
-    #side-menu ul li a.active {
-      color: #3498db;
     }
 
-    .content {
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 2rem;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
       text-align: center;
-      margin-top: 50px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input[type="text"] {
+      padding: 0.75rem;
+      border-radius: 1rem;
+      border: none;
+      width: 100%;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    button {
+      background-color: #00c6ff;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 1rem;
+      cursor: pointer;
+      margin: 0.5rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #007ea7;
+    }
+
+    .leaderboard, .shop {
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .leaderboard li {
+      background-color: rgba(255, 255, 255, 0.1);
+      margin-bottom: 0.25rem;
+      padding: 0.5rem;
+      border-radius: 1rem;
+    }
+
+    .planet {
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
-  <div id="sign-in" class="center">
-    <h1>Clicker Game</h1>
-    <input type="text" id="username" placeholder="Enter your username">
-    <button onclick="signIn()">Sign In</button>
-    <button onclick="resetUsernames()">Reset Usernames</button>
+  <div class="container" id="login">
+    <h2>Enter Username</h2>
+    <input type="text" id="usernameInput" placeholder="Your name..." />
+    <button onclick="startGame()">Start</button>
   </div>
 
-  <div id="menu-button" class="hidden" onclick="toggleMenu()">☰</div>
-  <div id="side-menu">
-    <ul>
-      <li><a href="#" onclick="showContent('home')" class="active">Home</a></li>
-      <li><a href="#" onclick="showContent('shop')">Shop</a></li>
-      <li><a href="#" onclick="showContent('leaderboard')">Leaderboards</a></li>
-      <li><a href="#" onclick="showContent('stats')">Stats</a></li>
-    </ul>
-  </div>
+  <div class="container" id="game" style="display: none;">
+    <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
+    <h3>Energy: <span id="energy">0</span></h3>
+    <button onclick="clickEnergy()">Click for Energy ⚡</button>
 
-  <div id="game" class="hidden">
-    <div id="content">
-      <div id="home" class="content">
-        <h1>Welcome to the Clicker Game!</h1>
-        <button onclick="clickButton()">Click Me!</button>
-        <p>Clicks: <span id="clicks">0</span></p>
-      </div>
+    <div class="shop">
+      <h4>Shop</h4>
+      <button onclick="buyUpgrade('click')">+1 Click Power (Cost: <span id="clickCost">10</span>)</button>
+      <button onclick="buyUpgrade('passive')">+1 Passive/s (Cost: <span id="passiveCost">20</span>)</button>
+    </div>
 
-      <div id="shop" class="content hidden">
-        <h2>Shop Coming Soon...</h2>
-      </div>
+    <div class="planet">
+      <h4>Current Planet: <span id="planetName">Earth</span></h4>
+      <button onclick="nextPlanet()">Next Planet 🌍</button>
+    </div>
 
-      <div id="leaderboard" class="content hidden">
-        <h2>Leaderboards</h2>
-        <div id="leaderboard-list"></div>
-      </div>
-
-      <div id="stats" class="content hidden">
-        <h2>Stats</h2>
-        <p>Coming Soon...</p>
-      </div>
+    <div class="leaderboard">
+      <h4>Leaderboard</h4>
+      <ul id="leaderboardList"></ul>
     </div>
   </div>
 
   <script>
-    let clicks = 0;
-    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-    let loggedInUser = localStorage.getItem('loggedInUser') || null;
+    let username = '';
+    let energy = 0;
+    let clickPower = 1;
+    let passivePower = 0;
+    let clickUpgradeCost = 10;
+    let passiveUpgradeCost = 20;
+    let planets = ['Earth', 'Mars', 'Jupiter', 'Saturn'];
+    let planetIndex = 0;
 
-    function signIn() {
-      const usernameInput = document.getElementById("username");
-      const username = usernameInput.value.trim();
-      if (!username || /[^a-zA-Z0-9]/.test(username)) {
-        alert("Invalid username. Only letters and numbers are allowed.");
-        return;
-      }
-      if (leaderboard.find(player => player.username === username)) {
-        alert("This username is already taken.");
-        return;
-      }
-      leaderboard.push({ username, clicks: 0 });
-      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-      localStorage.setItem('loggedInUser', username);
-      loggedInUser = username;
-      document.getElementById("sign-in").classList.add("hidden");
-      document.getElementById("game").classList.remove("hidden");
-      document.getElementById("menu-button").classList.remove("hidden");
+    const leaderboard = [];
+
+    function startGame() {
+      const input = document.getElementById('usernameInput');
+      username = input.value.trim() || 'Guest';
+      document.getElementById('usernameDisplay').textContent = username;
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
       updateLeaderboard();
     }
 
-    function toggleMenu() {
-      const menu = document.getElementById("side-menu");
-      menu.classList.toggle("open");
+    function clickEnergy() {
+      energy += clickPower;
+      updateEnergy();
     }
 
-    function showContent(id) {
-      document.querySelectorAll(".content").forEach(content => content.classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
-      document.querySelectorAll("#side-menu ul li a").forEach(link => link.classList.remove("active"));
-      document.querySelector(`#side-menu ul li a[href="#"][onclick="showContent('${id}')"]`).classList.add("active");
+    function buyUpgrade(type) {
+      if (type === 'click' && energy >= clickUpgradeCost) {
+        energy -= clickUpgradeCost;
+        clickPower++;
+        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5);
+        document.getElementById('clickCost').textContent = clickUpgradeCost;
+      } else if (type === 'passive' && energy >= passiveUpgradeCost) {
+        energy -= passiveUpgradeCost;
+        passivePower++;
+        passiveUpgradeCost = Math.floor(passiveUpgradeCost * 1.8);
+        document.getElementById('passiveCost').textContent = passiveUpgradeCost;
+      }
+      updateEnergy();
     }
 
-    function clickButton() {
-      clicks++;
-      const user = leaderboard.find(player => player.username === loggedInUser);
-      if (user) user.clicks = clicks;
-      document.getElementById("clicks").textContent = clicks;
+    function nextPlanet() {
+      if (planetIndex < planets.length - 1 && energy >= 100 * (planetIndex + 1)) {
+        energy -= 100 * (planetIndex + 1);
+        planetIndex++;
+        document.getElementById('planetName').textContent = planets[planetIndex];
+        updateEnergy();
+      }
+    }
+
+    function updateEnergy() {
+      document.getElementById('energy').textContent = energy;
       updateLeaderboard();
     }
 
     function updateLeaderboard() {
-      const list = document.getElementById("leaderboard-list");
-      list.innerHTML = leaderboard
-        .sort((a, b) => b.clicks - a.clicks)
-        .map(player => `<p>${player.username}: ${player.clicks} clicks</p>`)
-        .join("");
-      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-    }
-
-    function resetUsernames() {
-      leaderboard = [];
-      localStorage.removeItem('leaderboard');
-      localStorage.removeItem('loggedInUser');
-      alert("All usernames have been reset!");
-      location.reload();
-    }
-
-    // Automatically log the user in if they were logged in previously
-    window.onload = function() {
-      if (loggedInUser) {
-        document.getElementById("sign-in").classList.add("hidden");
-        document.getElementById("game").classList.remove("hidden");
-        document.getElementById("menu-button").classList.remove("hidden");
-        clicks = leaderboard.find(player => player.username === loggedInUser)?.clicks || 0;
-        document.getElementById("clicks").textContent = clicks;
-        updateLeaderboard();
+      const entry = leaderboard.find(e => e.name === username);
+      if (entry) {
+        entry.energy = energy;
+      } else {
+        leaderboard.push({ name: username, energy });
       }
-    };
+      const sorted = leaderboard.sort((a, b) => b.energy - a.energy);
+      const list = document.getElementById('leaderboardList');
+      list.innerHTML = '';
+      sorted.forEach(player => {
+        const li = document.createElement('li');
+        li.textContent = `${player.name}: ${player.energy}`;
+        if (player.name === username) li.style.fontWeight = 'bold';
+        list.appendChild(li);
+      });
+    }
+
+    setInterval(() => {
+      energy += passivePower;
+      updateEnergy();
+    }, 1000);
   </script>
 </body>
 </html>
