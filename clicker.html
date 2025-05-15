@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie Clicker Plus</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #main-planet, #second-planet {
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 15px;
+      width: 300px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #click-button {
+      padding: 15px 30px;
+      font-size: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 20px;
+    }
+
+    #click-button:hover {
+      background-color: #0056b3;
+    }
+
+    .upgrade {
+      margin: 10px 0;
+    }
+
+    .upgrade button {
+      padding: 10px;
+      font-size: 14px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .upgrade button:hover {
+      background-color: #1e7e34;
+    }
+
+    #second-planet {
+      display: none;
+    }
+
+    .currency {
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cookie Clicker Plus</h1>
+
+  <div id="main-planet">
+    <h2>Main Planet</h2>
+    <p>Resources: <span id="main-resources" class="currency">0</span></p>
+    <button id="click-button">Click Me!</button>
+    <div class="upgrade">
+      <button id="upgrade1">Upgrade Click (+1 per click) - Cost: 10</button>
+    </div>
+    <div class="upgrade">
+      <button id="upgrade2">Auto Collector (+1/sec) - Cost: 50</button>
+    </div>
+    <div class="upgrade">
+      <button id="unlock-second-planet">Unlock Second Planet - Cost: 200</button>
+    </div>
+  </div>
+
+  <div id="second-planet">
+    <h2>Second Planet</h2>
+    <p>Alien Resources: <span id="alien-resources" class="currency">0</span></p>
+    <button id="alien-click-button">Click for Alien Resources!</button>
+    <div class="upgrade">
+      <button id="alien-upgrade1">Alien Upgrade (+2 per click) - Cost: 50</button>
+    </div>
+  </div>
+
+  <script>
+    // Main Planet Variables
+    let mainResources = 0;
+    let mainClickValue = 1;
+    let autoCollectorValue = 0;
+
+    // Second Planet Variables
+    let alienResources = 0;
+    let alienClickValue = 1;
+
+    // DOM Elements
+    const mainResourcesDisplay = document.getElementById("main-resources");
+    const clickButton = document.getElementById("click-button");
+    const upgrade1Button = document.getElementById("upgrade1");
+    const upgrade2Button = document.getElementById("upgrade2");
+    const unlockSecondPlanetButton = document.getElementById("unlock-second-planet");
+    const secondPlanetDiv = document.getElementById("second-planet");
+    const alienResourcesDisplay = document.getElementById("alien-resources");
+    const alienClickButton = document.getElementById("alien-click-button");
+    const alienUpgrade1Button = document.getElementById("alien-upgrade1");
+
+    // Main Planet Click
+    clickButton.addEventListener("click", () => {
+      mainResources += mainClickValue;
+      updateMainResources();
+    });
+
+    // Upgrade Click
+    upgrade1Button.addEventListener("click", () => {
+      if (mainResources >= 10) {
+        mainResources -= 10;
+        mainClickValue += 1;
+        updateMainResources();
+      } else {
+        alert("Not enough resources!");
+      }
+    });
+
+    // Auto Collector
+    upgrade2Button.addEventListener("click", () => {
+      if (mainResources >= 50) {
+        mainResources -= 50;
+        autoCollectorValue += 1;
+        updateMainResources();
+      } else {
+        alert("Not enough resources!");
+      }
+    });
+
+    // Unlock Second Planet
+    unlockSecondPlanetButton.addEventListener("click", () => {
+      if (mainResources >= 200) {
+        mainResources -= 200;
+        secondPlanetDiv.style.display = "block";
+        updateMainResources();
+      } else {
+        alert("Not enough resources!");
+      }
+    });
+
+    // Alien Planet Click
+    alienClickButton.addEventListener("click", () => {
+      alienResources += alienClickValue;
+      updateAlienResources();
+    });
+
+    // Alien Upgrade
+    alienUpgrade1Button.addEventListener("click", () => {
+      if (alienResources >= 50) {
+        alienResources -= 50;
+        alienClickValue += 2;
+        updateAlienResources();
+      } else {
+        alert("Not enough alien resources!");
+      }
+    });
+
+    // Auto Collector Interval
+    setInterval(() => {
+      mainResources += autoCollectorValue;
+      updateMainResources();
+    }, 1000);
+
+    // Update Main Resources Display
+    function updateMainResources() {
+      mainResourcesDisplay.textContent = mainResources;
+    }
+
+    // Update Alien Resources Display
+    function updateAlienResources() {
+      alienResourcesDisplay.textContent = alienResources;
+    }
+  </script>
+</body>
+</html>
