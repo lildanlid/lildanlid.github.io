@@ -92,7 +92,34 @@
     background-color: rgba(0, 123, 255, 0.1);
   }
 
-  /* Mobile responsiveness */
+  .game-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .button:hover {
+    background-color: rgba(0, 123, 255, 0.8);
+  }
+
+  .button.danger {
+    background-color: #dc3545;
+  }
+
+  .button.danger:hover {
+    background-color: #c82333;
+  }
+
   @media (max-width: 768px) {
     .sidebar {
       position: absolute;
@@ -102,15 +129,6 @@
       transform: translateX(-100%);
     }
   }
-
-  iframe {
-    width: 100%;
-    height: 500px;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    margin-bottom: 20px;
-  }
 </style>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
@@ -118,9 +136,9 @@
 <div id="app">
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <div class="folder" onclick="showGameSection('clicker-games')" id="clicker-folder">Clicker Games</div>
-    <div class="folder" onclick="showGameSection('crossy-road-games')" id="crossy-folder">Crossy Road Style</div>
-    <div class="folder" onclick="showGameSection('puzzle-games')" id="puzzle-folder">Puzzle Games</div>
+    <div class="folder" onclick="showGameSection('clicker-game')" id="clicker-folder">Clicker Game</div>
+    <div class="folder" onclick="showGameSection('crossy-road-game')" id="crossy-folder">Crossy Road Style Game</div>
+    <div class="folder" onclick="showGameSection('puzzle-game')" id="puzzle-folder">Puzzle Game</div>
   </div>
 
   <!-- Main content -->
@@ -129,42 +147,65 @@
       <button class="theme-toggle material-icons" id="theme-toggle">brightness_6</button>
     </div>
 
-    <!-- Clicker Games Section -->
-    <section id="clicker-games" class="game-section">
-      <h1>Clicker Games</h1>
-      <iframe src="https://orteil.dashnet.org/cookieclicker/" title="Cookie Clicker"></iframe>
+    <!-- Clicker Game Section -->
+    <section id="clicker-game" class="game-section">
+      <h1>Clicker Game</h1>
+      <div class="game-container">
+        <p>Clicks: <span id="clicker-count">0</span></p>
+        <button class="button" onclick="incrementClicker()">Click Me!</button>
+      </div>
+      <div>
+        <button class="button" onclick="saveGame('clicker')">Save</button>
+        <button class="button" onclick="loadGame('clicker')">Load</button>
+        <button class="button" onclick="backupGame('clicker')">Backup</button>
+        <button class="button danger" onclick="deleteGame('clicker')">Delete</button>
+      </div>
     </section>
 
-    <!-- Crossy Road Style Games Section -->
-    <section id="crossy-road-games" class="game-section" style="display: none;">
-      <h1>Crossy Road Style Games</h1>
-      <iframe src="https://crossyroad.io/" title="Crossy Road"></iframe>
+    <!-- Crossy Road Style Game Section -->
+    <section id="crossy-road-game" class="game-section" style="display: none;">
+      <h1>Crossy Road Style Game</h1>
+      <div class="game-container">
+        <p>Score: <span id="crossy-score">0</span></p>
+        <button class="button" onclick="incrementCrossy()">Move Forward</button>
+      </div>
+      <div>
+        <button class="button" onclick="saveGame('crossy')">Save</button>
+        <button class="button" onclick="loadGame('crossy')">Load</button>
+        <button class="button" onclick="backupGame('crossy')">Backup</button>
+        <button class="button danger" onclick="deleteGame('crossy')">Delete</button>
+      </div>
     </section>
 
-    <!-- Puzzle Games Section -->
-    <section id="puzzle-games" class="game-section" style="display: none;">
-      <h1>Puzzle Games</h1>
-      <iframe src="https://sudoku.com/" title="Sudoku"></iframe>
+    <!-- Puzzle Game Section -->
+    <section id="puzzle-game" class="game-section" style="display: none;">
+      <h1>Puzzle Game</h1>
+      <div class="game-container">
+        <p>Puzzles Solved: <span id="puzzle-solved">0</span></p>
+        <button class="button" onclick="incrementPuzzle()">Solve Puzzle</button>
+      </div>
+      <div>
+        <button class="button" onclick="saveGame('puzzle')">Save</button>
+        <button class="button" onclick="loadGame('puzzle')">Load</button>
+        <button class="button" onclick="backupGame('puzzle')">Backup</button>
+        <button class="button danger" onclick="deleteGame('puzzle')">Delete</button>
+      </div>
     </section>
   </div>
 </div>
 
 <script>
-  const sidebar = document.getElementById('sidebar');
-  const themeToggle = document.getElementById('theme-toggle');
   const gameSections = document.querySelectorAll('.game-section');
   const folders = document.querySelectorAll('.folder');
 
+  // Default Dark Theme
   let darkTheme = true;
-
-  // Default to dark theme
   document.body.style.setProperty('--bg-light', '#2c2c2c');
   document.body.style.setProperty('--bg-dark', '#f9f9f9');
   document.body.style.setProperty('--text-light', '#fff');
   document.body.style.setProperty('--text-dark', '#000');
 
-  // Theme toggle functionality
-  themeToggle.addEventListener('click', () => {
+  document.getElementById('theme-toggle').addEventListener('click', () => {
     darkTheme = !darkTheme;
     document.body.style.setProperty('--bg-light', darkTheme ? '#2c2c2c' : '#f9f9f9');
     document.body.style.setProperty('--bg-dark', darkTheme ? '#f9f9f9' : '#2c2c2c');
@@ -172,15 +213,67 @@
     document.body.style.setProperty('--text-dark', darkTheme ? '#000' : '#fff');
   });
 
-  // Folder selection functionality
   function showGameSection(sectionId) {
-    gameSections.forEach((section) => {
+    gameSections.forEach(section => {
       section.style.display = section.id === sectionId ? 'block' : 'none';
     });
-
-    folders.forEach((folder) => {
+    folders.forEach(folder => {
       folder.classList.toggle('active', folder.id === `${sectionId.split('-')[0]}-folder`);
     });
+  }
+
+  // Game Logic
+  let clickerCount = 0, crossyScore = 0, puzzleSolved = 0;
+
+  function incrementClicker() {
+    clickerCount++;
+    document.getElementById('clicker-count').textContent = clickerCount;
+  }
+
+  function incrementCrossy() {
+    crossyScore++;
+    document.getElementById('crossy-score').textContent = crossyScore;
+  }
+
+  function incrementPuzzle() {
+    puzzleSolved++;
+    document.getElementById('puzzle-solved').textContent = puzzleSolved;
+  }
+
+  // Save, Load, Backup, Delete Functions
+  function saveGame(game) {
+    const data = game === 'clicker' ? clickerCount : game === 'crossy' ? crossyScore : puzzleSolved;
+    localStorage.setItem(`${game}-data`, data);
+    alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress saved!`);
+  }
+
+  function loadGame(game) {
+    const data = localStorage.getItem(`${game}-data`);
+    if (data !== null) {
+      if (game === 'clicker') clickerCount = parseInt(data);
+      if (game === 'crossy') crossyScore = parseInt(data);
+      if (game === 'puzzle') puzzleSolved = parseInt(data);
+      document.getElementById(`${game}-count`).textContent = data;
+      alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress loaded!`);
+    } else {
+      alert(`No saved progress found for ${game}`);
+    }
+  }
+
+  function backupGame(game) {
+    const data = localStorage.getItem(`${game}-data`);
+    if (data !== null) {
+      const backupKey = `${game}-backup-${Date.now()}`;
+      localStorage.setItem(backupKey, data);
+      alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress backed up!`);
+    } else {
+      alert(`No progress found to back up for ${game}`);
+    }
+  }
+
+  function deleteGame(game) {
+    localStorage.removeItem(`${game}-data`);
+    alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress deleted!`);
   }
 </script>
 </body>
