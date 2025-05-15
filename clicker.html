@@ -9,16 +9,19 @@
       font-family: Arial, sans-serif;
       background-color: #282c34;
       color: #fff;
-      text-align: center;
       margin: 0;
       padding: 0;
+      overflow-x: hidden;
     }
 
-    h1, h2 {
+    h1 {
+      text-align: center;
       margin-top: 20px;
     }
 
     #click-button {
+      display: block;
+      margin: 20px auto;
       background-color: #61dafb;
       border: none;
       color: #000;
@@ -26,7 +29,6 @@
       font-size: 24px;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 20px;
     }
 
     #click-button:hover {
@@ -34,28 +36,59 @@
     }
 
     #stats {
+      text-align: center;
       margin: 20px 0;
     }
 
+    #shop-menu {
+      position: fixed;
+      left: -300px;
+      top: 0;
+      width: 300px;
+      height: 100%;
+      background-color: #333;
+      color: #fff;
+      transition: left 0.3s ease;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+      overflow-y: auto;
+    }
+
+    #shop-menu.open {
+      left: 0;
+    }
+
     #shop-button {
+      position: fixed;
+      top: 20px;
+      left: 10px;
       background-color: #4caf50;
       border: none;
       color: #fff;
-      padding: 10px 20px;
+      padding: 10px;
       font-size: 18px;
-      border-radius: 5px;
+      border-radius: 50%;
       cursor: pointer;
-      margin-top: 20px;
+      z-index: 1000;
     }
 
-    #shop {
-      display: none;
-      background-color: #333;
-      border-radius: 10px;
-      padding: 20px;
-      margin: 20px auto;
-      width: 90%;
-      max-width: 600px;
+    #shop-button:after {
+      content: '→';
+      font-size: 24px;
+    }
+
+    #shop-button.open:after {
+      content: '←';
+    }
+
+    .shop-section {
+      margin-bottom: 20px;
+    }
+
+    .shop-section h2 {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #555;
+      padding-bottom: 5px;
     }
 
     .shop-item {
@@ -66,6 +99,7 @@
       padding: 10px;
       border: 1px solid #444;
       border-radius: 5px;
+      background-color: #444;
     }
 
     .shop-item button {
@@ -80,30 +114,28 @@
     .shop-item button:hover {
       background-color: #21a1f1;
     }
-
-    .section-title {
-      margin-top: 20px;
-      font-size: 18px;
-      text-align: left;
-    }
   </style>
 </head>
 <body>
+  <button id="shop-button"></button>
+
+  <div id="shop-menu">
+    <div class="shop-section">
+      <h2>Upgrades</h2>
+      <div id="upgrades-list"></div>
+    </div>
+
+    <div class="shop-section">
+      <h2>Planets</h2>
+      <div id="planets-list"></div>
+    </div>
+  </div>
+
   <h1>Clicker Game</h1>
   <button id="click-button">Click Me!</button>
   <div id="stats">
     <p>Clicks: <span id="click-count">0</span></p>
     <p>Currency: <span id="currency">0</span> ₴</p>
-  </div>
-  <button id="shop-button">Open Shop</button>
-  <div id="shop">
-    <h2>Shop</h2>
-
-    <div class="section-title">Upgrades</div>
-    <div id="upgrades-list"></div>
-
-    <div class="section-title">Planets</div>
-    <div id="planets-list"></div>
   </div>
 
   <script>
@@ -116,7 +148,7 @@
       { id: 1, name: "Quick Finger", effect: "+1 Click Power", cost: 100 },
       { id: 2, name: "Double Tap", effect: "Double Clicks for 5 Seconds", cost: 300 },
       { id: 3, name: "Auto Clicker v1", effect: "+1 CPS", cost: 500 },
-      // ... Add all 100 upgrades here
+      // Add remaining upgrades here...
       { id: 100, name: "Master Tapper", effect: "Unlocks All Click Levels", cost: 100000 }
     ];
 
@@ -151,10 +183,12 @@
       updateStats();
     });
 
-    // Handle shop button toggle
-    document.getElementById('shop-button').addEventListener('click', () => {
-      const shop = document.getElementById('shop');
-      shop.style.display = shop.style.display === 'none' ? 'block' : 'none';
+    // Handle shop toggle
+    const shopButton = document.getElementById('shop-button');
+    const shopMenu = document.getElementById('shop-menu');
+    shopButton.addEventListener('click', () => {
+      const isOpen = shopMenu.classList.toggle('open');
+      shopButton.classList.toggle('open', isOpen);
     });
 
     // Buy upgrades
