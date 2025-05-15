@@ -56,6 +56,7 @@
       cursor: pointer;
       user-select: none;
       color: white;
+      background: none;
     }
     .click-box .arrow.left {
       left: 10px;
@@ -102,9 +103,9 @@
     </div>
     <h3>Leaderboard</h3>
     <div class="section-toggle">
-      <button onclick="setLeaderboardType('energy')">⚡</button>
-      <button onclick="setLeaderboardType('money')">💰</button>
-      <button onclick="setLeaderboardType('time')">⏱️</button>
+      <button onclick="setLeaderboardType('energy')"><span class="material-icons">bolt</span></button>
+      <button onclick="setLeaderboardType('money')"><span class="material-icons">attach_money</span></button>
+      <button onclick="setLeaderboardType('time')"><span class="material-icons">timer</span></button>
     </div>
     <ul id="leaderboardList"></ul>
   </div>
@@ -115,10 +116,24 @@
       <span class="arrow left material-icons" onclick="event.stopPropagation(); prevPlanet();">arrow_back</span>
       <span class="arrow right material-icons" onclick="event.stopPropagation(); nextPlanet();">arrow_forward</span>
     </div>
-    <h2>⚡ Energy: <span id="energy">0</span></h2>
+    <h2><span class="material-icons">bolt</span> Energy: <span id="energy">0</span></h2>
   </div>
   <script>
+    let energy = 0;
+    let clickPower = 1;
+    let passivePower = 0;
+    let planetIndex = 0;
+    let planets = [
+      { name: "Earth", click: 1, price: 0 },
+      { name: "Mars", click: 2, price: 1000 },
+      { name: "Jupiter", click: 4, price: 10000 },
+      { name: "Neptune", click: 8, price: 50000 }
+    ];
+    let clickLevel = 1;
+    let passiveLevel = 0;
     let shopSection = 'upgrades';
+    let offlineTime = 0;
+
     function setShopSection(section) {
       shopSection = section;
       const container = document.getElementById('shopSection');
@@ -133,9 +148,35 @@
       } else if (section === 'offline') {
         container.innerHTML = `<button onclick="buyOfflineTime()">Buy Offline Time (Max 12H)</button>`;
       }
+      updateUI();
     }
 
-    let offlineTime = 0;
+    function buyUpgrade(type) {
+      let cost = type === 'click' ? clickLevel * 100 : (passiveLevel + 1) * 150;
+      if (energy >= cost) {
+        energy -= cost;
+        if (type === 'click') clickLevel++;
+        else passiveLevel++;
+        updateUI();
+        saveData();
+      } else {
+        showError('Not enough energy!');
+      }
+    }
+
+    function buyNextPlanet() {
+      if (planetIndex + 1 >= planets.length) return showError("No more planets!");
+      let next = planets[planetIndex + 1];
+      if (energy >= next.price) {
+        energy -= next.price;
+        planetIndex++;
+        updateUI();
+        saveData();
+      } else {
+        showError("Not enough energy for next planet!");
+      }
+    }
+
     function buyOfflineTime() {
       if (offlineTime >= 43200) return showError('Max offline time reached.');
       if (energy >= 1000) {
@@ -143,12 +184,77 @@
         if (offlineTime > 43200) offlineTime = 43200;
         energy -= 1000;
         showError('Offline time purchased: +1h');
+        saveData();
+        updateUI();
       } else {
         showError('Not enough energy for offline time.');
       }
-      saveData();
-      updateUI();
     }
+
+    function prevPlanet() {
+      if (planetIndex > 0) {
+        planetIndex--;
+        updateUI();
+      }
+    }
+
+    function nextPlanet() {
+      if (planetIndex + 1 < planets.length) {
+        showError("You must buy the next planet from the shop.");
+      }
+    }
+
+    function clickEnergy() {
+      energy += planets[planetIndex].click * clickLevel;
+      updateUI();
+      saveData();
+    }
+
+    function updateUI() {
+      document.getElementById('energy').innerText = energy;
+      document.getElementById('planetName').innerText = planets[planetIndex].name;
+      document.getElementById('clickCost').innerText = clickLevel * 100;
+      document.getElementById('passiveCost').innerText = (passiveLevel + 1) * 150;
+      document.getElementById('planetCostShop').innerText = planets[planetIndex + 1] ? planets[planetIndex + 1].price : 'N/A';
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      box.innerText = msg;
+      box.style.display = 'block';
+      setTimeout(() => box.style.display = 'none', 3000);
+    }
+
+    function saveData() {
+      const data = {
+        energy,
+        clickLevel,
+        passiveLevel,
+        planetIndex,
+        offlineTime
+      };
+      localStorage.setItem('clickerSave', JSON.stringify(data));
+    }
+
+    function loadData() {
+      const data = JSON.parse(localStorage.getItem('clickerSave'));
+      if (data) {
+        energy = data.energy;
+        clickLevel = data.clickLevel;
+        passiveLevel = data.passiveLevel;
+        planetIndex = data.planetIndex;
+        offlineTime = data.offlineTime;
+      }
+    }
+
+    loadData();
+    setShopSection('upgrades');
+    updateUI();
+    setInterval(() => {
+      energy += passiveLevel;
+      updateUI();
+      saveData();
+    }, 1000);
   </script>
 </body>
 </html>
