@@ -43,7 +43,6 @@
       position: absolute;
       top: 20px;
       left: 20px;
-      border: none;
       color: white;
       font-size: 24px;
       cursor: pointer;
@@ -71,98 +70,20 @@
     #side-menu ul li {
       padding: 15px 20px;
       border-bottom: 1px solid #333;
-      position: relative;
     }
     #side-menu ul li a {
       color: white;
       text-decoration: none;
       display: block;
     }
-    #side-menu ul li a:hover {
+    #side-menu ul li a:hover,
+    #side-menu ul li a.active {
       color: #3498db;
-    }
-    #side-menu ul li a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background-color: #3498db;
-      transition: width 0.3s;
-    }
-    #side-menu ul li a:hover::after,
-    #side-menu ul li a.active::after {
-      width: 100%;
     }
 
     .content {
       text-align: center;
       margin-top: 50px;
-    }
-    #shop .tabs {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-      gap: 10px;
-    }
-    #shop .tabs button {
-      background: none;
-      border: none;
-      color: #fff;
-      padding: 15px 20px;
-      cursor: pointer;
-      font-size: 16px;
-      position: relative;
-      border-radius: 10px;
-    }
-    #shop .tabs button:hover,
-    #shop .tabs button.active {
-      color: #3498db;
-    }
-    #shop .tabs button.active::after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-      height: 2px;
-      width: 100%;
-      background-color: #3498db;
-      animation: underline 0.3s ease-in-out;
-    }
-    @keyframes underline {
-      from {
-        width: 0;
-      }
-      to {
-        width: 100%;
-      }
-    }
-    #shop .tab-content {
-      display: none;
-    }
-    #shop .tab-content.active {
-      display: block;
-    }
-    .slider {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #2c2c2c;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-    }
-    .slider button {
-      background-color: #444;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    .slider button:hover {
-      background-color: #555;
     }
   </style>
 </head>
@@ -171,9 +92,10 @@
     <h1>Clicker Game</h1>
     <input type="text" id="username" placeholder="Enter your username">
     <button onclick="signIn()">Sign In</button>
+    <button onclick="resetUsernames()">Reset Usernames</button>
   </div>
 
-  <button id="menu-button" onclick="toggleMenu()">☰</button>
+  <div id="menu-button" class="hidden" onclick="toggleMenu()">☰</div>
   <div id="side-menu">
     <ul>
       <li><a href="#" onclick="showContent('home')" class="active">Home</a></li>
@@ -192,18 +114,7 @@
       </div>
 
       <div id="shop" class="content hidden">
-        <div class="tabs">
-          <button onclick="switchTab('upgrades')" class="active">Upgrades</button>
-          <button onclick="switchTab('planets')">Planets</button>
-        </div>
-        <div id="upgrades" class="tab-content active">
-          <h2>Upgrades</h2>
-          <div id="upgrade-list"></div>
-        </div>
-        <div id="planets" class="tab-content">
-          <h2>Planets</h2>
-          <div id="planet-list"></div>
-        </div>
+        <h2>Shop Coming Soon...</h2>
       </div>
 
       <div id="leaderboard" class="content hidden">
@@ -221,14 +132,7 @@
   <script>
     let clicks = 0;
     let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-    const upgrades = [
-      { name: "Quick Finger", effect: "+1 Click Power", cost: 10 },
-      { name: "Double Tap", effect: "Double Clicks for 5 Seconds", cost: 50 }
-    ];
-    const planets = [
-      { name: "Earth Alpha", currency: "₴ Solar Credits" },
-      { name: "Terra Nova", currency: "¤ Nova Coins" }
-    ];
+    let loggedInUser = localStorage.getItem('loggedInUser') || null;
 
     function signIn() {
       const usernameInput = document.getElementById("username");
@@ -243,8 +147,11 @@
       }
       leaderboard.push({ username, clicks: 0 });
       localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+      localStorage.setItem('loggedInUser', username);
+      loggedInUser = username;
       document.getElementById("sign-in").classList.add("hidden");
       document.getElementById("game").classList.remove("hidden");
+      document.getElementById("menu-button").classList.remove("hidden");
       updateLeaderboard();
     }
 
@@ -262,6 +169,8 @@
 
     function clickButton() {
       clicks++;
+      const user = leaderboard.find(player => player.username === loggedInUser);
+      if (user) user.clicks = clicks;
       document.getElementById("clicks").textContent = clicks;
       updateLeaderboard();
     }
@@ -275,43 +184,25 @@
       localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
 
-    function switchTab(tab) {
-      document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
-      document.querySelectorAll(".tabs button").forEach(button => button.classList.remove("active"));
-      document.getElementById(tab).classList.add("active");
-      document.querySelector(`.tabs button[onclick="switchTab('${tab}')"]`).classList.add("active");
+    function resetUsernames() {
+      leaderboard = [];
+      localStorage.removeItem('leaderboard');
+      localStorage.removeItem('loggedInUser');
+      alert("All usernames have been reset!");
+      location.reload();
     }
 
-    function loadShop() {
-      const upgradeList = document.getElementById("upgrade-list");
-      upgradeList.innerHTML = upgrades.map(upgrade => `
-        <div class="slider">
-          <span>${upgrade.name} - ${upgrade.effect} - Cost: ${upgrade.cost}</span>
-          <button onclick="buyUpgrade('${upgrade.name}')">Buy</button>
-        </div>
-      `).join("");
-
-      const planetList = document.getElementById("planet-list");
-      planetList.innerHTML = planets.map(planet => `
-        <div class="slider">
-          <span>${planet.name} - Currency: ${planet.currency}</span>
-        </div>
-      `).join("");
-    }
-
-    function buyUpgrade(name) {
-      const upgrade = upgrades.find(u => u.name === name);
-      if (clicks >= upgrade.cost) {
-        clicks -= upgrade.cost;
-        upgrade.cost = Math.ceil(upgrade.cost * 1.5);
+    // Automatically log the user in if they were logged in previously
+    window.onload = function() {
+      if (loggedInUser) {
+        document.getElementById("sign-in").classList.add("hidden");
+        document.getElementById("game").classList.remove("hidden");
+        document.getElementById("menu-button").classList.remove("hidden");
+        clicks = leaderboard.find(player => player.username === loggedInUser)?.clicks || 0;
         document.getElementById("clicks").textContent = clicks;
-        loadShop();
-      } else {
-        alert("Not enough clicks!");
+        updateLeaderboard();
       }
-    }
-
-    loadShop();
+    };
   </script>
 </body>
 </html>
