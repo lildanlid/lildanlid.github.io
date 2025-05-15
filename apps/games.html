@@ -23,66 +23,21 @@
 
   #app {
     display: flex;
+    flex-direction: column;
     height: 100vh;
   }
 
-  .content {
-    flex: 1;
-    padding: 20px;
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
     background-color: var(--bg-dark);
     color: var(--text-dark);
-    transition: all 0.3s ease;
-    overflow-y: auto;
-    text-align: center;
   }
 
-  .top-bar {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .icon-button {
-    cursor: pointer;
-    padding: 10px;
-    border: none;
-    background-color: transparent;
-    color: var(--primary-color);
-    font-size: 20px;
-    transition: all 0.3s ease;
-    border-radius: 50%;
-  }
-
-  .icon-button:hover {
-    background-color: rgba(0, 123, 255, 0.1);
-  }
-
-  .game-container {
-    margin-top: 40px;
-  }
-
-  .button {
-    padding: 10px 20px;
-    margin: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--primary-color);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .button:hover {
-    background-color: rgba(0, 123, 255, 0.8);
-  }
-
-  .dropdown {
+  .top-bar .dropdown {
     position: relative;
     display: inline-block;
-    margin-top: 20px;
   }
 
   .dropdown-content {
@@ -93,6 +48,8 @@
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1;
     border-radius: 5px;
+    right: 0;
+    text-align: left;
   }
 
   .dropdown-content button {
@@ -113,34 +70,58 @@
   .dropdown:hover .dropdown-content {
     display: block;
   }
+
+  .icon-button {
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    color: var(--primary-color);
+    font-size: 20px;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+  }
+
+  .icon-button:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .button:hover {
+    background-color: rgba(0, 123, 255, 0.8);
+  }
 </style>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 <div id="app">
-  <div class="content">
-    <div class="top-bar">
-      <button class="icon-button material-icons" id="theme-toggle">brightness_6</button>
-      <button class="icon-button material-icons" id="fullscreen-toggle">fullscreen</button>
-    </div>
-
-    <h1>Clicker Game</h1>
-    <div class="game-container">
-      <p>Clicks: <span id="clicker-count">0</span></p>
-      <p>Clicks per Second (CPS): <span id="clicker-cps">0</span></p>
-      <button class="button" onclick="incrementClicker()">Click Me!</button>
-    </div>
-
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <!-- Save/Load Dropdown -->
     <div class="dropdown">
-      <button class="button">Upgrades <span class="material-icons">upgrade</span></button>
-      <div class="dropdown-content">
-        <button onclick="buyClickUpgrade()">Buy Click Upgrade (+1 Click per Click, Cost: <span id="click-upgrade-cost">10</span>)</button>
-        <button onclick="buyAutoClicker()">Buy Auto Clicker (+1 CPS, Cost: <span id="auto-clicker-cost">50</span>)</button>
-      </div>
-    </div>
-
-    <div class="dropdown">
-      <button class="button">Save/Load Options <span class="material-icons">save_alt</span></button>
+      <button class="button">
+        Save/Load <span class="material-icons">save_alt</span>
+      </button>
       <div class="dropdown-content">
         <button onclick="saveGame()">Save Game</button>
         <button onclick="loadGame()">Load Game</button>
@@ -148,6 +129,25 @@
         <button onclick="deleteGame()">Delete Game</button>
       </div>
     </div>
+
+    <!-- Upgrades Dropdown -->
+    <div class="dropdown">
+      <button class="button">
+        Upgrades <span class="material-icons">upgrade</span>
+      </button>
+      <div class="dropdown-content">
+        <button onclick="buyClickUpgrade()">Buy Click Upgrade (+1 Click per Click, Cost: <span id="click-upgrade-cost">10</span>)</button>
+        <button onclick="buyAutoClicker()">Buy Auto Clicker (+1 CPS, Cost: <span id="auto-clicker-cost">50</span>)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1>Clicker Game</h1>
+    <p>Clicks: <span id="clicker-count">0</span></p>
+    <p>Clicks per Second (CPS): <span id="clicker-cps">0</span></p>
+    <button class="button" onclick="incrementClicker()">Click Me!</button>
   </div>
 </div>
 
@@ -259,20 +259,11 @@
     alert("Game progress deleted!");
   }
 
-  // Fullscreen toggle
-  document.getElementById("fullscreen-toggle").addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
-  });
-
   // Default dark mode
   document.body.style.setProperty("--bg-light", "#2c2c2c");
-  document.body.style.setProperty("--bg-dark", "#f9f9f9");
+  document.body.style.setProperty("--bg-dark", "#2c2c2c");
   document.body.style.setProperty("--text-light", "#fff");
-  document.body.style.setProperty("--text-dark", "#000");
+  document.body.style.setProperty("--text-dark", "#fff");
 </script>
 </body>
 </html>
