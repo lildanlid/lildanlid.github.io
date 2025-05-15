@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Planet Clicker</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -16,11 +17,40 @@
       background: linear-gradient(135deg, #1f1c2c, #928dab);
       color: #fff;
       display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      background-color: rgba(0, 0, 0, 0.3);
+      width: 250px;
+      padding: 1rem;
+      border-top-right-radius: 2rem;
+      border-bottom-right-radius: 2rem;
+      display: flex;
       flex-direction: column;
+      gap: 1rem;
+    }
+
+    .sidebar h4 {
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar .material-icons {
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    .sidebar-section {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 1rem;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      overflow: hidden;
     }
 
     .container {
@@ -57,11 +87,6 @@
       background-color: #007ea7;
     }
 
-    .leaderboard, .shop {
-      margin-top: 1rem;
-      text-align: left;
-    }
-
     .leaderboard ul {
       list-style: none;
       padding: 0;
@@ -80,31 +105,34 @@
   </style>
 </head>
 <body>
-  <div class="container" id="login">
-    <h2>Enter Username</h2>
-    <input type="text" id="usernameInput" placeholder="Your name..." />
-    <button onclick="startGame()">Start</button>
-  </div>
-
-  <div class="container" id="game" style="display: none;">
-    <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
-    <h3>Energy: <span id="energy">0</span></h3>
-    <button onclick="clickEnergy()">Click for Energy ⚡</button>
-
-    <div class="shop">
-      <h4>Shop</h4>
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h4><span class="material-icons">shopping_cart</span>Shop</h4>
       <button onclick="buyUpgrade('click')">+1 Click Power (Cost: <span id="clickCost">10</span>)</button>
       <button onclick="buyUpgrade('passive')">+1 Passive/s (Cost: <span id="passiveCost">20</span>)</button>
     </div>
+    <div class="sidebar-section leaderboard">
+      <h4><span class="material-icons">leaderboard</span>Leaderboard</h4>
+      <ul id="leaderboardList"></ul>
+    </div>
+  </div>
 
-    <div class="planet">
-      <h4>Current Planet: <span id="planetName">Earth</span></h4>
-      <button onclick="nextPlanet()">Next Planet 🌍</button>
+  <div class="main">
+    <div class="container" id="login">
+      <h2>Enter Username</h2>
+      <input type="text" id="usernameInput" placeholder="Your name..." />
+      <button onclick="startGame()">Start</button>
     </div>
 
-    <div class="leaderboard">
-      <h4>Leaderboard</h4>
-      <ul id="leaderboardList"></ul>
+    <div class="container" id="game" style="display: none;">
+      <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
+      <h3>Energy: <span id="energy">0</span></h3>
+      <button onclick="clickEnergy()">Click for Energy ⚡</button>
+
+      <div class="planet">
+        <h4>Current Planet: <span id="planetName">Earth</span></h4>
+        <button onclick="nextPlanet()">Next Planet 🌍</button>
+      </div>
     </div>
   </div>
 
@@ -118,14 +146,20 @@
     let planets = ['Earth', 'Mars', 'Jupiter', 'Saturn'];
     let planetIndex = 0;
 
-    const leaderboard = [];
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
 
     function startGame() {
       const input = document.getElementById('usernameInput');
-      username = input.value.trim() || 'Guest';
+      const name = input.value.trim();
+      if (!name) return alert('Please enter a username.');
+      if (leaderboard.find(player => player.name === name)) {
+        return alert('Username already taken. Please choose another.');
+      }
+      username = name;
       document.getElementById('usernameDisplay').textContent = username;
       document.getElementById('login').style.display = 'none';
       document.getElementById('game').style.display = 'block';
+      saveData();
       updateLeaderboard();
     }
 
@@ -161,24 +195,39 @@
     function updateEnergy() {
       document.getElementById('energy').textContent = energy;
       updateLeaderboard();
+      saveData();
     }
 
     function updateLeaderboard() {
-      const entry = leaderboard.find(e => e.name === username);
-      if (entry) {
-        entry.energy = energy;
-      } else {
+      const existing = leaderboard.find(p => p.name === username);
+      if (existing) {
+        existing.energy = energy;
+      } else if (username) {
         leaderboard.push({ name: username, energy });
       }
-      const sorted = leaderboard.sort((a, b) => b.energy - a.energy);
+      leaderboard = leaderboard.sort((a, b) => b.energy - a.energy);
+      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+
       const list = document.getElementById('leaderboardList');
       list.innerHTML = '';
-      sorted.forEach(player => {
+      leaderboard.forEach(player => {
         const li = document.createElement('li');
         li.textContent = `${player.name}: ${player.energy}`;
         if (player.name === username) li.style.fontWeight = 'bold';
         list.appendChild(li);
       });
+    }
+
+    function saveData() {
+      if (!username) return;
+      localStorage.setItem(`player_${username}`, JSON.stringify({
+        energy,
+        clickPower,
+        passivePower,
+        clickUpgradeCost,
+        passiveUpgradeCost,
+        planetIndex
+      }));
     }
 
     setInterval(() => {
