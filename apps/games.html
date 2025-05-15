@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Games Hub</title>
+<title>Clicker Game</title>
 <style>
   :root {
     --primary-color: #007bff;
@@ -26,35 +26,6 @@
     height: 100vh;
   }
 
-  /* Sidebar styles */
-  .sidebar {
-    width: 250px;
-    background-color: var(--bg-dark);
-    color: var(--text-dark);
-    transition: all 0.3s ease;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-  }
-
-  .sidebar .folder {
-    padding: 10px 20px;
-    cursor: pointer;
-    border-bottom: 1px solid #444;
-    transition: all 0.3s ease;
-    border-radius: 5px;
-    margin: 5px;
-  }
-
-  .sidebar .folder:hover, .sidebar .folder.active {
-    color: var(--primary-color);
-    background-color: rgba(0, 123, 255, 0.1);
-  }
-
-  .sidebar .folder.active {
-    border-bottom: 2px solid var(--primary-color);
-  }
-
-  /* Content area */
   .content {
     flex: 1;
     padding: 20px;
@@ -62,18 +33,19 @@
     color: var(--text-dark);
     transition: all 0.3s ease;
     overflow-y: auto;
+    text-align: center;
   }
 
-  /* Top bar with theme toggle */
   .top-bar {
     position: absolute;
     top: 10px;
     right: 10px;
     display: flex;
     align-items: center;
+    gap: 10px;
   }
 
-  .theme-toggle {
+  .icon-button {
     cursor: pointer;
     padding: 10px;
     border: none;
@@ -84,13 +56,12 @@
     border-radius: 50%;
   }
 
-  .theme-toggle:hover {
+  .icon-button:hover {
     background-color: rgba(0, 123, 255, 0.1);
   }
 
   .game-container {
-    text-align: center;
-    margin-top: 20px;
+    margin-top: 40px;
   }
 
   .button {
@@ -142,121 +113,120 @@
   .dropdown:hover .dropdown-content {
     display: block;
   }
-
-  @media (max-width: 768px) {
-    .sidebar {
-      position: absolute;
-      z-index: 1000;
-    }
-    .sidebar.hidden {
-      transform: translateX(-100%);
-    }
-  }
 </style>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 <div id="app">
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <div class="folder" onclick="showGameSection('clicker-game')" id="clicker-folder">Clicker Game</div>
-  </div>
-
-  <!-- Main content -->
   <div class="content">
     <div class="top-bar">
-      <button class="theme-toggle material-icons" id="theme-toggle">brightness_6</button>
+      <button class="icon-button material-icons" id="theme-toggle">brightness_6</button>
+      <button class="icon-button material-icons" id="fullscreen-toggle">fullscreen</button>
     </div>
 
-    <!-- Clicker Game Section -->
-    <section id="clicker-game" class="game-section">
-      <h1>Clicker Game</h1>
-      <div class="game-container">
-        <p>Clicks: <span id="clicker-count">0</span></p>
-        <button class="button" onclick="incrementClicker()">Click Me!</button>
-        <h3>Upgrades</h3>
-        <button class="button" onclick="buyUpgrade()">Buy Upgrade (Cost: <span id="upgrade-cost">10</span>)</button>
-        <p>Clicks per Click: <span id="clicks-per-click">1</span></p>
+    <h1>Clicker Game</h1>
+    <div class="game-container">
+      <p>Clicks: <span id="clicker-count">0</span></p>
+      <p>Clicks per Second (CPS): <span id="clicker-cps">0</span></p>
+      <button class="button" onclick="incrementClicker()">Click Me!</button>
+    </div>
+
+    <div class="dropdown">
+      <button class="button">Upgrades <span class="material-icons">upgrade</span></button>
+      <div class="dropdown-content">
+        <button onclick="buyClickUpgrade()">Buy Click Upgrade (+1 Click per Click, Cost: <span id="click-upgrade-cost">10</span>)</button>
+        <button onclick="buyAutoClicker()">Buy Auto Clicker (+1 CPS, Cost: <span id="auto-clicker-cost">50</span>)</button>
       </div>
-      <div class="dropdown">
-        <button class="button">Save/Load Options</button>
-        <div class="dropdown-content">
-          <button onclick="saveGame()">Save Game</button>
-          <button onclick="loadGame()">Load Game</button>
-          <button onclick="backupGame()">Backup Game</button>
-          <button onclick="deleteGame()">Delete Game</button>
-        </div>
+    </div>
+
+    <div class="dropdown">
+      <button class="button">Save/Load Options <span class="material-icons">save_alt</span></button>
+      <div class="dropdown-content">
+        <button onclick="saveGame()">Save Game</button>
+        <button onclick="loadGame()">Load Game</button>
+        <button onclick="backupGame()">Backup Game</button>
+        <button onclick="deleteGame()">Delete Game</button>
       </div>
-    </section>
+    </div>
   </div>
 </div>
 
 <script>
-  const gameSections = document.querySelectorAll('.game-section');
-  const folders = document.querySelectorAll('.folder');
-
-  // Default Dark Theme
-  let darkTheme = true;
-  document.body.style.setProperty('--bg-light', '#2c2c2c');
-  document.body.style.setProperty('--bg-dark', '#f9f9f9');
-  document.body.style.setProperty('--text-light', '#fff');
-  document.body.style.setProperty('--text-dark', '#000');
-
-  document.getElementById('theme-toggle').addEventListener('click', () => {
-    darkTheme = !darkTheme;
-    document.body.style.setProperty('--bg-light', darkTheme ? '#2c2c2c' : '#f9f9f9');
-    document.body.style.setProperty('--bg-dark', darkTheme ? '#f9f9f9' : '#2c2c2c');
-    document.body.style.setProperty('--text-light', darkTheme ? '#fff' : '#000');
-    document.body.style.setProperty('--text-dark', darkTheme ? '#000' : '#fff');
-  });
-
-  function showGameSection(sectionId) {
-    gameSections.forEach(section => {
-      section.style.display = section.id === sectionId ? 'block' : 'none';
-    });
-    folders.forEach(folder => {
-      folder.classList.toggle('active', folder.id === `${sectionId.split('-')[0]}-folder`);
-    });
-  }
-
-  // Clicker Game Logic
   let clickerCount = 0;
   let clicksPerClick = 1;
-  let upgradeCost = 10;
+  let autoClickers = 0;
+  let clickUpgradeCost = 10;
+  let autoClickerCost = 50;
+  let cps = 0;
 
+  // Increment clicks
   function incrementClicker() {
     clickerCount += clicksPerClick;
-    document.getElementById('clicker-count').textContent = clickerCount;
+    updateUI();
   }
 
-  function buyUpgrade() {
-    if (clickerCount >= upgradeCost) {
-      clickerCount -= upgradeCost;
+  // Buy click upgrade
+  function buyClickUpgrade() {
+    if (clickerCount >= clickUpgradeCost) {
+      clickerCount -= clickUpgradeCost;
       clicksPerClick++;
-      upgradeCost *= 2;
-      document.getElementById('clicker-count').textContent = clickerCount;
-      document.getElementById('clicks-per-click').textContent = clicksPerClick;
-      document.getElementById('upgrade-cost').textContent = upgradeCost;
+      clickUpgradeCost *= 2;
+      updateUI();
     } else {
       alert("Not enough clicks to buy upgrade!");
     }
   }
 
-  // Save, Load, Backup, Delete Functions
+  // Buy auto clicker
+  function buyAutoClicker() {
+    if (clickerCount >= autoClickerCost) {
+      clickerCount -= autoClickerCost;
+      autoClickers++;
+      autoClickerCost *= 2;
+      updateCPS();
+      updateUI();
+    } else {
+      alert("Not enough clicks to buy auto clicker!");
+    }
+  }
+
+  // Update CPS (Clicks Per Second)
+  function updateCPS() {
+    cps = autoClickers;
+    document.getElementById("clicker-cps").textContent = cps;
+  }
+
+  // Update UI
+  function updateUI() {
+    document.getElementById("clicker-count").textContent = clickerCount;
+    document.getElementById("click-upgrade-cost").textContent = clickUpgradeCost;
+    document.getElementById("auto-clicker-cost").textContent = autoClickerCost;
+  }
+
+  // Auto clicking logic
+  setInterval(() => {
+    clickerCount += cps;
+    updateUI();
+  }, 1000);
+
+  // Save/Load functionality
   function saveGame() {
-    localStorage.setItem('clicker-count', clickerCount);
-    localStorage.setItem('clicks-per-click', clicksPerClick);
-    localStorage.setItem('upgrade-cost', upgradeCost);
+    localStorage.setItem("clickerCount", clickerCount);
+    localStorage.setItem("clicksPerClick", clicksPerClick);
+    localStorage.setItem("autoClickers", autoClickers);
+    localStorage.setItem("clickUpgradeCost", clickUpgradeCost);
+    localStorage.setItem("autoClickerCost", autoClickerCost);
     alert("Game saved!");
   }
 
   function loadGame() {
-    clickerCount = parseInt(localStorage.getItem('clicker-count')) || 0;
-    clicksPerClick = parseInt(localStorage.getItem('clicks-per-click')) || 1;
-    upgradeCost = parseInt(localStorage.getItem('upgrade-cost')) || 10;
-    document.getElementById('clicker-count').textContent = clickerCount;
-    document.getElementById('clicks-per-click').textContent = clicksPerClick;
-    document.getElementById('upgrade-cost').textContent = upgradeCost;
+    clickerCount = parseInt(localStorage.getItem("clickerCount")) || 0;
+    clicksPerClick = parseInt(localStorage.getItem("clicksPerClick")) || 1;
+    autoClickers = parseInt(localStorage.getItem("autoClickers")) || 0;
+    clickUpgradeCost = parseInt(localStorage.getItem("clickUpgradeCost")) || 10;
+    autoClickerCost = parseInt(localStorage.getItem("autoClickerCost")) || 50;
+    updateCPS();
+    updateUI();
     alert("Game loaded!");
   }
 
@@ -264,7 +234,9 @@
     const backup = {
       clickerCount,
       clicksPerClick,
-      upgradeCost
+      autoClickers,
+      clickUpgradeCost,
+      autoClickerCost,
     };
     const backupKey = `clicker-backup-${Date.now()}`;
     localStorage.setItem(backupKey, JSON.stringify(backup));
@@ -272,17 +244,35 @@
   }
 
   function deleteGame() {
-    localStorage.removeItem('clicker-count');
-    localStorage.removeItem('clicks-per-click');
-    localStorage.removeItem('upgrade-cost');
+    localStorage.removeItem("clickerCount");
+    localStorage.removeItem("clicksPerClick");
+    localStorage.removeItem("autoClickers");
+    localStorage.removeItem("clickUpgradeCost");
+    localStorage.removeItem("autoClickerCost");
     clickerCount = 0;
     clicksPerClick = 1;
-    upgradeCost = 10;
-    document.getElementById('clicker-count').textContent = clickerCount;
-    document.getElementById('clicks-per-click').textContent = clicksPerClick;
-    document.getElementById('upgrade-cost').textContent = upgradeCost;
+    autoClickers = 0;
+    clickUpgradeCost = 10;
+    autoClickerCost = 50;
+    updateCPS();
+    updateUI();
     alert("Game progress deleted!");
   }
+
+  // Fullscreen toggle
+  document.getElementById("fullscreen-toggle").addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  // Default dark mode
+  document.body.style.setProperty("--bg-light", "#2c2c2c");
+  document.body.style.setProperty("--bg-dark", "#f9f9f9");
+  document.body.style.setProperty("--text-light", "#fff");
+  document.body.style.setProperty("--text-dark", "#000");
 </script>
 </body>
 </html>
