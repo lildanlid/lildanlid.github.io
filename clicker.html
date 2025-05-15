@@ -60,136 +60,45 @@
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    /* Side Menu */
-    #menu {
-      position: fixed;
-      left: -260px;
-      top: 0;
-      width: 250px;
-      height: 100%;
-      background-color: #1c1c1c;
-      transition: left 0.3s ease;
-      padding-top: 20px;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-    }
-
-    #menu.open {
-      left: 0;
-    }
-
-    /* Menu Toggle Button */
-    #menu-toggle {
-      position: fixed;
-      top: 20px;
-      left: 10px;
-      border: none;
-      color: #fff;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1000;
-      background: none;
-      padding: 5px;
-      transition: left 0.3s ease;
-    }
-
-    #menu.open + #menu-toggle {
-      left: 260px;
-    }
-
-    /* Menu Items */
-    #menu-items {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    #menu-items li {
+    /* Shop Items */
+    .shop-item {
       margin: 10px 0;
-    }
-
-    #menu-items li button {
-      display: flex;
-      align-items: center;
-      background: none;
-      color: #fff;
-      border: none;
-      font-size: 16px;
-      text-align: left;
-      cursor: pointer;
-      padding: 10px 20px;
-      width: 100%;
-      transition: all 0.3s;
-    }
-
-    #menu-items li button:hover,
-    #menu-items li button.selected {
-      color: #61dafb;
-    }
-
-    #menu-items li button.selected {
-      border-left: 4px solid #61dafb;
-    }
-
-    #menu-items li button .material-icons {
-      margin-right: 10px;
-      font-size: 20px;
-    }
-
-    /* Content Area */
-    #content {
-      margin-left: 260px;
-      padding: 20px;
-      transition: margin-left 0.3s ease;
-    }
-
-    #content.hidden {
-      margin-left: 0;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    /* Leaderboard Styling */
-    .leaderboard {
-      margin-top: 20px;
-    }
-
-    .leaderboard h2 {
-      margin-bottom: 10px;
-      color: #61dafb;
-    }
-
-    .leaderboard ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .leaderboard ul li {
-      margin: 5px 0;
       padding: 10px;
-      background-color: #444;
+      border: 1px solid #444;
       border-radius: 5px;
+      background-color: #444;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .shop-item button {
+      background-color: #61dafb;
+      border: none;
+      color: #000;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .shop-item button:hover {
+      background-color: #21a1f1;
+    }
+
+    .shop-item button:active {
+      transform: scale(0.95);
+      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
 <body>
-  <!-- Side Menu -->
   <div id="menu">
     <ul id="menu-items">
       <li><button id="home-btn" class="selected"><span class="material-icons">home</span>Home</button></li>
       <li><button id="shop-btn"><span class="material-icons">shopping_cart</span>Shop</button></li>
-      <li><button id="leaderboard-btn"><span class="material-icons">leaderboard</span>Leaderboard</button></li>
-      <li><button id="stats-btn"><span class="material-icons">insights</span>Stats</button></li>
     </ul>
   </div>
 
-  <!-- Menu Toggle Button -->
-  <button id="menu-toggle">
-    <span class="material-icons">menu</span>
-  </button>
-
-  <!-- Content -->
   <div id="content">
     <!-- Home Content -->
     <div id="home-content">
@@ -208,110 +117,90 @@
         <h2>Planets</h2>
       </div>
     </div>
-
-    <!-- Leaderboard Content -->
-    <div id="leaderboard-content" class="hidden">
-      <h1>Leaderboard</h1>
-      <div class="leaderboard">
-        <h2>Most Money</h2>
-        <ul id="most-money-list"></ul>
-      </div>
-      <div class="leaderboard">
-        <h2>Most Time Played</h2>
-        <ul id="most-time-list"></ul>
-      </div>
-      <div class="leaderboard">
-        <h2>Top Clicks</h2>
-        <ul id="top-clicks-list"></ul>
-      </div>
-    </div>
-
-    <!-- Stats Content -->
-    <div id="stats-content" class="hidden">
-      <h1>Stats</h1>
-      <p>Clicks: <span id="click-count">0</span></p>
-      <p>Currency: <span id="currency">0</span> ₴</p>
-    </div>
   </div>
 
   <script>
-    const menuToggle = document.getElementById('menu-toggle');
-    const menu = document.getElementById('menu');
-    const homeBtn = document.getElementById('home-btn');
-    const shopBtn = document.getElementById('shop-btn');
-    const leaderboardBtn = document.getElementById('leaderboard-btn');
-    const statsBtn = document.getElementById('stats-btn');
-
-    const homeContent = document.getElementById('home-content');
-    const shopContent = document.getElementById('shop-content');
-    const leaderboardContent = document.getElementById('leaderboard-content');
-    const statsContent = document.getElementById('stats-content');
-
-    const mostMoneyList = document.getElementById('most-money-list');
-    const mostTimeList = document.getElementById('most-time-list');
-    const topClicksList = document.getElementById('top-clicks-list');
+    const currencyCounter = document.getElementById('currency');
+    const upgradesList = document.getElementById('upgrades-list');
+    const planetsList = document.getElementById('planets-list');
 
     let currency = 0;
-    let clicks = 0;
+    let clickPower = 1;
 
-    // Toggle Menu
-    menuToggle.addEventListener('click', () => {
-      menu.classList.toggle('open');
+    // List of upgrades
+    const upgrades = [
+      { name: "Quick Finger", effect: "+1 Click Power", cost: 50, apply: () => clickPower += 1 },
+    ];
+
+    // List of planets
+    const planets = [
+      { name: "Earth Alpha", cost: 1200, currencyType: "₴" },
+      { name: "Terra Nova", cost: 950, currencyType: "¤" },
+      { name: "Gaia Prime", cost: 3450, currencyType: "🍃" },
+    ];
+
+    // Render upgrades in the shop
+    upgrades.forEach((upgrade, index) => {
+      const item = document.createElement('div');
+      item.className = 'shop-item';
+      item.innerHTML = `
+        <span>${upgrade.name} (${upgrade.effect}) - ${upgrade.cost} ₴</span>
+        <button id="buy-upgrade-${index}">Buy</button>
+      `;
+      upgradesList.appendChild(item);
+
+      // Add event listener to the button
+      document.getElementById(`buy-upgrade-${index}`).addEventListener('click', () => {
+        if (currency >= upgrade.cost) {
+          currency -= upgrade.cost;
+          currencyCounter.textContent = currency;
+          upgrade.apply();
+          item.querySelector('button').disabled = true; // Disable button after purchase
+        } else {
+          alert("Not enough currency!");
+        }
+      });
     });
 
-    // Switch Content
-    function switchContent(newContent, selectedButton) {
-      homeContent.classList.add('hidden');
-      shopContent.classList.add('hidden');
-      leaderboardContent.classList.add('hidden');
-      statsContent.classList.add('hidden');
+    // Render planets in the shop
+    planets.forEach((planet, index) => {
+      const item = document.createElement('div');
+      item.className = 'shop-item';
+      item.innerHTML = `
+        <span>${planet.name} - ${planet.cost} ${planet.currencyType}</span>
+        <button id="buy-planet-${index}">Buy</button>
+      `;
+      planetsList.appendChild(item);
 
-      newContent.classList.remove('hidden');
+      // Add event listener to the button
+      document.getElementById(`buy-planet-${index}`).addEventListener('click', () => {
+        alert(`You bought ${planet.name}!`);
+        item.querySelector('button').disabled = true; // Disable button after purchase
+      });
+    });
 
-      homeBtn.classList.remove('selected');
-      shopBtn.classList.remove('selected');
-      leaderboardBtn.classList.remove('selected');
-      statsBtn.classList.remove('selected');
+    // Handle clicking
+    const clickButton = document.getElementById('click-button');
+    clickButton.addEventListener('click', () => {
+      currency += clickPower;
+      currencyCounter.textContent = currency;
+    });
 
-      selectedButton.classList.add('selected');
-    }
+    // Navigation Logic
+    const homeBtn = document.getElementById('home-btn');
+    const shopBtn = document.getElementById('shop-btn');
+    const homeContent = document.getElementById('home-content');
+    const shopContent = document.getElementById('shop-content');
 
     homeBtn.addEventListener('click', () => {
-      switchContent(homeContent, homeBtn);
+      homeContent.classList.remove('hidden');
+      shopContent.classList.add('hidden');
     });
 
     shopBtn.addEventListener('click', () => {
-      switchContent(shopContent, shopBtn);
+      homeContent.classList.add('hidden');
+      shopContent.classList.remove('hidden');
     });
-
-    leaderboardBtn.addEventListener('click', () => {
-      switchContent(leaderboardContent, leaderboardBtn);
-    });
-
-    statsBtn.addEventListener('click', () => {
-      switchContent(statsContent, statsBtn);
-    });
-
-    // Click Button Logic
-    const clickButton = document.getElementById('click-button');
-    const currencyCounter = document.getElementById('currency');
-    const clickCount = document.getElementById('click-count');
-
-    clickButton.addEventListener('click', () => {
-      currency += 1;
-      clicks += 1;
-      currencyCounter.textContent = currency;
-      clickCount.textContent = clicks;
-
-      updateLeaderboard();
-    });
-
-    // Live Leaderboard Updates
-    function updateLeaderboard() {
-      mostMoneyList.innerHTML = `<li>You: ${currency} ₴</li>`;
-      mostTimeList.innerHTML = `<li>You: ${clicks * 2} seconds</li>`; // Example: 2 seconds per click
-      topClicksList.innerHTML = `<li>You: ${clicks} clicks</li>`;
-    }
   </script>
 </body>
 </html>
