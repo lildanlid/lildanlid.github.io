@@ -44,10 +44,12 @@
       background: #333;
       border-radius: 20px;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       position: relative;
       margin-bottom: 20px;
+      cursor: pointer;
     }
     .click-box .arrow {
       position: absolute;
@@ -63,6 +65,16 @@
     }
     .click-box .arrow.right {
       right: 10px;
+    }
+    .click-button {
+      padding: 15px 30px;
+      background: #555;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 18px;
+      margin-top: 20px;
     }
     .error-box {
       position: fixed;
@@ -86,6 +98,23 @@
       padding: 10px;
       cursor: pointer;
       border-radius: 12px;
+    }
+    .floating-text {
+      position: absolute;
+      color: #0f0;
+      font-weight: bold;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0px);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
     }
   </style>
 </head>
@@ -111,11 +140,12 @@
   </div>
   <div class="main">
     <div id="errorBox" class="error-box"></div>
-    <div class="click-box" onclick="clickEnergy()">
-      <span id="planetName"></span>
+    <div class="click-box" onclick="clickEnergy(event)">
       <span class="arrow left material-icons" onclick="event.stopPropagation(); prevPlanet();">arrow_back</span>
+      <span id="planetName"></span>
       <span class="arrow right material-icons" onclick="event.stopPropagation(); nextPlanet();">arrow_forward</span>
     </div>
+    <button class="click-button" onclick="clickEnergy(event)">Click</button>
     <h2><span class="material-icons">bolt</span> Energy: <span id="energy">0</span></h2>
   </div>
   <script>
@@ -204,10 +234,25 @@
       }
     }
 
-    function clickEnergy() {
-      energy += planets[planetIndex].click * clickLevel;
+    function clickEnergy(event) {
+      let gain = planets[planetIndex].click * clickLevel;
+      energy += gain;
       updateUI();
       saveData();
+
+      // Create floating text
+      const floatText = document.createElement('div');
+      floatText.className = 'floating-text';
+      floatText.innerText = `+${gain}`;
+
+      const box = document.querySelector('.click-box');
+      const rect = box.getBoundingClientRect();
+
+      floatText.style.left = (event.clientX - rect.left - 10) + 'px';
+      floatText.style.top = (event.clientY - rect.top - 10) + 'px';
+
+      box.appendChild(floatText);
+      setTimeout(() => floatText.remove(), 1000);
     }
 
     function updateUI() {
