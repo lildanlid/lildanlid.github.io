@@ -61,6 +61,7 @@
       text-align: center;
       width: 90%;
       max-width: 400px;
+      position: relative;
     }
 
     input[type="text"] {
@@ -102,6 +103,20 @@
     .planet {
       margin-top: 1rem;
     }
+
+    .leaderboard-buttons button {
+      margin: 0.2rem;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .planet-nav {
+      position: absolute;
+      top: 1rem;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 1rem;
+    }
   </style>
 </head>
 <body>
@@ -110,9 +125,15 @@
       <h4><span class="material-icons">shopping_cart</span>Shop</h4>
       <button onclick="buyUpgrade('click')">+1 Click Power (Cost: <span id="clickCost">10</span>)</button>
       <button onclick="buyUpgrade('passive')">+1 Passive/s (Cost: <span id="passiveCost">20</span>)</button>
+      <button onclick="buyNextPlanet()">Buy Next Planet (Cost: <span id="planetCostShop">500</span>)</button>
     </div>
     <div class="sidebar-section leaderboard">
       <h4><span class="material-icons">leaderboard</span>Leaderboard</h4>
+      <div class="leaderboard-buttons">
+        <button onclick="setLeaderboardType('energy')">Click</button>
+        <button onclick="setLeaderboardType('money')">Money</button>
+        <button onclick="setLeaderboardType('time')">Time</button>
+      </div>
       <ul id="leaderboardList"></ul>
     </div>
   </div>
@@ -125,14 +146,16 @@
     </div>
 
     <div class="container" id="game" style="display: none;">
+      <div class="planet-nav">
+        <button onclick="prevPlanet()">⬅️</button>
+        <button onclick="nextPlanet()">➡️</button>
+      </div>
       <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
       <h3>Energy: <span id="energy">0</span></h3>
       <button onclick="clickEnergy()">Click for Energy ⚡</button>
 
       <div class="planet">
         <h4>Current Planet: <span id="planetName">Earth</span></h4>
-        <button onclick="prevPlanet()">⬅️ Previous Planet</button>
-        <button onclick="nextPlanet()">Next Planet ➡️ (Cost: <span id="planetCost">100</span>)</button>
       </div>
     </div>
   </div>
@@ -146,13 +169,19 @@
     let passiveUpgradeCost = 20;
     let planets = ['Earth', 'Mars', 'Jupiter', 'Saturn'];
     let planetIndex = 0;
-
-    let leaderboard = [];
+    let timePlayed = 0;
+    let leaderboardType = 'energy';
 
     function startGame() {
       const input = document.getElementById('usernameInput');
       const name = input.value.trim();
       if (!name) return alert('Please enter a username.');
+
+      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+      if (!allUsers.includes(name)) {
+        allUsers.push(name);
+        localStorage.setItem('allUsers', JSON.stringify(allUsers));
+      }
 
       username = name;
       document.getElementById('usernameDisplay').textContent = username;
@@ -181,10 +210,17 @@
       updateUI();
     }
 
-    function nextPlanet() {
-      const cost = 100 * (planetIndex + 1);
+    function buyNextPlanet() {
+      const cost = 1000 * (planetIndex + 1);
       if (planetIndex < planets.length - 1 && energy >= cost) {
         energy -= cost;
+        planetIndex++;
+        updateUI();
+      }
+    }
+
+    function nextPlanet() {
+      if (planetIndex < planets.length - 1) {
         planetIndex++;
         updateUI();
       }
@@ -202,26 +238,48 @@
       document.getElementById('clickCost').textContent = clickUpgradeCost;
       document.getElementById('passiveCost').textContent = passiveUpgradeCost;
       document.getElementById('planetName').textContent = planets[planetIndex];
-      document.getElementById('planetCost').textContent = 100 * (planetIndex + 1);
+      document.getElementById('planetCostShop').textContent = 1000 * (planetIndex + 1);
       saveData();
       updateLeaderboard();
     }
 
     function updateLeaderboard() {
-      const storedLeaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-      const filtered = storedLeaderboard.filter(p => p.name !== username);
-      filtered.push({ name: username, energy });
-      leaderboard = filtered.sort((a, b) => b.energy - a.energy);
-      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+      let players = allUsers.map(name => {
+        const data = JSON.parse(localStorage.getItem(`player_${name}`) || '{}');
+        return {
+          name,
+          energy: data.energy || 0,
+          time: data.timePlayed || 0
+        };
+      });
+
+      if (leaderboardType === 'energy') {
+        players.sort((a, b) => b.energy - a.energy);
+      } else if (leaderboardType === 'time') {
+        players.sort((a, b) => b.time - a.time);
+      }
 
       const list = document.getElementById('leaderboardList');
       list.innerHTML = '';
-      leaderboard.forEach(player => {
+      players.forEach(p => {
         const li = document.createElement('li');
-        li.textContent = `${player.name}: ${player.energy}`;
-        if (player.name === username) li.style.fontWeight = 'bold';
+        if (leaderboardType === 'time') {
+          const d = Math.floor(p.time / 86400);
+          const h = Math.floor((p.time % 86400) / 3600);
+          const m = Math.floor((p.time % 3600) / 60);
+          li.textContent = `${p.name}: ${d}D ${h}H ${m}M`;
+        } else {
+          li.textContent = `${p.name}: ${p.energy}`;
+        }
+        if (p.name === username) li.style.fontWeight = 'bold';
         list.appendChild(li);
       });
+    }
+
+    function setLeaderboardType(type) {
+      leaderboardType = type;
+      updateLeaderboard();
     }
 
     function saveData() {
@@ -232,29 +290,29 @@
         passivePower,
         clickUpgradeCost,
         passiveUpgradeCost,
-        planetIndex
+        planetIndex,
+        timePlayed
       }));
     }
 
     function loadData() {
-      const saved = JSON.parse(localStorage.getItem(`player_${username}`));
+      const saved = JSON.parse(localStorage.getItem(`player_${username}`) || '{}');
       if (saved) {
-        energy = saved.energy;
-        clickPower = saved.clickPower;
-        passivePower = saved.passivePower;
-        clickUpgradeCost = saved.clickUpgradeCost;
-        passiveUpgradeCost = saved.passiveUpgradeCost;
-        planetIndex = saved.planetIndex;
+        energy = saved.energy || 0;
+        clickPower = saved.clickPower || 1;
+        passivePower = saved.passivePower || 0;
+        clickUpgradeCost = saved.clickUpgradeCost || 10;
+        passiveUpgradeCost = saved.passiveUpgradeCost || 20;
+        planetIndex = saved.planetIndex || 0;
+        timePlayed = saved.timePlayed || 0;
       }
     }
 
     setInterval(() => {
       energy += passivePower;
+      timePlayed++;
       updateUI();
     }, 1000);
-
-    // Reset leaderboard usernames for clean start
-    localStorage.setItem('leaderboard', JSON.stringify([]));
   </script>
 </body>
 </html>
