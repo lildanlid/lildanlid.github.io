@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clicker Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    .hidden {
+      display: none;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+    input {
+      width: 200px;
+    }
+    button {
+      cursor: pointer;
+      background-color: #3498db;
+      color: white;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #dropdown {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+    #dropdown-menu {
+      background-color: #2c2c2c;
+      border: 1px solid #444;
+      border-radius: 5px;
+      padding: 5px;
+      display: none;
+      position: absolute;
+      top: 40px;
+      left: 10px;
+    }
+    #dropdown-menu a {
+      text-decoration: none;
+      color: white;
+      display: block;
+      padding: 5px;
+    }
+    #dropdown-menu a:hover {
+      background-color: #444;
+    }
+    .content {
+      text-align: center;
+    }
+    #leaderboard, #shop {
+      text-align: left;
+      margin: 20px;
+    }
+    #shop .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    #shop .tab-content {
+      display: none;
+    }
+    #shop .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="sign-in" class="center">
+    <h1>Clicker Game</h1>
+    <input type="text" id="username" placeholder="Enter your username">
+    <button onclick="signIn()">Sign In</button>
+  </div>
+
+  <div id="game" class="hidden">
+    <button id="dropdown" onclick="toggleMenu()">☰ Menu</button>
+    <div id="dropdown-menu">
+      <a href="#" onclick="showContent('home')">Home</a>
+      <a href="#" onclick="showContent('shop')">Shop</a>
+      <a href="#" onclick="showContent('leaderboard')">Leaderboards</a>
+      <a href="#" onclick="showContent('stats')">Stats</a>
+    </div>
+
+    <div id="content">
+      <div id="home" class="content">
+        <h1>Welcome to the Clicker Game!</h1>
+        <button onclick="clickButton()">Click Me!</button>
+        <p>Clicks: <span id="clicks">0</span></p>
+      </div>
+
+      <div id="shop" class="content hidden">
+        <div class="tabs">
+          <button onclick="switchTab('upgrades')">Upgrades</button>
+          <button onclick="switchTab('planets')">Planets</button>
+        </div>
+        <div id="upgrades" class="tab-content">
+          <h2>Upgrades</h2>
+          <div id="upgrade-list"></div>
+        </div>
+        <div id="planets" class="tab-content">
+          <h2>Planets</h2>
+          <div id="planet-list"></div>
+        </div>
+      </div>
+
+      <div id="leaderboard" class="content hidden">
+        <h2>Leaderboards</h2>
+        <div id="leaderboard-list"></div>
+      </div>
+
+      <div id="stats" class="content hidden">
+        <h2>Stats</h2>
+        <p>Coming Soon...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let clicks = 0;
+    let leaderboard = [];
+    const upgrades = [
+      { name: "Quick Finger", effect: "+1 Click Power", cost: 10 },
+      { name: "Double Tap", effect: "Double Clicks for 5 Seconds", cost: 50 },
+      // Add more upgrades here
+    ];
+    const planets = [
+      { name: "Earth Alpha", currency: "₴ Solar Credits" },
+      { name: "Terra Nova", currency: "¤ Nova Coins" },
+      // Add more planets here
+    ];
+
+    function signIn() {
+      const usernameInput = document.getElementById("username");
+      const username = usernameInput.value.trim();
+      if (!username || /[^a-zA-Z0-9]/.test(username)) {
+        alert("Invalid username. Only letters and numbers are allowed.");
+        return;
+      }
+      if (leaderboard.find(player => player.username === username)) {
+        alert("This username is already taken.");
+        return;
+      }
+      leaderboard.push({ username, clicks: 0 });
+      document.getElementById("sign-in").classList.add("hidden");
+      document.getElementById("game").classList.remove("hidden");
+      updateLeaderboard();
+    }
+
+    function toggleMenu() {
+      const menu = document.getElementById("dropdown-menu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function showContent(id) {
+      document.querySelectorAll(".content").forEach(content => content.classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+      toggleMenu();
+    }
+
+    function clickButton() {
+      clicks++;
+      document.getElementById("clicks").textContent = clicks;
+      updateLeaderboard();
+    }
+
+    function updateLeaderboard() {
+      const list = document.getElementById("leaderboard-list");
+      list.innerHTML = leaderboard
+        .sort((a, b) => b.clicks - a.clicks)
+        .map(player => `<p>${player.username}: ${player.clicks} clicks</p>`)
+        .join("");
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+      document.getElementById(tab).classList.add("active");
+    }
+
+    function loadShop() {
+      const upgradeList = document.getElementById("upgrade-list");
+      upgradeList.innerHTML = upgrades.map(upgrade => `
+        <div>
+          <p>${upgrade.name} - ${upgrade.effect} - Cost: ${upgrade.cost}</p>
+          <button onclick="buyUpgrade('${upgrade.name}')">Buy</button>
+        </div>
+      `).join("");
+
+      const planetList = document.getElementById("planet-list");
+      planetList.innerHTML = planets.map(planet => `
+        <div>
+          <p>${planet.name} - Currency: ${planet.currency}</p>
+        </div>
+      `).join("");
+    }
+
+    function buyUpgrade(name) {
+      const upgrade = upgrades.find(u => u.name === name);
+      if (clicks >= upgrade.cost) {
+        clicks -= upgrade.cost;
+        upgrade.cost = Math.ceil(upgrade.cost * 1.5);
+        document.getElementById("clicks").textContent = clicks;
+        loadShop();
+      } else {
+        alert("Not enough clicks!");
+      }
+    }
+
+    loadShop();
+  </script>
+</body>
+</html>
