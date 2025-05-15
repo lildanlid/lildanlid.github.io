@@ -14,64 +14,74 @@
       transition: background 0.5s ease;
     }
 
+    #performance-display {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    #menu-toggle, #stats-toggle {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    #menu-toggle:hover, #stats-toggle:hover {
+      background-color: #0056b3;
+    }
+
+    #menu-toggle {
+      left: 10px;
+    }
+
+    #stats-toggle {
+      left: 100px;
+    }
+
     #sidebar {
-      width: 250px;
+      position: fixed;
+      left: -300px;
+      top: 0;
+      width: 300px;
+      height: 100%;
       background-color: #333;
       color: white;
-      height: 100vh;
-      position: fixed;
-      left: -250px;
-      transition: left 0.3s ease;
       padding: 20px;
-      box-sizing: border-box;
+      transition: left 0.3s ease-in-out;
     }
 
     #sidebar.open {
       left: 0;
     }
 
-    #content {
-      margin-left: 0;
-      transition: margin-left 0.3s ease;
-    }
-
-    #content.shifted {
-      margin-left: 250px;
-    }
-
-    .menu-arrow {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
+    #menu-close {
+      background: none;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      color: white;
       font-size: 18px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
 
-    .menu-arrow:hover {
-      background-color: #0056b3;
-    }
-
-    .shop-options {
-      margin-bottom: 10px;
-    }
-
-    .shop-options select {
-      padding: 5px;
-      font-size: 14px;
-    }
-
-    .planet {
+    #planet {
       text-align: center;
-      padding: 20px;
+      padding: 50px;
       transition: background 0.5s ease;
     }
 
-    .click-button {
+    #click-button {
       margin-top: 20px;
       padding: 10px 20px;
       font-size: 16px;
@@ -82,17 +92,12 @@
       cursor: pointer;
     }
 
-    .click-button:hover {
+    #click-button:hover {
       background-color: #218838;
     }
 
-    .shop-upgrades {
-      margin: 20px 0;
-    }
-
-    .shop-upgrades button {
-      margin: 5px 0;
-      width: 100%;
+    .shop-options select, .shop-upgrades button {
+      margin: 10px 0;
       padding: 10px;
       font-size: 14px;
       background-color: #007bff;
@@ -105,26 +110,26 @@
     .shop-upgrades button:hover {
       background-color: #0056b3;
     }
-
-    .menu-stats {
-      margin-top: 20px;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 5px;
-    }
-
-    .menu-stats p {
-      margin: 5px 0;
-    }
   </style>
 </head>
 <body>
-  <button class="menu-arrow" onclick="toggleSidebar()">&#x25B6;</button>
+  <!-- CPS/FPS Display -->
+  <div id="performance-display">
+    <p>CPS: <span id="cps-display">0</span></p>
+    <p>FPS: <span id="fps-display">0</span></p>
+  </div>
+
+  <!-- Menu Toggle Button -->
+  <button id="menu-toggle" onclick="toggleMenu()">☰</button>
+
+  <!-- Stats Toggle Button -->
+  <button id="stats-toggle" onclick="toggleStats()">Stats</button>
 
   <!-- Sidebar Menu -->
   <div id="sidebar">
+    <button id="menu-close" onclick="toggleMenu()">✖</button>
     <h2>Menu</h2>
-    <div class="menu-stats">
+    <div id="menu-stats">
       <h3>Stats</h3>
       <p>Total Clicks: <span id="total-clicks">0</span></p>
       <p>Total Purchases: <span id="total-purchases">0</span></p>
@@ -145,50 +150,45 @@
     </div>
   </div>
 
-  <div id="content">
-    <div id="planet" class="planet">
-      <h1 id="planet-name">Earth</h1>
-      <p>Resources: <span id="resources">0</span></p>
-      <button class="click-button" onclick="handleClick()">Click Me!</button>
-    </div>
+  <!-- Main Game Content -->
+  <div id="planet">
+    <h1 id="planet-name">Earth</h1>
+    <p>Resources: <span id="resources">0</span></p>
+    <button id="click-button" onclick="handleClick()">Click Me!</button>
   </div>
 
   <script>
+    // Planet Data
     const planets = {
-      Earth: {
-        background: "linear-gradient(to right, #4facfe, #00f2fe)",
-        resources: 0,
-        clickPower: 1,
-      },
-      Mars: {
-        background: "linear-gradient(to right, #ff512f, #dd2476)",
-        resources: 0,
-        clickPower: 2,
-      },
-      Venus: {
-        background: "linear-gradient(to right, #fbc7d4, #9796f0)",
-        resources: 0,
-        clickPower: 3,
-      },
+      Earth: { background: "linear-gradient(to right, #4facfe, #00f2fe)", resources: 0, clickPower: 1 },
+      Mars: { background: "linear-gradient(to right, #ff512f, #dd2476)", resources: 0, clickPower: 2 },
+      Venus: { background: "linear-gradient(to right, #fbc7d4, #9796f0)", resources: 0, clickPower: 3 },
     };
 
     let currentPlanet = "Earth";
     let totalClicks = 0;
     let totalPurchases = 0;
+    let lastClickTime = 0;
+    let clickCount = 0;
 
     const resourcesElement = document.getElementById("resources");
     const planetNameElement = document.getElementById("planet-name");
     const totalClicksElement = document.getElementById("total-clicks");
     const totalPurchasesElement = document.getElementById("total-purchases");
     const planetElement = document.getElementById("planet");
+    const cpsDisplay = document.getElementById("cps-display");
+    const fpsDisplay = document.getElementById("fps-display");
 
+    // Handle Clicks
     function handleClick() {
       const planet = planets[currentPlanet];
       planet.resources += planet.clickPower;
       totalClicks++;
+      clickCount++;
       updateUI();
     }
 
+    // Purchase Upgrades
     function purchaseUpgrade() {
       const buyAmount = document.getElementById("buy-amount").value;
       let amountToBuy = 1;
@@ -213,30 +213,40 @@
       }
     }
 
-    function toggleSidebar() {
+    // Menu Toggle
+    function toggleMenu() {
       const sidebar = document.getElementById("sidebar");
-      const content = document.getElementById("content");
-      const menuArrow = document.querySelector(".menu-arrow");
-
       sidebar.classList.toggle("open");
-      content.classList.toggle("shifted");
-
-      // Change arrow direction
-      if (sidebar.classList.contains("open")) {
-        menuArrow.innerHTML = "&#x25C0;"; // Left arrow
-      } else {
-        menuArrow.innerHTML = "&#x25B6;"; // Right arrow
-      }
     }
 
+    // Stats Toggle
+    function toggleStats() {
+      const stats = document.getElementById("menu-stats");
+      stats.style.display = stats.style.display === "none" ? "block" : "none";
+    }
+
+    // Update UI
     function updateUI() {
       const planet = planets[currentPlanet];
       resourcesElement.textContent = planet.resources;
       totalClicksElement.textContent = totalClicks;
       totalPurchasesElement.textContent = totalPurchases;
+      planetElement.style.background = planet.background;
+      planetNameElement.textContent = currentPlanet;
     }
 
-    // Initialize UI
+    // Calculate CPS and FPS
+    function calculatePerformance() {
+      const now = performance.now();
+      const delta = now - lastClickTime;
+      fpsDisplay.textContent = (1000 / delta).toFixed(1);
+      cpsDisplay.textContent = clickCount;
+      clickCount = 0;
+      lastClickTime = now;
+    }
+
+    // Initialize Game
+    setInterval(calculatePerformance, 1000);
     updateUI();
   </script>
 </body>
