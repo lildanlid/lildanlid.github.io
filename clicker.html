@@ -35,10 +35,35 @@
       margin-top: 10px;
     }
 
+    /* Click Button Styling */
+    #click-button {
+      display: block;
+      margin: 40px auto;
+      background-color: #61dafb;
+      border: none;
+      color: #000;
+      padding: 20px 60px;
+      font-size: 24px;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.1s, box-shadow 0.1s, background-color 0.3s;
+    }
+
+    #click-button:hover {
+      background-color: #21a1f1;
+    }
+
+    #click-button:active {
+      transform: scale(0.95);
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
     /* Side Menu */
     #menu {
       position: fixed;
-      left: -260px; /* Fully off-screen when closed */
+      left: -260px;
       top: 0;
       width: 250px;
       height: 100%;
@@ -64,11 +89,11 @@
       z-index: 1000;
       background: none;
       padding: 5px;
-      transition: left 0.3s ease; /* Moves with the menu */
+      transition: left 0.3s ease;
     }
 
     #menu.open + #menu-toggle {
-      left: 260px; /* Aligns with the open menu */
+      left: 260px;
     }
 
     /* Menu Items */
@@ -112,7 +137,7 @@
 
     /* Content Area */
     #content {
-      margin-left: 260px; /* Matches the menu width */
+      margin-left: 260px;
       padding: 20px;
       transition: margin-left 0.3s ease;
     }
@@ -123,36 +148,6 @@
 
     .hidden {
       display: none;
-    }
-
-    /* Shop Items */
-    .shop-item {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid #444;
-      border-radius: 5px;
-      background-color: #444;
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .shop-item button {
-      background-color: #61dafb;
-      border: none;
-      color: #000;
-      padding: 10px 20px;
-      font-size: 14px;
-      cursor: pointer;
-      border-radius: 6px;
-      transition: transform 0.1s, box-shadow 0.1s;
-    }
-
-    .shop-item button:hover {
-      background-color: #21a1f1;
-    }
-
-    .shop-item button:active {
-      transform: scale(0.95);
-      box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
     }
 
     /* Leaderboard Styling */
@@ -219,24 +214,15 @@
       <h1>Leaderboard</h1>
       <div class="leaderboard">
         <h2>Most Money</h2>
-        <ul id="most-money-list">
-          <li>Player1: $1000</li>
-          <li>Player2: $800</li>
-        </ul>
+        <ul id="most-money-list"></ul>
       </div>
       <div class="leaderboard">
         <h2>Most Time Played</h2>
-        <ul id="most-time-list">
-          <li>Player1: 5 hours</li>
-          <li>Player2: 4 hours</li>
-        </ul>
+        <ul id="most-time-list"></ul>
       </div>
       <div class="leaderboard">
         <h2>Top Clicks</h2>
-        <ul id="top-clicks-list">
-          <li>Player1: 500 clicks</li>
-          <li>Player2: 400 clicks</li>
-        </ul>
+        <ul id="top-clicks-list"></ul>
       </div>
     </div>
 
@@ -260,6 +246,13 @@
     const shopContent = document.getElementById('shop-content');
     const leaderboardContent = document.getElementById('leaderboard-content');
     const statsContent = document.getElementById('stats-content');
+
+    const mostMoneyList = document.getElementById('most-money-list');
+    const mostTimeList = document.getElementById('most-time-list');
+    const topClicksList = document.getElementById('top-clicks-list');
+
+    let currency = 0;
+    let clicks = 0;
 
     // Toggle Menu
     menuToggle.addEventListener('click', () => {
@@ -299,41 +292,26 @@
       switchContent(statsContent, statsBtn);
     });
 
-    // Add upgrades and planets to the shop
-    const upgrades = [
-      { name: "Quick Finger", effect: "+1 Click Power", cost: 100 },
-      { name: "Double Tap", effect: "Double Clicks for 5 Seconds", cost: 300 },
-      { name: "Auto Clicker v1", effect: "+1 CPS", cost: 500 }
-    ];
+    // Click Button Logic
+    const clickButton = document.getElementById('click-button');
+    const currencyCounter = document.getElementById('currency');
+    const clickCount = document.getElementById('click-count');
 
-    const planets = [
-      { name: "Earth Alpha", cost: 1200 },
-      { name: "Terra Nova", cost: 950 },
-      { name: "Gaia Prime", cost: 3450 }
-    ];
+    clickButton.addEventListener('click', () => {
+      currency += 1;
+      clicks += 1;
+      currencyCounter.textContent = currency;
+      clickCount.textContent = clicks;
 
-    const upgradesList = document.getElementById('upgrades-list');
-    const planetsList = document.getElementById('planets-list');
-
-    upgrades.forEach(upgrade => {
-      const item = document.createElement('div');
-      item.className = 'shop-item';
-      item.innerHTML = `
-        <span>${upgrade.name} (${upgrade.effect}) - ${upgrade.cost} ₴</span>
-        <button>Buy</button>
-      `;
-      upgradesList.appendChild(item);
+      updateLeaderboard();
     });
 
-    planets.forEach(planet => {
-      const item = document.createElement('div');
-      item.className = 'shop-item';
-      item.innerHTML = `
-        <span>${planet.name} - ${planet.cost} ₴</span>
-        <button>Buy</button>
-      `;
-      planetsList.appendChild(item);
-    });
+    // Live Leaderboard Updates
+    function updateLeaderboard() {
+      mostMoneyList.innerHTML = `<li>You: ${currency} ₴</li>`;
+      mostTimeList.innerHTML = `<li>You: ${clicks * 2} seconds</li>`; // Example: 2 seconds per click
+      topClicksList.innerHTML = `<li>You: ${clicks} clicks</li>`;
+    }
   </script>
 </body>
 </html>
