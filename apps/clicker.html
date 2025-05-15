@@ -117,6 +117,23 @@
       justify-content: space-between;
       padding: 0 1rem;
     }
+
+    .planet-nav button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .error-box {
+      background: rgba(255, 0, 0, 0.7);
+      color: white;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 1rem;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -152,11 +169,12 @@
       </div>
       <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
       <h3>Energy: <span id="energy">0</span></h3>
-      <button onclick="clickEnergy()">Click for Energy ⚡</button>
+      <button onclick="clickEnergy()" id="clickButton">Click for Energy ⚡</button>
 
       <div class="planet">
         <h4>Current Planet: <span id="planetName">Earth</span></h4>
       </div>
+      <div id="errorBox" class="error-box"></div>
     </div>
   </div>
 
@@ -167,15 +185,27 @@
     let passivePower = 0;
     let clickUpgradeCost = 10;
     let passiveUpgradeCost = 20;
-    let planets = ['Earth', 'Mars', 'Jupiter', 'Saturn'];
+    let planets = [
+      { name: 'Earth', baseClick: 1, cost: 0 },
+      { name: 'Mars', baseClick: 3, cost: 1000 },
+      { name: 'Jupiter', baseClick: 7, cost: 5000 },
+      { name: 'Saturn', baseClick: 15, cost: 15000 }
+    ];
     let planetIndex = 0;
     let timePlayed = 0;
     let leaderboardType = 'energy';
 
+    function showError(message) {
+      const errorBox = document.getElementById('errorBox');
+      errorBox.textContent = message;
+      errorBox.style.display = 'block';
+      setTimeout(() => errorBox.style.display = 'none', 3000);
+    }
+
     function startGame() {
       const input = document.getElementById('usernameInput');
       const name = input.value.trim();
-      if (!name) return alert('Please enter a username.');
+      if (!name) return showError('Please enter a username.');
 
       const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
       if (!allUsers.includes(name)) {
@@ -193,7 +223,7 @@
     }
 
     function clickEnergy() {
-      energy += clickPower;
+      energy += planets[planetIndex].baseClick + clickPower;
       updateUI();
     }
 
@@ -206,30 +236,34 @@
         energy -= passiveUpgradeCost;
         passivePower++;
         passiveUpgradeCost = Math.floor(passiveUpgradeCost * 1.8);
+      } else {
+        showError('Not enough energy!');
       }
       updateUI();
     }
 
     function buyNextPlanet() {
-      const cost = 1000 * (planetIndex + 1);
-      if (planetIndex < planets.length - 1 && energy >= cost) {
+      if (planetIndex >= planets.length - 1) return showError('No more planets!');
+      const cost = planets[planetIndex + 1].cost;
+      if (energy >= cost) {
         energy -= cost;
         planetIndex++;
         updateUI();
+      } else {
+        showError('Not enough energy to purchase next planet!');
       }
     }
 
     function nextPlanet() {
-      if (planetIndex < planets.length - 1) {
-        planetIndex++;
-        updateUI();
-      }
+      showError('You must purchase the next planet from the shop.');
     }
 
     function prevPlanet() {
       if (planetIndex > 0) {
         planetIndex--;
         updateUI();
+      } else {
+        showError('This is the first planet.');
       }
     }
 
@@ -237,8 +271,8 @@
       document.getElementById('energy').textContent = energy;
       document.getElementById('clickCost').textContent = clickUpgradeCost;
       document.getElementById('passiveCost').textContent = passiveUpgradeCost;
-      document.getElementById('planetName').textContent = planets[planetIndex];
-      document.getElementById('planetCostShop').textContent = 1000 * (planetIndex + 1);
+      document.getElementById('planetName').textContent = planets[planetIndex].name;
+      document.getElementById('planetCostShop').textContent = planetIndex < planets.length - 1 ? planets[planetIndex + 1].cost : 'N/A';
       saveData();
       updateLeaderboard();
     }
