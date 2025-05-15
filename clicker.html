@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background: linear-gradient(120deg, #ffcc70, #ff914d);
       margin: 0;
       padding: 0;
       display: flex;
@@ -63,8 +63,25 @@
       margin-left: 250px;
     }
 
+    .menu-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .menu-button:hover {
+      background-color: #555;
+    }
+
     h1 {
-      color: #333;
+      color: #fff;
     }
 
     #main-planet, #second-planet {
@@ -148,7 +165,7 @@
 
   <!-- Main Content -->
   <div id="content">
-    <button onclick="toggleMenu()">☰</button>
+    <button class="menu-button" onclick="toggleMenu()">☰</button>
     <h1>Cookie Clicker Advanced</h1>
 
     <!-- Main Planet -->
