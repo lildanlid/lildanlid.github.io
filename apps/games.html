@@ -36,10 +36,6 @@
     position: relative;
   }
 
-  .sidebar.hidden {
-    transform: translateX(-250px);
-  }
-
   .sidebar .folder {
     padding: 10px 20px;
     cursor: pointer;
@@ -112,12 +108,39 @@
     background-color: rgba(0, 123, 255, 0.8);
   }
 
-  .button.danger {
-    background-color: #dc3545;
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    margin-top: 20px;
   }
 
-  .button.danger:hover {
-    background-color: #c82333;
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+  }
+
+  .dropdown-content button {
+    background-color: transparent;
+    border: none;
+    color: var(--text-dark);
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .dropdown-content button:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
   }
 
   @media (max-width: 768px) {
@@ -137,8 +160,6 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="folder" onclick="showGameSection('clicker-game')" id="clicker-folder">Clicker Game</div>
-    <div class="folder" onclick="showGameSection('crossy-road-game')" id="crossy-folder">Crossy Road Style Game</div>
-    <div class="folder" onclick="showGameSection('puzzle-game')" id="puzzle-folder">Puzzle Game</div>
   </div>
 
   <!-- Main content -->
@@ -153,42 +174,18 @@
       <div class="game-container">
         <p>Clicks: <span id="clicker-count">0</span></p>
         <button class="button" onclick="incrementClicker()">Click Me!</button>
+        <h3>Upgrades</h3>
+        <button class="button" onclick="buyUpgrade()">Buy Upgrade (Cost: <span id="upgrade-cost">10</span>)</button>
+        <p>Clicks per Click: <span id="clicks-per-click">1</span></p>
       </div>
-      <div>
-        <button class="button" onclick="saveGame('clicker')">Save</button>
-        <button class="button" onclick="loadGame('clicker')">Load</button>
-        <button class="button" onclick="backupGame('clicker')">Backup</button>
-        <button class="button danger" onclick="deleteGame('clicker')">Delete</button>
-      </div>
-    </section>
-
-    <!-- Crossy Road Style Game Section -->
-    <section id="crossy-road-game" class="game-section" style="display: none;">
-      <h1>Crossy Road Style Game</h1>
-      <div class="game-container">
-        <p>Score: <span id="crossy-score">0</span></p>
-        <button class="button" onclick="incrementCrossy()">Move Forward</button>
-      </div>
-      <div>
-        <button class="button" onclick="saveGame('crossy')">Save</button>
-        <button class="button" onclick="loadGame('crossy')">Load</button>
-        <button class="button" onclick="backupGame('crossy')">Backup</button>
-        <button class="button danger" onclick="deleteGame('crossy')">Delete</button>
-      </div>
-    </section>
-
-    <!-- Puzzle Game Section -->
-    <section id="puzzle-game" class="game-section" style="display: none;">
-      <h1>Puzzle Game</h1>
-      <div class="game-container">
-        <p>Puzzles Solved: <span id="puzzle-solved">0</span></p>
-        <button class="button" onclick="incrementPuzzle()">Solve Puzzle</button>
-      </div>
-      <div>
-        <button class="button" onclick="saveGame('puzzle')">Save</button>
-        <button class="button" onclick="loadGame('puzzle')">Load</button>
-        <button class="button" onclick="backupGame('puzzle')">Backup</button>
-        <button class="button danger" onclick="deleteGame('puzzle')">Delete</button>
+      <div class="dropdown">
+        <button class="button">Save/Load Options</button>
+        <div class="dropdown-content">
+          <button onclick="saveGame()">Save Game</button>
+          <button onclick="loadGame()">Load Game</button>
+          <button onclick="backupGame()">Backup Game</button>
+          <button onclick="deleteGame()">Delete Game</button>
+        </div>
       </div>
     </section>
   </div>
@@ -222,58 +219,69 @@
     });
   }
 
-  // Game Logic
-  let clickerCount = 0, crossyScore = 0, puzzleSolved = 0;
+  // Clicker Game Logic
+  let clickerCount = 0;
+  let clicksPerClick = 1;
+  let upgradeCost = 10;
 
   function incrementClicker() {
-    clickerCount++;
+    clickerCount += clicksPerClick;
     document.getElementById('clicker-count').textContent = clickerCount;
   }
 
-  function incrementCrossy() {
-    crossyScore++;
-    document.getElementById('crossy-score').textContent = crossyScore;
-  }
-
-  function incrementPuzzle() {
-    puzzleSolved++;
-    document.getElementById('puzzle-solved').textContent = puzzleSolved;
+  function buyUpgrade() {
+    if (clickerCount >= upgradeCost) {
+      clickerCount -= upgradeCost;
+      clicksPerClick++;
+      upgradeCost *= 2;
+      document.getElementById('clicker-count').textContent = clickerCount;
+      document.getElementById('clicks-per-click').textContent = clicksPerClick;
+      document.getElementById('upgrade-cost').textContent = upgradeCost;
+    } else {
+      alert("Not enough clicks to buy upgrade!");
+    }
   }
 
   // Save, Load, Backup, Delete Functions
-  function saveGame(game) {
-    const data = game === 'clicker' ? clickerCount : game === 'crossy' ? crossyScore : puzzleSolved;
-    localStorage.setItem(`${game}-data`, data);
-    alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress saved!`);
+  function saveGame() {
+    localStorage.setItem('clicker-count', clickerCount);
+    localStorage.setItem('clicks-per-click', clicksPerClick);
+    localStorage.setItem('upgrade-cost', upgradeCost);
+    alert("Game saved!");
   }
 
-  function loadGame(game) {
-    const data = localStorage.getItem(`${game}-data`);
-    if (data !== null) {
-      if (game === 'clicker') clickerCount = parseInt(data);
-      if (game === 'crossy') crossyScore = parseInt(data);
-      if (game === 'puzzle') puzzleSolved = parseInt(data);
-      document.getElementById(`${game}-count`).textContent = data;
-      alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress loaded!`);
-    } else {
-      alert(`No saved progress found for ${game}`);
-    }
+  function loadGame() {
+    clickerCount = parseInt(localStorage.getItem('clicker-count')) || 0;
+    clicksPerClick = parseInt(localStorage.getItem('clicks-per-click')) || 1;
+    upgradeCost = parseInt(localStorage.getItem('upgrade-cost')) || 10;
+    document.getElementById('clicker-count').textContent = clickerCount;
+    document.getElementById('clicks-per-click').textContent = clicksPerClick;
+    document.getElementById('upgrade-cost').textContent = upgradeCost;
+    alert("Game loaded!");
   }
 
-  function backupGame(game) {
-    const data = localStorage.getItem(`${game}-data`);
-    if (data !== null) {
-      const backupKey = `${game}-backup-${Date.now()}`;
-      localStorage.setItem(backupKey, data);
-      alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress backed up!`);
-    } else {
-      alert(`No progress found to back up for ${game}`);
-    }
+  function backupGame() {
+    const backup = {
+      clickerCount,
+      clicksPerClick,
+      upgradeCost
+    };
+    const backupKey = `clicker-backup-${Date.now()}`;
+    localStorage.setItem(backupKey, JSON.stringify(backup));
+    alert("Game backed up!");
   }
 
-  function deleteGame(game) {
-    localStorage.removeItem(`${game}-data`);
-    alert(`${game.charAt(0).toUpperCase() + game.slice(1)} game progress deleted!`);
+  function deleteGame() {
+    localStorage.removeItem('clicker-count');
+    localStorage.removeItem('clicks-per-click');
+    localStorage.removeItem('upgrade-cost');
+    clickerCount = 0;
+    clicksPerClick = 1;
+    upgradeCost = 10;
+    document.getElementById('clicker-count').textContent = clickerCount;
+    document.getElementById('clicks-per-click').textContent = clicksPerClick;
+    document.getElementById('upgrade-cost').textContent = upgradeCost;
+    alert("Game progress deleted!");
   }
 </script>
 </body>
