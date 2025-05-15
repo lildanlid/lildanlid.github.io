@@ -9,7 +9,8 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #121212;
-      color: #ffffff;
+      color: #fff;
+      overflow-x: hidden;
     }
     .center {
       display: flex;
@@ -38,47 +39,112 @@
     button:hover {
       background-color: #2980b9;
     }
-    #dropdown {
-      position: absolute;
-      top: 10px;
-      left: 10px;
+    #side-menu {
+      width: 250px;
+      height: 100vh;
+      background-color: #1c1c1c;
+      position: fixed;
+      left: -250px;
+      top: 0;
+      transition: left 0.3s;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
     }
-    #dropdown-menu {
-      background-color: #2c2c2c;
-      border: 1px solid #444;
-      border-radius: 5px;
-      padding: 5px;
-      display: none;
-      position: absolute;
-      top: 40px;
-      left: 10px;
+    #side-menu.open {
+      left: 0;
     }
-    #dropdown-menu a {
-      text-decoration: none;
+    #side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #side-menu ul li {
+      padding: 15px;
+      border-bottom: 1px solid #333;
+    }
+    #side-menu ul li a {
       color: white;
+      text-decoration: none;
       display: block;
-      padding: 5px;
     }
-    #dropdown-menu a:hover {
-      background-color: #444;
+    #side-menu ul li a:hover {
+      background-color: #333;
+    }
+    #menu-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 2;
     }
     .content {
       text-align: center;
-    }
-    #leaderboard, #shop {
-      text-align: left;
-      margin: 20px;
+      margin-top: 50px;
     }
     #shop .tabs {
       display: flex;
       justify-content: space-around;
       margin-bottom: 20px;
     }
+    #shop .tabs button {
+      background: none;
+      border: none;
+      color: #fff;
+      padding: 10px;
+      cursor: pointer;
+      position: relative;
+    }
+    #shop .tabs button:hover,
+    #shop .tabs button.active {
+      color: #3498db;
+    }
+    #shop .tabs button.active::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      height: 2px;
+      width: 100%;
+      background-color: #3498db;
+      animation: underline 0.3s ease-in-out;
+    }
+    @keyframes underline {
+      from {
+        width: 0;
+      }
+      to {
+        width: 100%;
+      }
+    }
     #shop .tab-content {
       display: none;
     }
     #shop .tab-content.active {
       display: block;
+    }
+    .slider {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #2c2c2c;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .slider button {
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .slider button:hover {
+      background-color: #555;
     }
   </style>
 </head>
@@ -89,15 +155,17 @@
     <button onclick="signIn()">Sign In</button>
   </div>
 
-  <div id="game" class="hidden">
-    <button id="dropdown" onclick="toggleMenu()">☰ Menu</button>
-    <div id="dropdown-menu">
-      <a href="#" onclick="showContent('home')">Home</a>
-      <a href="#" onclick="showContent('shop')">Shop</a>
-      <a href="#" onclick="showContent('leaderboard')">Leaderboards</a>
-      <a href="#" onclick="showContent('stats')">Stats</a>
-    </div>
+  <button id="menu-button" onclick="toggleMenu()">☰</button>
+  <div id="side-menu">
+    <ul>
+      <li><a href="#" onclick="showContent('home')">Home</a></li>
+      <li><a href="#" onclick="showContent('shop')">Shop</a></li>
+      <li><a href="#" onclick="showContent('leaderboard')">Leaderboards</a></li>
+      <li><a href="#" onclick="showContent('stats')">Stats</a></li>
+    </ul>
+  </div>
 
+  <div id="game" class="hidden">
     <div id="content">
       <div id="home" class="content">
         <h1>Welcome to the Clicker Game!</h1>
@@ -107,10 +175,10 @@
 
       <div id="shop" class="content hidden">
         <div class="tabs">
-          <button onclick="switchTab('upgrades')">Upgrades</button>
+          <button onclick="switchTab('upgrades')" class="active">Upgrades</button>
           <button onclick="switchTab('planets')">Planets</button>
         </div>
-        <div id="upgrades" class="tab-content">
+        <div id="upgrades" class="tab-content active">
           <h2>Upgrades</h2>
           <div id="upgrade-list"></div>
         </div>
@@ -134,16 +202,14 @@
 
   <script>
     let clicks = 0;
-    let leaderboard = [];
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
     const upgrades = [
       { name: "Quick Finger", effect: "+1 Click Power", cost: 10 },
-      { name: "Double Tap", effect: "Double Clicks for 5 Seconds", cost: 50 },
-      // Add more upgrades here
+      { name: "Double Tap", effect: "Double Clicks for 5 Seconds", cost: 50 }
     ];
     const planets = [
       { name: "Earth Alpha", currency: "₴ Solar Credits" },
-      { name: "Terra Nova", currency: "¤ Nova Coins" },
-      // Add more planets here
+      { name: "Terra Nova", currency: "¤ Nova Coins" }
     ];
 
     function signIn() {
@@ -158,20 +224,20 @@
         return;
       }
       leaderboard.push({ username, clicks: 0 });
+      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
       document.getElementById("sign-in").classList.add("hidden");
       document.getElementById("game").classList.remove("hidden");
       updateLeaderboard();
     }
 
     function toggleMenu() {
-      const menu = document.getElementById("dropdown-menu");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
+      const menu = document.getElementById("side-menu");
+      menu.classList.toggle("open");
     }
 
     function showContent(id) {
       document.querySelectorAll(".content").forEach(content => content.classList.add("hidden"));
       document.getElementById(id).classList.remove("hidden");
-      toggleMenu();
     }
 
     function clickButton() {
@@ -186,26 +252,29 @@
         .sort((a, b) => b.clicks - a.clicks)
         .map(player => `<p>${player.username}: ${player.clicks} clicks</p>`)
         .join("");
+      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
     }
 
     function switchTab(tab) {
       document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+      document.querySelectorAll(".tabs button").forEach(button => button.classList.remove("active"));
       document.getElementById(tab).classList.add("active");
+      document.querySelector(`.tabs button[onclick="switchTab('${tab}')"]`).classList.add("active");
     }
 
     function loadShop() {
       const upgradeList = document.getElementById("upgrade-list");
       upgradeList.innerHTML = upgrades.map(upgrade => `
-        <div>
-          <p>${upgrade.name} - ${upgrade.effect} - Cost: ${upgrade.cost}</p>
+        <div class="slider">
+          <span>${upgrade.name} - ${upgrade.effect} - Cost: ${upgrade.cost}</span>
           <button onclick="buyUpgrade('${upgrade.name}')">Buy</button>
         </div>
       `).join("");
 
       const planetList = document.getElementById("planet-list");
       planetList.innerHTML = planets.map(planet => `
-        <div>
-          <p>${planet.name} - Currency: ${planet.currency}</p>
+        <div class="slider">
+          <span>${planet.name} - Currency: ${planet.currency}</span>
         </div>
       `).join("");
     }
