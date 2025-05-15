@@ -15,16 +15,15 @@
       overflow-x: hidden;
     }
 
-    #stats {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      text-align: right;
-    }
-
     h1 {
       text-align: center;
-      margin-top: 20px;
+      margin: 20px auto;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+      width: fit-content;
+      color: #61dafb;
     }
 
     #click-button {
@@ -48,7 +47,7 @@
 
     #shop-menu {
       position: fixed;
-      left: -300px;
+      left: -310px; /* Ensure it goes fully off the screen */
       top: 0;
       width: 300px;
       height: 100%;
@@ -68,24 +67,34 @@
       position: fixed;
       top: 20px;
       left: 10px;
-      background-color: #4caf50;
       border: none;
       color: #fff;
-      padding: 10px;
-      font-size: 18px;
-      border-radius: 50%;
+      font-size: 24px;
       cursor: pointer;
       z-index: 1000;
+      background: none;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #currency-counter {
+      position: fixed;
+      top: 60px;
+      left: 10px;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    #leaderboard {
+      position: fixed;
+      top: 20px;
+      right: 10px;
+      background-color: #444;
+      padding: 10px;
+      border-radius: 10px;
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    #shop-button .material-icons {
-      color: white;
-      font-size: 30px;
-    }
-
-    #shop-button:active {
-      transform: scale(0.95);
     }
 
     .shop-section {
@@ -132,14 +141,14 @@
   </style>
 </head>
 <body>
-  <div id="stats">
-    <p>Clicks: <span id="click-count">0</span></p>
-    <p>Currency: <span id="currency">0</span> ₴</p>
-  </div>
-
   <button id="shop-button">
     <span class="material-icons">menu</span>
   </button>
+  <div id="currency-counter">Currency: <span id="currency">0</span> ₴</div>
+  <div id="leaderboard">
+    <h3>Leaderboard</h3>
+    <ul id="leaderboard-list"></ul>
+  </div>
 
   <div id="shop-menu">
     <div class="shop-section">
@@ -161,6 +170,7 @@
     let currency = 0;
     let clickPower = 1;
     let cps = 0; // Clicks per second
+    const user = 'lildanlid'; // Only this user can add money for testing
 
     const upgrades = [
       { id: 1, name: "Quick Finger", effect: "+1 Click Power", cost: 100 },
@@ -177,8 +187,13 @@
     ];
 
     function updateStats() {
-      document.getElementById('click-count').textContent = clickCount;
       document.getElementById('currency').textContent = currency;
+      updateLeaderboard();
+    }
+
+    function updateLeaderboard() {
+      const leaderboardList = document.getElementById('leaderboard-list');
+      leaderboardList.innerHTML = `<li>${user}: ${clickCount} clicks</li>`;
     }
 
     document.getElementById('click-button').addEventListener('click', () => {
@@ -193,9 +208,11 @@
       shopMenu.classList.toggle('open');
     });
 
-    function buyUpgrade(upgradeId, cost) {
-      if (currency >= cost) {
-        currency -= cost;
+    function buyUpgrade(upgradeId, baseCost) {
+      const upgrade = upgrades.find(up => up.id === upgradeId);
+      if (currency >= upgrade.cost) {
+        currency -= upgrade.cost;
+        upgrade.cost = Math.floor(upgrade.cost * 1.5); // Price increase
         switch (upgradeId) {
           case 1:
             clickPower += 1;
@@ -208,40 +225,57 @@
             break;
         }
         updateStats();
+        renderUpgrades();
       } else {
         alert("Not enough currency!");
       }
     }
 
+    function addMoney(amount) {
+      if (user === 'lildanlid') {
+        currency += amount;
+        updateStats();
+      } else {
+        alert("Access denied.");
+      }
+    }
+
     setInterval(() => {
       if (cps > 0) {
-        clickCount += cps;
         currency += cps;
         updateStats();
       }
     }, 1000);
 
-    const upgradesList = document.getElementById("upgrades-list");
-    upgrades.forEach(upgrade => {
-      const upgradeElement = document.createElement("div");
-      upgradeElement.className = "shop-item";
-      upgradeElement.innerHTML = `
-        <span>${upgrade.name} (${upgrade.effect}) - ${upgrade.cost} ₴</span>
-        <button onclick="buyUpgrade(${upgrade.id}, ${upgrade.cost})">Buy</button>
-      `;
-      upgradesList.appendChild(upgradeElement);
-    });
+    function renderUpgrades() {
+      const upgradesList = document.getElementById("upgrades-list");
+      upgradesList.innerHTML = '';
+      upgrades.forEach(upgrade => {
+        const upgradeElement = document.createElement("div");
+        upgradeElement.className = "shop-item";
+        upgradeElement.innerHTML = `
+          <span>${upgrade.name} (${upgrade.effect}) - ${upgrade.cost} ₴</span>
+          <button onclick="buyUpgrade(${upgrade.id}, ${upgrade.cost})">Buy</button>
+        `;
+        upgradesList.appendChild(upgradeElement);
+      });
+    }
 
-    const planetsList = document.getElementById("planets-list");
-    planets.forEach(planet => {
-      const planetElement = document.createElement("div");
-      planetElement.className = "shop-item";
-      planetElement.innerHTML = `
-        <span>${planet.name} - ${planet.cost} ${planet.currency}</span>
-        <button onclick="alert('Planet purchased: ${planet.name}')">Buy</button>
-      `;
-      planetsList.appendChild(planetElement);
-    });
+    function renderPlanets() {
+      const planetsList = document.getElementById("planets-list");
+      planets.forEach(planet => {
+        const planetElement = document.createElement("div");
+        planetElement.className = "shop-item";
+        planetElement.innerHTML = `
+          <span>${planet.name} - ${planet.cost} ${planet.currency}</span>
+          <button onclick="alert('Planet purchased: ${planet.name}')">Buy</button>
+        `;
+        planetsList.appendChild(planetElement);
+      });
+    }
+
+    renderUpgrades();
+    renderPlanets();
   </script>
 </body>
 </html>
