@@ -47,15 +47,29 @@
       background-color: #0056b3;
     }
 
-    #shop {
-      margin-top: 20px;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 10px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
+    #sidebar {
+      width: 250px;
+      background-color: #333;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      left: -250px;
+      transition: left 0.3s ease;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #sidebar.open {
+      left: 0;
+    }
+
+    #content {
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+
+    #content.shifted {
+      margin-left: 250px;
     }
 
     .shop-options {
@@ -87,10 +101,31 @@
     .click-button:hover {
       background-color: #218838;
     }
+
+    .shop-upgrades {
+      margin: 20px 0;
+    }
+
+    .shop-upgrades button {
+      margin: 5px 0;
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .shop-upgrades button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <button class="menu-button" onclick="toggleStatsPage()">Stats</button>
+  <button class="menu-button" style="left: auto; right: 10px;" onclick="toggleSidebar()">Shop</button>
 
   <div id="stats-page">
     <h1>Stats</h1>
@@ -99,13 +134,8 @@
     <button class="menu-button" onclick="toggleStatsPage()">Close</button>
   </div>
 
-  <div id="planet" class="planet">
-    <h1 id="planet-name">Earth</h1>
-    <p>Resources: <span id="resources">0</span></p>
-    <button class="click-button" onclick="handleClick()">Click Me!</button>
-  </div>
-
-  <div id="shop">
+  <!-- Sidebar for Shop -->
+  <div id="sidebar">
     <h2>Shop</h2>
     <div class="shop-options">
       <label for="buy-amount">Buy Amount:</label>
@@ -118,7 +148,17 @@
         <option value="max">Max</option>
       </select>
     </div>
-    <button onclick="purchaseUpgrade()">Buy Upgrade</button>
+    <div class="shop-upgrades">
+      <button onclick="purchaseUpgrade()">Buy Upgrade</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="planet" class="planet">
+      <h1 id="planet-name">Earth</h1>
+      <p>Resources: <span id="resources">0</span></p>
+      <button class="click-button" onclick="handleClick()">Click Me!</button>
+    </div>
   </div>
 
   <script>
@@ -169,39 +209,4 @@
         amountToBuy = parseInt(buyAmount, 10);
       }
 
-      const cost = amountToBuy * 10; // Assuming each upgrade costs 10 resources
-
-      if (planets[currentPlanet].resources >= cost) {
-        planets[currentPlanet].resources -= cost;
-        totalPurchases += amountToBuy;
-        planets[currentPlanet].clickPower += amountToBuy; // Assuming each upgrade increases click power by 1
-        updateUI();
-      } else {
-        alert("Not enough resources!");
-      }
-    }
-
-    function toggleStatsPage() {
-      const statsPage = document.getElementById("stats-page");
-      statsPage.style.display = statsPage.style.display === "none" ? "block" : "none";
-    }
-
-    function switchPlanet(planetName) {
-      currentPlanet = planetName;
-      planetNameElement.textContent = planetName;
-      planetElement.style.background = planets[planetName].background;
-      updateUI();
-    }
-
-    function updateUI() {
-      const planet = planets[currentPlanet];
-      resourcesElement.textContent = planet.resources;
-      totalClicksElement.textContent = totalClicks;
-      totalPurchasesElement.textContent = totalPurchases;
-    }
-
-    // Initialize UI
-    updateUI();
-  </script>
-</body>
-</html>
+      const
