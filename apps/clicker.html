@@ -6,347 +6,149 @@
   <title>Planet Clicker</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      margin: 0;
+      font-family: sans-serif;
+      background: #111;
       color: #fff;
       display: flex;
       height: 100vh;
     }
-
     .sidebar {
-      background-color: rgba(0, 0, 0, 0.3);
-      width: 250px;
-      padding: 1rem;
-      border-top-right-radius: 2rem;
-      border-bottom-right-radius: 2rem;
+      width: 240px;
+      background: #222;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
     }
-
-    .sidebar h4 {
-      margin-bottom: 0.5rem;
+    .sidebar button {
+      margin: 5px 0;
+      padding: 10px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 12px;
     }
-
-    .sidebar .material-icons {
-      vertical-align: middle;
-      margin-right: 0.5rem;
-    }
-
-    .sidebar-section {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 1rem;
-      border-radius: 1rem;
-    }
-
     .main {
       flex: 1;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-    }
-
-    .container {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 2rem;
-      border-radius: 2rem;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-      text-align: center;
-      width: 90%;
-      max-width: 400px;
+      align-items: center;
       position: relative;
     }
-
-    input[type="text"] {
-      padding: 0.75rem;
-      border-radius: 1rem;
-      border: none;
-      width: 100%;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    button {
-      background-color: #00c6ff;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 1rem;
-      cursor: pointer;
-      margin: 0.5rem;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #007ea7;
-    }
-
-    .leaderboard ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .leaderboard li {
-      background-color: rgba(255, 255, 255, 0.1);
-      margin-bottom: 0.25rem;
-      padding: 0.5rem;
-      border-radius: 1rem;
-    }
-
-    .planet {
-      margin-top: 1rem;
-    }
-
-    .leaderboard-buttons button {
-      margin: 0.2rem;
-      padding: 0.3rem 0.6rem;
-    }
-
-    .planet-nav {
-      position: absolute;
-      top: 1rem;
-      width: 100%;
+    .click-box {
+      width: 300px;
+      height: 300px;
+      background: #333;
+      border-radius: 20px;
       display: flex;
-      justify-content: space-between;
-      padding: 0 1rem;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-bottom: 20px;
     }
-
-    .planet-nav button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
+    .click-box .arrow {
+      position: absolute;
+      top: 10px;
+      font-size: 28px;
       cursor: pointer;
-    }
-
-    .error-box {
-      background: rgba(255, 0, 0, 0.7);
+      user-select: none;
       color: white;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-radius: 1rem;
+    }
+    .click-box .arrow.left {
+      left: 10px;
+    }
+    .click-box .arrow.right {
+      right: 10px;
+    }
+    .error-box {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #e74c3c;
+      padding: 10px 20px;
+      border-radius: 10px;
       display: none;
+    }
+    .section-toggle {
+      display: flex;
+      margin-top: 10px;
+    }
+    .section-toggle button {
+      flex: 1;
+      border: none;
+      background: #333;
+      color: #fff;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 12px;
     }
   </style>
 </head>
 <body>
   <div class="sidebar">
-    <div class="sidebar-section">
-      <h4><span class="material-icons">shopping_cart</span>Shop</h4>
-      <button onclick="buyUpgrade('click')">+1 Click Power (Cost: <span id="clickCost">10</span>)</button>
-      <button onclick="buyUpgrade('passive')">+1 Passive/s (Cost: <span id="passiveCost">20</span>)</button>
-      <button onclick="buyNextPlanet()">Buy Next Planet (Cost: <span id="planetCostShop">500</span>)</button>
+    <h3>Shop</h3>
+    <div class="section-toggle">
+      <button onclick="setShopSection('upgrades')">Upgrades</button>
+      <button onclick="setShopSection('planets')">Planets</button>
+      <button onclick="setShopSection('offline')">Offline</button>
     </div>
-    <div class="sidebar-section leaderboard">
-      <h4><span class="material-icons">leaderboard</span>Leaderboard</h4>
-      <div class="leaderboard-buttons">
-        <button onclick="setLeaderboardType('energy')">Click</button>
-        <button onclick="setLeaderboardType('money')">Money</button>
-        <button onclick="setLeaderboardType('time')">Time</button>
-      </div>
-      <ul id="leaderboardList"></ul>
+    <div id="shopSection">
+      <button onclick="buyUpgrade('click')">Click Power (<span id="clickCost"></span>)</button>
+      <button onclick="buyUpgrade('passive')">Passive Power (<span id="passiveCost"></span>)</button>
     </div>
+    <h3>Leaderboard</h3>
+    <div class="section-toggle">
+      <button onclick="setLeaderboardType('energy')">⚡</button>
+      <button onclick="setLeaderboardType('money')">💰</button>
+      <button onclick="setLeaderboardType('time')">⏱️</button>
+    </div>
+    <ul id="leaderboardList"></ul>
   </div>
-
   <div class="main">
-    <div class="container" id="login">
-      <h2>Enter Username</h2>
-      <input type="text" id="usernameInput" placeholder="Your name..." />
-      <button onclick="startGame()">Start</button>
+    <div id="errorBox" class="error-box"></div>
+    <div class="click-box" onclick="clickEnergy()">
+      <span id="planetName"></span>
+      <span class="arrow left material-icons" onclick="event.stopPropagation(); prevPlanet();">arrow_back</span>
+      <span class="arrow right material-icons" onclick="event.stopPropagation(); nextPlanet();">arrow_forward</span>
     </div>
-
-    <div class="container" id="game" style="display: none;">
-      <div class="planet-nav">
-        <button onclick="prevPlanet()">⬅️</button>
-        <button onclick="nextPlanet()">➡️</button>
-      </div>
-      <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
-      <h3>Energy: <span id="energy">0</span></h3>
-      <button onclick="clickEnergy()" id="clickButton">Click for Energy ⚡</button>
-
-      <div class="planet">
-        <h4>Current Planet: <span id="planetName">Earth</span></h4>
-      </div>
-      <div id="errorBox" class="error-box"></div>
-    </div>
+    <h2>⚡ Energy: <span id="energy">0</span></h2>
   </div>
-
   <script>
-    let username = '';
-    let energy = 0;
-    let clickPower = 1;
-    let passivePower = 0;
-    let clickUpgradeCost = 10;
-    let passiveUpgradeCost = 20;
-    let planets = [
-      { name: 'Earth', baseClick: 1, cost: 0 },
-      { name: 'Mars', baseClick: 3, cost: 1000 },
-      { name: 'Jupiter', baseClick: 7, cost: 5000 },
-      { name: 'Saturn', baseClick: 15, cost: 15000 }
-    ];
-    let planetIndex = 0;
-    let timePlayed = 0;
-    let leaderboardType = 'energy';
-
-    function showError(message) {
-      const errorBox = document.getElementById('errorBox');
-      errorBox.textContent = message;
-      errorBox.style.display = 'block';
-      setTimeout(() => errorBox.style.display = 'none', 3000);
-    }
-
-    function startGame() {
-      const input = document.getElementById('usernameInput');
-      const name = input.value.trim();
-      if (!name) return showError('Please enter a username.');
-
-      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-      if (!allUsers.includes(name)) {
-        allUsers.push(name);
-        localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    let shopSection = 'upgrades';
+    function setShopSection(section) {
+      shopSection = section;
+      const container = document.getElementById('shopSection');
+      container.innerHTML = '';
+      if (section === 'upgrades') {
+        container.innerHTML = `
+          <button onclick="buyUpgrade('click')">Click Power (<span id="clickCost"></span>)</button>
+          <button onclick="buyUpgrade('passive')">Passive Power (<span id="passiveCost"></span>)</button>
+        `;
+      } else if (section === 'planets') {
+        container.innerHTML = `<button onclick="buyNextPlanet()">Next Planet (<span id="planetCostShop"></span>)</button>`;
+      } else if (section === 'offline') {
+        container.innerHTML = `<button onclick="buyOfflineTime()">Buy Offline Time (Max 12H)</button>`;
       }
-
-      username = name;
-      document.getElementById('usernameDisplay').textContent = username;
-      document.getElementById('login').style.display = 'none';
-      document.getElementById('game').style.display = 'block';
-
-      loadData();
-      updateUI();
     }
 
-    function clickEnergy() {
-      energy += planets[planetIndex].baseClick + clickPower;
-      updateUI();
-    }
-
-    function buyUpgrade(type) {
-      if (type === 'click' && energy >= clickUpgradeCost) {
-        energy -= clickUpgradeCost;
-        clickPower++;
-        clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5);
-      } else if (type === 'passive' && energy >= passiveUpgradeCost) {
-        energy -= passiveUpgradeCost;
-        passivePower++;
-        passiveUpgradeCost = Math.floor(passiveUpgradeCost * 1.8);
+    let offlineTime = 0;
+    function buyOfflineTime() {
+      if (offlineTime >= 43200) return showError('Max offline time reached.');
+      if (energy >= 1000) {
+        offlineTime += 3600;
+        if (offlineTime > 43200) offlineTime = 43200;
+        energy -= 1000;
+        showError('Offline time purchased: +1h');
       } else {
-        showError('Not enough energy!');
+        showError('Not enough energy for offline time.');
       }
-      updateUI();
-    }
-
-    function buyNextPlanet() {
-      if (planetIndex >= planets.length - 1) return showError('No more planets!');
-      const cost = planets[planetIndex + 1].cost;
-      if (energy >= cost) {
-        energy -= cost;
-        planetIndex++;
-        updateUI();
-      } else {
-        showError('Not enough energy to purchase next planet!');
-      }
-    }
-
-    function nextPlanet() {
-      showError('You must purchase the next planet from the shop.');
-    }
-
-    function prevPlanet() {
-      if (planetIndex > 0) {
-        planetIndex--;
-        updateUI();
-      } else {
-        showError('This is the first planet.');
-      }
-    }
-
-    function updateUI() {
-      document.getElementById('energy').textContent = energy;
-      document.getElementById('clickCost').textContent = clickUpgradeCost;
-      document.getElementById('passiveCost').textContent = passiveUpgradeCost;
-      document.getElementById('planetName').textContent = planets[planetIndex].name;
-      document.getElementById('planetCostShop').textContent = planetIndex < planets.length - 1 ? planets[planetIndex + 1].cost : 'N/A';
       saveData();
-      updateLeaderboard();
-    }
-
-    function updateLeaderboard() {
-      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-      let players = allUsers.map(name => {
-        const data = JSON.parse(localStorage.getItem(`player_${name}`) || '{}');
-        return {
-          name,
-          energy: data.energy || 0,
-          time: data.timePlayed || 0
-        };
-      });
-
-      if (leaderboardType === 'energy') {
-        players.sort((a, b) => b.energy - a.energy);
-      } else if (leaderboardType === 'time') {
-        players.sort((a, b) => b.time - a.time);
-      }
-
-      const list = document.getElementById('leaderboardList');
-      list.innerHTML = '';
-      players.forEach(p => {
-        const li = document.createElement('li');
-        if (leaderboardType === 'time') {
-          const d = Math.floor(p.time / 86400);
-          const h = Math.floor((p.time % 86400) / 3600);
-          const m = Math.floor((p.time % 3600) / 60);
-          li.textContent = `${p.name}: ${d}D ${h}H ${m}M`;
-        } else {
-          li.textContent = `${p.name}: ${p.energy}`;
-        }
-        if (p.name === username) li.style.fontWeight = 'bold';
-        list.appendChild(li);
-      });
-    }
-
-    function setLeaderboardType(type) {
-      leaderboardType = type;
-      updateLeaderboard();
-    }
-
-    function saveData() {
-      if (!username) return;
-      localStorage.setItem(`player_${username}`, JSON.stringify({
-        energy,
-        clickPower,
-        passivePower,
-        clickUpgradeCost,
-        passiveUpgradeCost,
-        planetIndex,
-        timePlayed
-      }));
-    }
-
-    function loadData() {
-      const saved = JSON.parse(localStorage.getItem(`player_${username}`) || '{}');
-      if (saved) {
-        energy = saved.energy || 0;
-        clickPower = saved.clickPower || 1;
-        passivePower = saved.passivePower || 0;
-        clickUpgradeCost = saved.clickUpgradeCost || 10;
-        passiveUpgradeCost = saved.passiveUpgradeCost || 20;
-        planetIndex = saved.planetIndex || 0;
-        timePlayed = saved.timePlayed || 0;
-      }
-    }
-
-    setInterval(() => {
-      energy += passivePower;
-      timePlayed++;
       updateUI();
-    }, 1000);
+    }
   </script>
 </body>
 </html>
