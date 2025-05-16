@@ -209,21 +209,29 @@
         alert("Invalid or inappropriate username.");
         return;
       }
-      if (localStorage.getItem("user-" + username)) {
-        alert("Username already taken.");
-        return;
+      const existing = localStorage.getItem("user-" + username);
+      if (existing) {
+        const data = JSON.parse(existing);
+        currentUser = username;
+        money = data.money;
+        clicks = data.clicks;
+        ownedPlanets = data.ownedPlanets;
+      } else {
+        currentUser = username;
+        money = 0;
+        clicks = 0;
+        ownedPlanets = [true];
+        localStorage.setItem("user-" + username, JSON.stringify({ money, clicks, ownedPlanets }));
       }
-      localStorage.setItem("user-" + username, JSON.stringify({money: 0, clicks: 0, ownedPlanets: [true]}));
-      currentUser = username;
       document.querySelector('.login-screen').classList.remove('active');
       document.querySelector('.game-container').classList.add('active');
-      saveData();
+      updateUI();
     }
 
     function clickerClick() {
       money += 1;
       clicks++;
-      document.getElementById("currency").innerText = `Money: $${money}`;
+      updateUI();
       saveData();
     }
 
@@ -253,7 +261,7 @@
     function nextPlanet() {
       if (currentPlanet < planets.length - 1 && ownedPlanets[currentPlanet + 1]) {
         currentPlanet++;
-        document.getElementById("planetName").innerText = planets[currentPlanet];
+        updateUI();
       } else {
         alert("You need to buy this planet first!");
       }
@@ -262,8 +270,13 @@
     function previousPlanet() {
       if (currentPlanet > 0) {
         currentPlanet--;
-        document.getElementById("planetName").innerText = planets[currentPlanet];
+        updateUI();
       }
+    }
+
+    function updateUI() {
+      document.getElementById("currency").innerText = `Money: $${money}`;
+      document.getElementById("planetName").innerText = planets[currentPlanet];
     }
 
     function saveData() {
@@ -275,6 +288,13 @@
     function toggleMenu() {
       const menu = document.getElementById('sideMenu');
       menu.classList.toggle('hidden');
+    }
+
+    // Reset all accounts (dev tool)
+    function resetAllAccounts() {
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith("user-")) localStorage.removeItem(k);
+      });
     }
   </script>
 </body>
