@@ -1,335 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700;900&display=swap"
-        rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            border: 0;
-            outline: none;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modern Clicker Game</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
 
-        body {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #06283D;
-        }
+    body {
+      background: #121212;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        .container {
-            position: relative;
-            width: 400px;
-            height: 105px;
-            background: #fff;
-            padding: 28px 32px;
-            overflow: hidden;
-            border-radius: 18px;
-            font-family: 'Roboto', sans-serif;
-            transition: 0.6s ease-out;
-        }
+    .login-screen, .game-container {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
 
-        .search-box {
-            width: 100%;
-            height: min-content;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .login-screen.active, .game-container.active {
+      display: flex;
+    }
 
-        .search-box input {
-            color: #06283D;
-            width: 80%;
-            font-size: 24px;
-            font-weight: 500;
-            text-transform: uppercase;
-            padding-left: 32px;
-        }
+    input, button {
+      border: none;
+      padding: 12px 16px;
+      margin: 10px;
+      border-radius: 20px;
+      background-color: #1e1e1e;
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: 0.3s ease;
+    }
 
-        .search-box input::placeholder {
-            font-size: 20px;
-            font-weight: 500;
-            color: #06283D;
-            text-transform: capitalize;
-        }
+    input:focus, button:hover {
+      background-color: #2c2c2c;
+    }
 
-        .search-box button {
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-            color: #06283D;
-            background: #dff6ff;
-            border-radius: 50%;
-            font-size: 22px;
-            transition: 0.4s ease;
-        }
+    .side-menu {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 60px;
+      background-color: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      gap: 20px;
+      transition: transform 0.3s ease;
+      z-index: 5;
+    }
 
-        .search-box button:hover {
-            color: #fff;
-            background: #06283D;
-        }
+    .side-menu.hidden {
+      transform: translateX(-100%);
+    }
 
-        .search-box i {
-            position: absolute;
-            color: #06283D;
-            font-size: 28px;
-        }
+    .menu-toggle {
+      position: absolute;
+      top: 10px;
+      left: 60px;
+      background: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 10;
+      transition: left 0.3s ease;
+    }
 
-        .weather-box {
-            text-align: center;
-        }
+    .side-menu.hidden + .menu-toggle {
+      left: 0;
+    }
 
-        .weather-box img {
-            width: 60%;
-            margin-top: 30px;
-        }
+    .clicker-area {
+      width: 300px;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background-color: #1e1e1e;
+      border-radius: 20px;
+      margin: 40px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
 
-        .weather-box .temperature {
-            position: relative;
-            color: #06283D;
-            font-size: 4rem;
-            font-weight: 800;
-            margin-top: 30px;
-            margin-left: -16px;
-        }
+    .click-btn {
+      font-size: 40px;
+      background: none;
+      cursor: pointer;
+    }
 
-        .weather-box .temperature span {
-            position: absolute;
-            margin-left: 4px;
-            font-size: 1.5rem;
-        }
+    .planet-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
 
-        .weather-box .description {
-            color: #06283D;
-            font-size: 22px;
-            font-weight: 500;
-            text-transform: capitalize;
-        }
+    .planet-nav button {
+      background: none;
+      color: white;
+      font-size: 24px;
+    }
 
-        .weather-details {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
+    .shop-panel, .leaderboard-panel {
+      position: absolute;
+      top: 0;
+      left: 60px;
+      width: 300px;
+      height: 100%;
+      background-color: #1e1e1e;
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      animation: slideIn 0.3s ease forwards;
+    }
 
-        .weather-details .humidity,
-        .weather-details .wind {
-            display: flex;
-            align-items: center;
-            width: 50%;
-            height: 100px;
-        }
+    .side-menu.hidden ~ .shop-panel,
+    .side-menu.hidden ~ .leaderboard-panel {
+      display: none !important;
+    }
 
-        .weather-details .humidity {
-            padding-left: 20px;
-            justify-content: flex-start;
-        }
+    .shop-panel.active, .leaderboard-panel.active {
+      display: flex;
+    }
 
-        .weather-details .wind {
-            padding-right: 20px;
-            justify-content: flex-end;
-        }
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
 
-        .weather-details i {
-            color: #06283D;
-            font-size: 26px;
-            margin-right: 10px;
-            margin-top: 6px;
-        }
+    .dropdown {
+      background-color: #2a2a2a;
+      color: white;
+      border-radius: 20px;
+      padding: 10px;
+      outline: none;
+    }
 
-        .weather-details span {
-            color: #06283D;
-            font-size: 22px;
-            font-weight: 500;
-        }
+    .error-box {
+      background-color: #ff4c4c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      margin-top: 10px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
 
-        .weather-details p {
-            color: #06283D;
-            font-size: 14px;
-            font-weight: 500;
-        }
+    @keyframes slideIn {
+      from { transform: translateX(-20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
 
-        .not-found {
-            width: 100%;
-            text-align: center;
-            margin-top: 50px;
-            scale: 0;
-            opacity: 0;
-            display: none;
-        }
-
-        .not-found img {
-            width: 70%;
-        }
-
-        .not-found p {
-            color: #06283D;
-            font-size: 22px;
-            font-weight: 500;
-            margin-top: 12px;
-        }
-
-        .weather-box,
-        .weather-details {
-            scale: 0;
-            opacity: 0;
-        }
-
-        .fadeIn {
-            animation: 0.5s fadeIn forwards;
-            animation-delay: 0.5s;
-        }
-
-        @keyframes fadeIn {
-            to {
-                scale: 1;
-                opacity: 1;
-            }
-        }
-    </style>
-     <script>
-        // Track visits to the Weather page (only count once)
-        const trackVisit = () => {
-            if (!localStorage.getItem('weatherVisited')) {
-                const weatherVisits = parseInt(localStorage.getItem('weatherVisits') || '0', 10);
-                localStorage.setItem('weatherVisits', weatherVisits + 1);
-                localStorage.setItem('weatherVisited', 'true');
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', trackVisit);
-    </script>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
-    <title>Weather App</title>
-</head>
-
 <body>
+  <div class="login-screen active">
+    <h2>Enter Username</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <button onclick="login()">Login</button>
+    <div id="errorBox" class="error-box" style="display:none"></div>
+  </div>
 
-    <div class="container">
-        <div class="search-box">
-            <i class="fa-solid fa-location-dot"></i>
-            <input type="text" placeholder="Enter your location">
-            <button class="fa-solid fa-magnifying-glass"></button>
-        </div>
+  <div class="game-container">
+    <div class="side-menu" id="sideMenu">
+      <button onclick="togglePanel('shop')"><span class="material-icons">shopping_cart</span></button>
+      <button onclick="togglePanel('leaderboard')"><span class="material-icons">leaderboard</span></button>
+    </div>
+    <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()"><span class="material-icons">menu</span></button>
 
-        <div class="not-found">
-            <img src="images/404.png">
-            <p>Oops! Invalid location :/</p>
-        </div>
-
-        <div class="weather-box">
-            <img src="">
-            <p class="temperature"></p>
-            <p class="description"></p>
-        </div>
-
-        <div class="weather-details">
-            <div class="humidity">
-                <i class="fa-solid fa-water"></i>
-                <div class="text">
-                    <span></span>
-                    <p>Humidity</p>
-                </div>
-            </div>
-            <div class="wind">
-                <i class="fa-solid fa-wind"></i>
-                <div class="text">
-                    <span></span>
-                    <p>Wind Speed</p>
-                </div>
-            </div>
-        </div>
-
+    <div class="shop-panel" id="shopPanel">
+      <div class="tab-buttons">
+        <button onclick="alert('Show Planets')">Planets</button>
+        <button onclick="alert('Show Upgrades')">Upgrades</button>
+      </div>
     </div>
 
-    <script src="https://kit.fontawesome.com/7c8801c017.js" crossorigin="anonymous"></script>
-    <script>
-        const container = document.querySelector('.container');
-        const search = document.querySelector('.search-box button');
-        const weatherBox = document.querySelector('.weather-box');
-        const weatherDetails = document.querySelector('.weather-details');
-        const error404 = document.querySelector('.not-found');
+    <div class="leaderboard-panel" id="leaderboardPanel">
+      <select class="dropdown" onchange="showLeaderboard(this.value)">
+        <option value="clicks">Most Clicks</option>
+        <option value="money">Most Money</option>
+        <option value="played">Most Played</option>
+      </select>
+      <div id="leaderboardContent"></div>
+    </div>
 
-        search.addEventListener('click', () => {
+    <div class="clicker-area">
+      <div class="planet-nav">
+        <button onclick="previousPlanet()"><span class="material-icons">chevron_left</span></button>
+        <span id="planetName">Earth</span>
+        <button onclick="nextPlanet()"><span class="material-icons">chevron_right</span></button>
+      </div>
+      <div id="currency">Money: $0</div>
+      <button class="click-btn material-icons" onclick="clickerClick()">touch_app</button>
+    </div>
+  </div>
 
-            const APIKey = '7f9eacad67666c1461fe8c839e4b0890';
-            const city = document.querySelector('.search-box input').value;
+  <script>
+    const badWords = ["badword", "swear"];
+    let currentUser = null;
+    let money = 0;
+    let clicks = 0;
+    let currentPlanet = 0;
+    const planets = ["Earth", "Mars", "Jupiter"];
+    let ownedPlanets = [true];
 
-            if (city === '')
-                return;
+    if (localStorage.getItem("lastUser")) {
+      const remembered = localStorage.getItem("lastUser");
+      const userData = localStorage.getItem("user-" + remembered);
+      if (userData) {
+        const data = JSON.parse(userData);
+        currentUser = remembered;
+        money = data.money;
+        clicks = data.clicks;
+        ownedPlanets = data.ownedPlanets || [true];
+        document.querySelector('.login-screen').classList.remove('active');
+        document.querySelector('.game-container').classList.add('active');
+        updateUI();
+      }
+    }
 
-            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${APIKey}`)
-                .then(response => response.json())
-                .then(json => {
+    function login() {
+      const input = document.getElementById("username");
+      const username = input.value.trim().toLowerCase();
+      const errorBox = document.getElementById("errorBox");
+      if (!username || badWords.some(word => username.includes(word))) {
+        errorBox.innerText = "Invalid or inappropriate username.";
+        errorBox.style.display = "block";
+        return;
+      }
+      const existing = localStorage.getItem("user-" + username);
+      if (existing) {
+        const data = JSON.parse(existing);
+        currentUser = username;
+        money = data.money;
+        clicks = data.clicks;
+        ownedPlanets = data.ownedPlanets || [true];
+      } else {
+        currentUser = username;
+        money = 0;
+        clicks = 0;
+        ownedPlanets = [true];
+        localStorage.setItem("user-" + username, JSON.stringify({ money, clicks, ownedPlanets }));
+      }
+      localStorage.setItem("lastUser", currentUser);
+      document.querySelector('.login-screen').classList.remove('active');
+      document.querySelector('.game-container').classList.add('active');
+      errorBox.style.display = "none";
+      updateUI();
+    }
 
-                    if (json.cod === '404') {
-                        container.style.height = '400px';
-                        weatherBox.style.display = 'none';
-                        weatherDetails.style.display = 'none';
-                        error404.style.display = 'block';
-                        error404.classList.add('fadeIn');
-                        return;
-                    }
+    function clickerClick() {
+      money += 1;
+      clicks++;
+      updateUI();
+      saveData();
+    }
 
-                    error404.style.display = 'none';
-                    error404.classList.remove('fadeIn');
+    function togglePanel(panel) {
+      document.getElementById("shopPanel").classList.remove("active");
+      document.getElementById("leaderboardPanel").classList.remove("active");
+      if (panel === "shop") document.getElementById("shopPanel").classList.add("active");
+      if (panel === "leaderboard") document.getElementById("leaderboardPanel").classList.add("active");
+    }
 
-                    const image = document.querySelector('.weather-box img');
-                    const temperature = document.querySelector('.weather-box .temperature');
-                    const description = document.querySelector('.weather-box .description');
-                    const humidity = document.querySelector('.weather-details .humidity span');
-                    const wind = document.querySelector('.weather-details .wind span');
-
-                    switch (json.weather[0].main) {
-                        case 'Clear':
-                            image.src = 'images/clear.png';
-                            break;
-
-                        case 'Rain':
-                            image.src = 'images/rain.png';
-                            break;
-
-                        case 'Snow':
-                            image.src = 'images/snow.png';
-                            break;
-
-                        case 'Clouds':
-                            image.src = 'images/cloud.png';
-                            break;
-
-                        case 'Haze':
-                            image.src = 'images/mist.png';
-                            break;
-
-                        default:
-                            image.src = '';
-                    }
-
-                    temperature.innerHTML = `${parseInt(json.main.temp)}<span>°C</span>`;
-                    description.innerHTML = `${json.weather[0].description}`;
-                    humidity.innerHTML = `${json.main.humidity}%`;
-                    wind.innerHTML = `${parseInt(json.wind.speed)}Km/h`;
-
-                    weatherBox.style.display = '';
-                    weatherDetails.style.display = '';
-                    weatherBox.classList.add('fadeIn');
-                    weatherDetails.classList.add('fadeIn');
-                    container.style.height = '590px';
-
-                });
-
+    function showLeaderboard(type) {
+      const content = document.getElementById("leaderboardContent");
+      const users = Object.keys(localStorage)
+        .filter(k => k.startsWith("user-"))
+        .map(k => {
+          const user = JSON.parse(localStorage.getItem(k));
+          if (!Array.isArray(user.ownedPlanets)) user.ownedPlanets = [];
+          return {
+            name: k.replace("user-", ""),
+            ...user
+          };
         });
-    </script>
+      let sorted;
+      if (type === "clicks") sorted = users.sort((a, b) => b.clicks - a.clicks);
+      else if (type === "money") sorted = users.sort((a, b) => b.money - a.money);
+      else if (type === "played") sorted = users.sort((a, b) => (Array.isArray(b.ownedPlanets) ? b.ownedPlanets.length : 0) - (Array.isArray(a.ownedPlanets) ? a.ownedPlanets.length : 0));
 
+      content.innerHTML = sorted.map((u, i) => {
+        const label = type === 'money'
+          ? '$' + u.money
+          : type === 'clicks'
+            ? u.clicks + ' clicks'
+            : (Array.isArray(u.ownedPlanets) ? u.ownedPlanets.length : 0) + ' planets';
+        return `<div>#${i + 1} ${u.name} - ${label}</div>`;
+      }).join('');
+    }
+
+    function nextPlanet() {
+      if (currentPlanet < planets.length - 1 && ownedPlanets[currentPlanet + 1]) {
+        currentPlanet++;
+        updateUI();
+      } else {
+        alert("You need to buy this planet first!");
+      }
+    }
+
+    function previousPlanet() {
+      if (currentPlanet > 0) {
+        currentPlanet--;
+        updateUI();
+      }
+    }
+
+    function updateUI() {
+      document.getElementById("currency").innerText = `Money: $${money}`;
+      document.getElementById("planetName").innerText = planets[currentPlanet];
+    }
+
+    function saveData() {
+      if (currentUser) {
+        localStorage.setItem("user-" + currentUser, JSON.stringify({ money, clicks, ownedPlanets }));
+        localStorage.setItem("lastUser", currentUser);
+      }
+    }
+
+    function toggleMenu() {
+      const menu = document.getElementById('sideMenu');
+      const toggle = document.getElementById('menuToggle');
+      menu.classList.toggle('hidden');
+    }
+
+    function resetAllAccounts() {
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith("user-")) localStorage.removeItem(k);
+      });
+      localStorage.removeItem("lastUser");
+    }
+  </script>
 </body>
-
 </html>
