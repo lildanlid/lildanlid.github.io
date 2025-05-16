@@ -62,13 +62,22 @@
       align-items: center;
       padding-top: 20px;
       gap: 20px;
+      transition: transform 0.3s ease;
     }
 
-    .side-menu button {
+    .side-menu.hidden {
+      transform: translateX(-100%);
+    }
+
+    .menu-toggle {
+      position: absolute;
+      left: 60px;
+      top: 10px;
       background: none;
       color: white;
-      cursor: pointer;
       font-size: 24px;
+      cursor: pointer;
+      z-index: 10;
     }
 
     .clicker-area {
@@ -78,6 +87,11 @@
       justify-content: center;
       align-items: center;
       gap: 20px;
+      padding: 20px;
+      background-color: #1e1e1e;
+      border-radius: 20px;
+      margin: 40px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
     .click-btn {
@@ -86,9 +100,16 @@
       cursor: pointer;
     }
 
+    .planet-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
     .planet-nav button {
       background: none;
       color: white;
+      font-size: 24px;
     }
 
     .shop-panel, .leaderboard-panel {
@@ -139,10 +160,11 @@
   </div>
 
   <div class="game-container">
-    <div class="side-menu">
+    <div class="side-menu" id="sideMenu">
       <button onclick="togglePanel('shop')"><span class="material-icons">shopping_cart</span></button>
       <button onclick="togglePanel('leaderboard')"><span class="material-icons">leaderboard</span></button>
     </div>
+    <button class="menu-toggle" onclick="toggleMenu()"><span class="material-icons">menu</span></button>
 
     <div class="shop-panel" id="shopPanel">
       <div class="tab-buttons">
@@ -161,13 +183,13 @@
     </div>
 
     <div class="clicker-area">
+      <div class="planet-nav">
+        <button onclick="previousPlanet()"><span class="material-icons">arrow_back</span></button>
+        <span id="planetName">Earth</span>
+        <button onclick="nextPlanet()"><span class="material-icons">arrow_forward</span></button>
+      </div>
       <div id="currency">Money: $0</div>
       <button class="click-btn material-icons" onclick="clickerClick()">touch_app</button>
-      <div class="planet-nav">
-        <button onclick="previousPlanet()">⬅️</button>
-        <span id="planetName">Earth</span>
-        <button onclick="nextPlanet()">➡️</button>
-      </div>
     </div>
   </div>
 
@@ -214,7 +236,18 @@
 
     function showLeaderboard(type) {
       const content = document.getElementById("leaderboardContent");
-      content.innerHTML = `Showing leaderboard for ${type}`;
+      const users = Object.keys(localStorage)
+        .filter(k => k.startsWith("user-"))
+        .map(k => ({
+          name: k.replace("user-", ""),
+          ...JSON.parse(localStorage.getItem(k))
+        }));
+      let sorted;
+      if (type === "clicks") sorted = users.sort((a, b) => b.clicks - a.clicks);
+      else if (type === "money") sorted = users.sort((a, b) => b.money - a.money);
+      else if (type === "played") sorted = users.sort((a, b) => (b.ownedPlanets?.length || 0) - (a.ownedPlanets?.length || 0));
+
+      content.innerHTML = sorted.map((u, i) => `<div>#${i + 1} ${u.name} - ${type === 'money' ? '$' + u.money : type === 'clicks' ? u.clicks + ' clicks' : u.ownedPlanets?.length + ' planets'}</div>`).join('');
     }
 
     function nextPlanet() {
@@ -237,6 +270,11 @@
       if (currentUser) {
         localStorage.setItem("user-" + currentUser, JSON.stringify({ money, clicks, ownedPlanets }));
       }
+    }
+
+    function toggleMenu() {
+      const menu = document.getElementById('sideMenu');
+      menu.classList.toggle('hidden');
     }
   </script>
 </body>
