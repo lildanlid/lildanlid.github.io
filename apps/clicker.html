@@ -63,6 +63,7 @@
       padding-top: 20px;
       gap: 20px;
       transition: transform 0.3s ease;
+      z-index: 5;
     }
 
     .side-menu.hidden {
@@ -81,7 +82,8 @@
     }
 
     .clicker-area {
-      flex: 1;
+      width: 300px;
+      height: 300px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -103,7 +105,8 @@
     .planet-nav {
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: space-between;
+      width: 100%;
     }
 
     .planet-nav button {
@@ -146,9 +149,23 @@
       outline: none;
     }
 
+    .error-box {
+      background-color: #ff4c4c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      margin-top: 10px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
     @keyframes slideIn {
       from { transform: translateX(-20px); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
@@ -157,6 +174,7 @@
     <h2>Enter Username</h2>
     <input type="text" id="username" placeholder="Username" />
     <button onclick="login()">Login</button>
+    <div id="errorBox" class="error-box" style="display:none"></div>
   </div>
 
   <div class="game-container">
@@ -184,9 +202,9 @@
 
     <div class="clicker-area">
       <div class="planet-nav">
-        <button onclick="previousPlanet()"><span class="material-icons">arrow_back</span></button>
+        <button onclick="previousPlanet()"><span class="material-icons">chevron_left</span></button>
         <span id="planetName">Earth</span>
-        <button onclick="nextPlanet()"><span class="material-icons">arrow_forward</span></button>
+        <button onclick="nextPlanet()"><span class="material-icons">chevron_right</span></button>
       </div>
       <div id="currency">Money: $0</div>
       <button class="click-btn material-icons" onclick="clickerClick()">touch_app</button>
@@ -205,8 +223,10 @@
     function login() {
       const input = document.getElementById("username");
       const username = input.value.trim().toLowerCase();
+      const errorBox = document.getElementById("errorBox");
       if (!username || badWords.some(word => username.includes(word))) {
-        alert("Invalid or inappropriate username.");
+        errorBox.innerText = "Invalid or inappropriate username.";
+        errorBox.style.display = "block";
         return;
       }
       const existing = localStorage.getItem("user-" + username);
@@ -215,7 +235,7 @@
         currentUser = username;
         money = data.money;
         clicks = data.clicks;
-        ownedPlanets = data.ownedPlanets;
+        ownedPlanets = data.ownedPlanets || [true];
       } else {
         currentUser = username;
         money = 0;
@@ -225,6 +245,7 @@
       }
       document.querySelector('.login-screen').classList.remove('active');
       document.querySelector('.game-container').classList.add('active');
+      errorBox.style.display = "none";
       updateUI();
     }
 
@@ -246,16 +267,27 @@
       const content = document.getElementById("leaderboardContent");
       const users = Object.keys(localStorage)
         .filter(k => k.startsWith("user-"))
-        .map(k => ({
-          name: k.replace("user-", ""),
-          ...JSON.parse(localStorage.getItem(k))
-        }));
+        .map(k => {
+          const user = JSON.parse(localStorage.getItem(k));
+          if (!Array.isArray(user.ownedPlanets)) user.ownedPlanets = [];
+          return {
+            name: k.replace("user-", ""),
+            ...user
+          };
+        });
       let sorted;
       if (type === "clicks") sorted = users.sort((a, b) => b.clicks - a.clicks);
       else if (type === "money") sorted = users.sort((a, b) => b.money - a.money);
-      else if (type === "played") sorted = users.sort((a, b) => (b.ownedPlanets?.length || 0) - (a.ownedPlanets?.length || 0));
+      else if (type === "played") sorted = users.sort((a, b) => (Array.isArray(b.ownedPlanets) ? b.ownedPlanets.length : 0) - (Array.isArray(a.ownedPlanets) ? a.ownedPlanets.length : 0));
 
-      content.innerHTML = sorted.map((u, i) => `<div>#${i + 1} ${u.name} - ${type === 'money' ? '$' + u.money : type === 'clicks' ? u.clicks + ' clicks' : u.ownedPlanets?.length + ' planets'}</div>`).join('');
+      content.innerHTML = sorted.map((u, i) => {
+        const label = type === 'money'
+          ? '$' + u.money
+          : type === 'clicks'
+            ? u.clicks + ' clicks'
+            : (Array.isArray(u.ownedPlanets) ? u.ownedPlanets.length : 0) + ' planets';
+        return `<div>#${i + 1} ${u.name} - ${label}</div>`;
+      }).join('');
     }
 
     function nextPlanet() {
@@ -290,7 +322,6 @@
       menu.classList.toggle('hidden');
     }
 
-    // Reset all accounts (dev tool)
     function resetAllAccounts() {
       Object.keys(localStorage).forEach(k => {
         if (k.startsWith("user-")) localStorage.removeItem(k);
