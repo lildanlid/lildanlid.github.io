@@ -40,6 +40,8 @@
     html, body {
       height: 100%;
       min-height: 100%;
+      width: 100vw;
+      overflow-x: hidden;
     }
 
     body {
@@ -134,17 +136,20 @@
     .sidebar a::after, .sidebar .sidebar-settings-btn::after {
       content: "";
       position: absolute;
-      left: 25px;
-      bottom: 10px;
-      height: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 6px;
+      height: 2.5px;
       width: 0;
       background-color: var(--accent);
-      transition: width 0.3s ease;
+      transition: width 0.3s cubic-bezier(.48,.04,.36,1.32);
       border-radius: var(--radius);
+      opacity: 0.9;
     }
 
     .sidebar a.active::after {
-      width: calc(100% - 50px);
+      width: calc(100% - 32px);
+      /* 16px left + 16px right padding, so underline matches text, not full width */
     }
 
     .sidebar a.active, .sidebar .sidebar-settings-btn.active {
@@ -602,6 +607,16 @@
       padding-left: 0;
       padding-right: 0;
       overflow-x: auto;
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      border-radius: var(--radius);
+    }
+    section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
