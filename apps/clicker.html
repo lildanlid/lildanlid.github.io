@@ -227,6 +227,31 @@
   </div>
 
   <script>
+    let username = localStorage.getItem('username') || '';
+    let money = 0;
+    let clickValue = 1;
+    let planets = ['Earth', 'Mars', 'Jupiter'];
+    let currentPlanet = 0;
+
+    if (username) {
+      document.querySelector('.login-screen').classList.remove('active');
+      document.querySelector('.game-container').classList.add('active');
+    }
+
+    function login() {
+      const input = document.getElementById('username');
+      const errorBox = document.getElementById('errorBox');
+      if (!input.value.trim()) {
+        errorBox.innerText = 'Please enter a username.';
+        errorBox.style.display = 'block';
+        return;
+      }
+      username = input.value.trim();
+      localStorage.setItem('username', username);
+      document.querySelector('.login-screen').classList.remove('active');
+      document.querySelector('.game-container').classList.add('active');
+    }
+
     function toggleMenu() {
       const container = document.getElementById('sideContainer');
       const shop = document.getElementById("shopPanel");
@@ -236,6 +261,61 @@
         shop.classList.remove("active");
         leaderboard.classList.remove("active");
       }
+    }
+
+    function togglePanel(panel) {
+      const shop = document.getElementById('shopPanel');
+      const leaderboard = document.getElementById('leaderboardPanel');
+      shop.classList.remove('active');
+      leaderboard.classList.remove('active');
+      if (panel === 'shop') shop.classList.add('active');
+      else if (panel === 'leaderboard') leaderboard.classList.add('active');
+    }
+
+    function clickerClick() {
+      money += clickValue;
+      updateCurrency();
+    }
+
+    function updateCurrency() {
+      document.getElementById('currency').innerText = `Money: $${money}`;
+    }
+
+    function previousPlanet() {
+      currentPlanet = (currentPlanet - 1 + planets.length) % planets.length;
+      updatePlanet();
+    }
+
+    function nextPlanet() {
+      currentPlanet = (currentPlanet + 1) % planets.length;
+      updatePlanet();
+    }
+
+    function updatePlanet() {
+      document.getElementById('planetName').innerText = planets[currentPlanet];
+    }
+
+    function showPlanets() {
+      const store = document.getElementById('planetStore');
+      store.innerHTML = '';
+      planets.forEach((p, index) => {
+        const item = document.createElement('div');
+        item.innerText = `Buy planet: ${p}`;
+        item.style.background = '#333';
+        item.style.padding = '10px';
+        item.style.borderRadius = '10px';
+        item.style.cursor = 'pointer';
+        item.onclick = () => {
+          currentPlanet = index;
+          updatePlanet();
+          alert(`Switched to ${p}`);
+        };
+        store.appendChild(item);
+      });
+    }
+
+    function showLeaderboard(type) {
+      document.getElementById('leaderboardContent').innerText = `Showing: ${type}`;
     }
   </script>
 </body>
