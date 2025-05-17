@@ -50,10 +50,20 @@
       background-color: #2c2c2c;
     }
 
-    .side-menu {
+    .side-container {
       position: absolute;
-      left: 0;
       top: 0;
+      left: 0;
+      display: flex;
+      transition: transform 0.3s ease;
+      z-index: 10;
+    }
+
+    .side-container.hidden {
+      transform: translateX(-60px);
+    }
+
+    .side-menu {
       height: 100%;
       width: 60px;
       background-color: #1a1a1a;
@@ -62,28 +72,19 @@
       align-items: center;
       padding-top: 20px;
       gap: 20px;
-      transition: transform 0.3s ease;
       z-index: 5;
     }
 
-    .side-menu.hidden {
-      transform: translateX(-100%);
-    }
-
     .menu-toggle {
-      position: absolute;
       top: 10px;
-      left: 60px;
+      left: 0;
       background: none;
       color: white;
       font-size: 24px;
       cursor: pointer;
       z-index: 10;
       transition: left 0.3s ease;
-    }
-
-    .side-menu.hidden + .menu-toggle {
-      left: 0;
+      position: relative;
     }
 
     .clicker-area {
@@ -189,11 +190,13 @@
   </div>
 
   <div class="game-container">
-    <div class="side-menu" id="sideMenu">
-      <button onclick="togglePanel('shop')"><span class="material-icons">shopping_cart</span></button>
-      <button onclick="togglePanel('leaderboard')"><span class="material-icons">leaderboard</span></button>
+    <div class="side-container" id="sideContainer">
+      <div class="side-menu" id="sideMenu">
+        <button onclick="togglePanel('shop')"><span class="material-icons">shopping_cart</span></button>
+        <button onclick="togglePanel('leaderboard')"><span class="material-icons">leaderboard</span></button>
+      </div>
+      <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()"><span class="material-icons">menu</span></button>
     </div>
-    <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()"><span class="material-icons">menu</span></button>
 
     <div class="shop-panel" id="shopPanel">
       <div class="tab-buttons">
@@ -224,160 +227,12 @@
   </div>
 
   <script>
-    const badWords = ["badword", "swear"];
-    let currentUser = null;
-    let money = 0;
-    let clicks = 0;
-    let currentPlanet = 0;
-    const planets = ["Earth", "Mars", "Jupiter"];
-    let ownedPlanets = [true];
-
-    if (localStorage.getItem("lastUser")) {
-      const remembered = localStorage.getItem("lastUser");
-      const userData = localStorage.getItem("user-" + remembered);
-      if (userData) {
-        const data = JSON.parse(userData);
-        currentUser = remembered;
-        money = data.money;
-        clicks = data.clicks;
-        ownedPlanets = data.ownedPlanets || [true];
-        document.querySelector('.login-screen').classList.remove('active');
-        document.querySelector('.game-container').classList.add('active');
-        updateUI();
-      }
-    }
-
-    function login() {
-      const input = document.getElementById("username");
-      const username = input.value.trim().toLowerCase();
-      const errorBox = document.getElementById("errorBox");
-      if (!username || badWords.some(word => username.includes(word))) {
-        errorBox.innerText = "Invalid or inappropriate username.";
-        errorBox.style.display = "block";
-        return;
-      }
-      const existing = localStorage.getItem("user-" + username);
-      if (existing) {
-        const data = JSON.parse(existing);
-        currentUser = username;
-        money = data.money;
-        clicks = data.clicks;
-        ownedPlanets = data.ownedPlanets || [true];
-      } else {
-        currentUser = username;
-        money = 0;
-        clicks = 0;
-        ownedPlanets = [true];
-        localStorage.setItem("user-" + username, JSON.stringify({ money, clicks, ownedPlanets }));
-      }
-      localStorage.setItem("lastUser", currentUser);
-      document.querySelector('.login-screen').classList.remove('active');
-      document.querySelector('.game-container').classList.add('active');
-      errorBox.style.display = "none";
-      updateUI();
-    }
-
-    function clickerClick() {
-      money += 1;
-      clicks++;
-      updateUI();
-      saveData();
-    }
-
-    function togglePanel(panel) {
-      document.getElementById("shopPanel").classList.remove("active");
-      document.getElementById("leaderboardPanel").classList.remove("active");
-      if (document.getElementById('sideMenu').classList.contains('hidden')) return;
-      if (panel === "shop") document.getElementById("shopPanel").classList.add("active");
-      if (panel === "leaderboard") document.getElementById("leaderboardPanel").classList.add("active");
-    }
-
-    function showPlanets() {
-      const store = document.getElementById("planetStore");
-      store.innerHTML = planets.map((planet, i) => {
-        const owned = ownedPlanets[i];
-        const canBuy = money >= 100 && !owned;
-        return `<div>
-          ${planet} - ${owned ? 'Owned' : `<button onclick="buyPlanet(${i})">Buy for $100</button>`}
-        </div>`;
-      }).join('');
-    }
-
-    function buyPlanet(i) {
-      if (!ownedPlanets[i] && money >= 100) {
-        money -= 100;
-        ownedPlanets[i] = true;
-        updateUI();
-        saveData();
-        showPlanets();
-      }
-    }
-
-    function showLeaderboard(type) {
-      const content = document.getElementById("leaderboardContent");
-      const users = Object.keys(localStorage)
-        .filter(k => k.startsWith("user-"))
-        .map(k => {
-          const user = JSON.parse(localStorage.getItem(k));
-          if (!Array.isArray(user.ownedPlanets)) user.ownedPlanets = [];
-          return {
-            name: k.replace("user-", ""),
-            ...user
-          };
-        });
-      let sorted;
-      if (type === "clicks") sorted = users.sort((a, b) => b.clicks - a.clicks);
-      else if (type === "money") sorted = users.sort((a, b) => b.money - a.money);
-      else if (type === "played") sorted = users.sort((a, b) => (Array.isArray(b.ownedPlanets) ? b.ownedPlanets.length : 0) - (Array.isArray(a.ownedPlanets) ? a.ownedPlanets.length : 0));
-
-      content.innerHTML = sorted.map((u, i) => {
-        const label = type === 'money'
-          ? '$' + u.money
-          : type === 'clicks'
-            ? u.clicks + ' clicks'
-            : (Array.isArray(u.ownedPlanets) ? u.ownedPlanets.length : 0) + ' planets';
-        return `<div>#${i + 1} ${u.name} - ${label}</div>`;
-      }).join('');
-    }
-
-    function nextPlanet() {
-      if (currentPlanet < planets.length - 1 && ownedPlanets[currentPlanet + 1]) {
-        currentPlanet++;
-        updateUI();
-      } else {
-        alert("You need to buy this planet first!");
-      }
-    }
-
-    function previousPlanet() {
-      if (currentPlanet > 0) {
-        currentPlanet--;
-        updateUI();
-      }
-    }
-
-    function updateUI() {
-      document.getElementById("currency").innerText = `Money: $${money}`;
-      document.getElementById("planetName").innerText = planets[currentPlanet];
-    }
-
-    function saveData() {
-      if (currentUser) {
-        localStorage.setItem("user-" + currentUser, JSON.stringify({ money, clicks, ownedPlanets }));
-        localStorage.setItem("lastUser", currentUser);
-      }
-    }
-
     function toggleMenu() {
-      const menu = document.getElementById('sideMenu');
-      const toggle = document.getElementById('menuToggle');
-
+      const container = document.getElementById('sideContainer');
       const shop = document.getElementById("shopPanel");
       const leaderboard = document.getElementById("leaderboardPanel");
-
-      menu.classList.toggle('hidden');
-
-      if (menu.classList.contains('hidden')) {
+      container.classList.toggle('hidden');
+      if (container.classList.contains('hidden')) {
         shop.classList.remove("active");
         leaderboard.classList.remove("active");
       }
