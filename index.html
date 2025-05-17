@@ -16,6 +16,8 @@
       --skeleton-light: #2c2c2c;
       --sidebar-margin: 20px;
       --sidebar-width: 250px;
+      --sidebar-width-collapsed: 56px;
+      --sidebar-btn-size: 36px;
     }
 
     [data-theme="light"] {
@@ -61,11 +63,11 @@
       width: var(--sidebar-width);
       position: fixed;
       top: var(--sidebar-margin);
-      left: calc(-1 * (var(--sidebar-width) + var(--sidebar-margin)));
+      left: var(--sidebar-margin);
       background-color: rgba(30, 30, 30, 0.6);
       backdrop-filter: blur(14px);
       overflow-x: hidden;
-      transition: left 0.3s ease;
+      transition: width 0.3s, left 0.3s;
       padding-top: 60px;
       z-index: 1000;
       border-radius: var(--radius);
@@ -77,10 +79,13 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      min-width: var(--sidebar-width-collapsed);
     }
 
-    .sidebar.open {
-      left: var(--sidebar-margin);
+    .sidebar.closed {
+      width: var(--sidebar-width-collapsed);
+      min-width: var(--sidebar-width-collapsed);
+      /* Keep it visible, just collapsed */
     }
 
     .sidebar .sidebar-links {
@@ -91,20 +96,28 @@
     }
 
     .sidebar a, .sidebar .sidebar-settings-btn {
-      padding: 15px 25px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
       color: var(--text);
       font-weight: bold;
       position: relative;
-      transition: color 0.3s, background 0.3s;
+      transition: color 0.3s, background 0.3s, padding 0.3s;
       border-radius: var(--radius);
       background: none;
       border: none;
       font-size: 1.05em;
       cursor: pointer;
       outline: none;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .sidebar.closed a, .sidebar.closed .sidebar-settings-btn {
+      justify-content: center;
+      padding-left: 10px;
+      padding-right: 10px;
     }
 
     .sidebar a[data-section], .sidebar a[onclick] {
@@ -141,7 +154,10 @@
     }
 
     .sidebar a .material-icons, .sidebar .sidebar-settings-btn .material-icons {
-      transition: color 0.3s;
+      transition: color 0.3s, margin 0.3s;
+      min-width: 24px;
+      min-height: 24px;
+      font-size: 24px;
     }
 
     .sidebar a.active .material-icons,
@@ -151,11 +167,51 @@
       color: var(--accent);
     }
 
+    /* Hide link text when collapsed, only show icons */
+    .sidebar.closed a span:not(.material-icons),
+    .sidebar.closed .sidebar-settings-btn span:not(.material-icons) {
+      display: none;
+    }
+
+    /* Make sure icons are always visible */
+    .sidebar.closed a .material-icons,
+    .sidebar.closed .sidebar-settings-btn .material-icons {
+      margin: 0 auto;
+      display: block;
+    }
+
     .sidebar .sidebar-settings-btn {
       width: 100%;
       margin-top: auto;
       margin-bottom: 10px;
       justify-content: flex-start;
+    }
+
+    /* Toggle button inside sidebar, moves with it */
+    .sidebar .toggle-sidebar-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      border-radius: var(--radius);
+      z-index: 1002;
+      width: var(--sidebar-btn-size);
+      height: var(--sidebar-btn-size);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: right 0.3s;
+    }
+    .sidebar.closed .toggle-sidebar-btn {
+      right: 8px;
+    }
+    .sidebar .toggle-sidebar-btn:hover {
+      background: rgba(30,30,30,0.11);
+      color: var(--accent);
     }
 
     .main {
@@ -168,18 +224,8 @@
     .main.shift {
       margin-left: calc(var(--sidebar-width) + 2 * var(--sidebar-margin));
     }
-
-    .openbtn {
-      font-size: 24px;
-      cursor: pointer;
-      background: none;
-      color: var(--text);
-      border: none;
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 1001;
-      border-radius: var(--radius);
+    .main.shift-collapsed {
+      margin-left: calc(var(--sidebar-width-collapsed) + 2 * var(--sidebar-margin));
     }
 
     .theme-toggle {
@@ -414,11 +460,12 @@
       .sidebar {
         width: 85vw;
         min-width: 0;
-        left: calc(-1 * 85vw - 20px);
+        left: 8px;
         margin-left: 8px;
         margin-right: 8px;
       }
-      .sidebar.open {
+      .sidebar.closed {
+        width: var(--sidebar-width-collapsed);
         left: 8px;
       }
       .main.shift {
@@ -442,26 +489,25 @@
 <body>
   <!-- Sidebar -->
   <div id="mySidebar" class="sidebar">
+    <button class="toggle-sidebar-btn" type="button" title="Toggle Menu">
+      <span class="material-icons">chevron_left</span>
+    </button>
     <div class="sidebar-links">
-      <a href="#" data-section="home"><span class="material-icons">home</span>Home</a>
-      <a href="#" data-section="projects"><span class="material-icons">folder</span>Projects</a>
-      <a href="#" data-section="apps"><span class="material-icons">apps</span>Apps</a>
-      <a href="#" data-section="links"><span class="material-icons">link</span>Links</a>
+      <a href="#" data-section="home"><span class="material-icons">home</span><span>Home</span></a>
+      <a href="#" data-section="projects"><span class="material-icons">folder</span><span>Projects</span></a>
+      <a href="#" data-section="apps"><span class="material-icons">apps</span><span>Apps</span></a>
+      <a href="#" data-section="links"><span class="material-icons">link</span><span>Links</span></a>
       <a href="https://lildanlid.github.io/apps/forms" target="_blank" rel="noopener">
-        <span class="material-icons">description</span>Forms
+        <span class="material-icons">description</span><span>Forms</span>
       </a>
     </div>
     <button class="sidebar-settings-btn" type="button">
-      <span class="material-icons">settings</span>Settings
+      <span class="material-icons">settings</span><span>Settings</span>
     </button>
   </div>
 
-  <!-- Menu Button -->
-  <button class="openbtn" type="button">
-    <span class="material-icons">menu</span>
-  </button>
   <!-- Theme Toggle (hidden, used in settings modal) -->
-  <button class="theme-toggle" type="button">
+  <button class="theme-toggle" type="button" style="display:none;">
     <span class="material-icons">dark_mode</span>
   </button>
   <!-- Settings Modal -->
@@ -522,10 +568,11 @@
     const themeSwitch = document.getElementById("themeSwitch");
     const themeSwitchIcon = document.getElementById("themeSwitchIcon");
     const themeSwitchText = document.getElementById("themeSwitchText");
-    const openbtn = document.querySelector('.openbtn');
     const sidebarSettingsBtn = document.querySelector('.sidebar-settings-btn');
     const closeSettingsBtn = document.querySelector('.close-settings');
+    const toggleSidebarBtn = document.querySelector('.toggle-sidebar-btn');
     const sidebarLinks = document.querySelectorAll('.sidebar-links a[data-section]');
+
     // Card data
     const projectsCards = [
       {
@@ -561,23 +608,30 @@
     ];
 
     // SIDEBAR FUNCTIONALITY
-    function toggleSidebar() {
-      const isOpen = sidebar.classList.toggle("open");
-      if(window.innerWidth > 700) {
-        main.classList.toggle("shift", isOpen);
+    function setSidebarState(closed) {
+      if (closed) {
+        sidebar.classList.add("closed");
+        main.classList.add("shift-collapsed");
+        main.classList.remove("shift");
+        toggleSidebarBtn.querySelector('.material-icons').innerText = "chevron_right";
+      } else {
+        sidebar.classList.remove("closed");
+        main.classList.add("shift");
+        main.classList.remove("shift-collapsed");
+        toggleSidebarBtn.querySelector('.material-icons').innerText = "chevron_left";
       }
-      localStorage.setItem("sidebarOpen", isOpen);
+      localStorage.setItem("sidebarClosed", closed ? "true" : "false");
     }
-    openbtn.addEventListener('click', toggleSidebar);
+    function toggleSidebar() {
+      setSidebarState(!sidebar.classList.contains("closed"));
+    }
+    toggleSidebarBtn.addEventListener('click', toggleSidebar);
 
     // SECTION NAVIGATION
     function showSection(id) {
-      // Save
       localStorage.setItem("activeSection", id);
-      // Section visibility
       document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
       document.getElementById(id).classList.add("active");
-      // Sidebar links active state
       sidebarLinks.forEach(link => {
         if (link.dataset.section === id) {
           link.classList.add("active");
@@ -585,20 +639,13 @@
           link.classList.remove("active");
         }
       });
-      // Animate cards in that section if it has cards
-      if (id === "projects") {
-        loadCards("projects");
-      }
-      if (id === "apps") {
-        loadCards("apps");
-      }
+      if (id === "projects") loadCards("projects");
+      if (id === "apps") loadCards("apps");
     }
-    // Attach click event to sidebar links
     sidebarLinks.forEach(link => {
       link.addEventListener('click', function(e) {
         e.preventDefault();
         showSection(this.dataset.section);
-        toggleSidebar(); // close sidebar on small screens
       });
     });
 
@@ -627,7 +674,6 @@
     // SETTINGS MODAL
     sidebarSettingsBtn.addEventListener('click', function() {
       openSettings();
-      toggleSidebar();
     });
     function openSettings() {
       settingsModal.classList.add("active");
@@ -691,12 +737,9 @@
       const savedSection = localStorage.getItem("activeSection") || "home";
       showSection(savedSection);
 
-      // Sidebar
-      const isSidebarOpen = localStorage.getItem("sidebarOpen") === "true";
-      if (isSidebarOpen) {
-        sidebar.classList.add("open");
-        if(window.innerWidth > 700) main.classList.add("shift");
-      }
+      // Sidebar: use new closed/collapsed logic
+      const sidebarClosed = localStorage.getItem("sidebarClosed") === "true";
+      setSidebarState(sidebarClosed);
 
       // Cards
       if (savedSection === "projects") loadCards("projects");
@@ -704,11 +747,7 @@
     };
 
     window.addEventListener("resize", () => {
-      if (window.innerWidth <= 700) {
-        main.classList.remove("shift");
-      } else if (sidebar.classList.contains("open")) {
-        main.classList.add("shift");
-      }
+      // Nothing required as the sidebar stays visible in both modes
     });
   </script>
 </body>
