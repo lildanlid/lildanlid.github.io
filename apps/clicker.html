@@ -6,182 +6,98 @@
   <title>Modern Clicker Game</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
     body {
       background: #121212;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .login-screen, .game-container {
-      display: none;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
-
-    .login-screen.active, .game-container.active {
-      display: flex;
-    }
-
-    input, button {
-      border: none;
-      padding: 12px 16px;
-      margin: 10px;
-      border-radius: 20px;
-      background-color: #1e1e1e;
       color: white;
-      font-size: 16px;
-      outline: none;
-      transition: 0.3s ease;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
     }
-
-    input:focus, button:hover {
-      background-color: #2c2c2c;
-    }
-
-    .side-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      transition: transform 0.3s ease;
-      z-index: 10;
-    }
-
-    .side-container.hidden {
-      transform: translateX(-60px);
-    }
-
-    .side-menu {
-      height: 100%;
-      width: 60px;
-      background-color: #1a1a1a;
+    .login-screen.active,
+    .game-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 20px;
-      gap: 20px;
-      z-index: 5;
-    }
-
-    .menu-toggle {
-      top: 10px;
-      left: 0;
-      background: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 10;
-      transition: left 0.3s ease;
-      position: relative;
-    }
-
-    .clicker-area {
-      width: 300px;
-      height: 300px;
-      display: flex;
-      flex-direction: column;
       justify-content: center;
-      align-items: center;
-      gap: 20px;
-      padding: 20px;
-      background-color: #1e1e1e;
-      border-radius: 20px;
-      margin: 40px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      height: 100vh;
     }
-
     .click-btn {
+      background-color: #6200ea;
+      border: none;
+      padding: 20px;
+      border-radius: 50%;
       font-size: 40px;
-      background: none;
+      color: white;
       cursor: pointer;
     }
-
-    .planet-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
+    .shop-panel,
+    .leaderboard-panel {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 300px;
+      background: #1e1e1e;
+      padding: 20px;
+      height: calc(100% - 60px);
+      overflow-y: auto;
     }
-
-    .planet-nav button {
+    .shop-panel.active,
+    .leaderboard-panel.active {
+      display: block;
+    }
+    .side-menu button {
       background: none;
+      border: none;
       color: white;
       font-size: 24px;
+      margin: 10px 0;
+      cursor: pointer;
     }
-
-    .shop-panel, .leaderboard-panel {
+    .menu-toggle {
       position: absolute;
-      top: 0;
-      left: 60px;
-      width: 300px;
-      height: 100%;
-      background-color: #1e1e1e;
-      padding: 20px;
-      display: none;
-      flex-direction: column;
-      overflow-y: auto;
-      border-top-right-radius: 20px;
-      border-bottom-right-radius: 20px;
-      animation: slideIn 0.3s ease forwards;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
     }
-
-    .shop-panel.active, .leaderboard-panel.active {
-      display: flex;
+    .planet-store div {
+      background: #333;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      cursor: pointer;
     }
-
-    .tab-buttons {
-      display: flex;
-      gap: 10px;
+    .dropdown {
+      width: 100%;
+      padding: 5px;
+      font-size: 16px;
       margin-bottom: 10px;
     }
-
-    .dropdown {
-      background-color: #2a2a2a;
-      color: white;
-      border-radius: 20px;
-      padding: 10px;
-      outline: none;
-    }
-
-    .error-box {
-      background-color: #ff4c4c;
-      color: white;
+    .auto-click-toggle {
+      background-color: #444;
+      border: none;
       padding: 10px 20px;
+      color: white;
       border-radius: 20px;
+      margin-top: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .auto-click-toggle.active {
+      background-color: #00c853;
+    }
+    .error-box {
+      background-color: #d32f2f;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
       margin-top: 10px;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .planet-store {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(-20px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
+  <audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_03b72dc509.mp3?filename=click-124467.mp3"></audio>
+
   <div class="login-screen active">
     <h2>Enter Username</h2>
     <input type="text" id="username" placeholder="Username" />
@@ -190,10 +106,14 @@
   </div>
 
   <div class="game-container">
+    <div style="position: absolute; top: 10px; right: 10px; color: white; font-weight: bold;">
+      <span id="usernameDisplay"></span>
+    </div>
     <div class="side-container" id="sideContainer">
       <div class="side-menu" id="sideMenu">
         <button onclick="togglePanel('shop')"><span class="material-icons">shopping_cart</span></button>
         <button onclick="togglePanel('leaderboard')"><span class="material-icons">leaderboard</span></button>
+        <button onclick="resetGame()" title="Reset Game"><span class="material-icons">restart_alt</span></button>
       </div>
       <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()"><span class="material-icons">menu</span></button>
     </div>
@@ -201,7 +121,8 @@
     <div class="shop-panel" id="shopPanel">
       <div class="tab-buttons">
         <button onclick="showPlanets()">Planets</button>
-        <button onclick="alert('Show Upgrades')">Upgrades</button>
+        <button onclick="showOfflineShop()">Offline Time</button>
+        <button onclick="showUpgrades()">Upgrades</button>
       </div>
       <div class="planet-store" id="planetStore"></div>
     </div>
@@ -223,99 +144,75 @@
       </div>
       <div id="currency">Money: $0</div>
       <button class="click-btn material-icons" onclick="clickerClick()">touch_app</button>
+      <button id="autoClickToggle" class="auto-click-toggle" onclick="toggleAutoClick()">Auto Click: Off</button>
     </div>
   </div>
 
   <script>
     let username = localStorage.getItem('username') || '';
-    let money = 0;
-    let clickValue = 1;
-    let planets = ['Earth', 'Mars', 'Jupiter'];
-    let currentPlanet = 0;
+    let savedData = JSON.parse(localStorage.getItem('clickerData') || '{}');
+    let money = savedData.money || 0;
+    let clickValue = savedData.clickValue || 1;
+    let currentPlanet = savedData.currentPlanet || 0;
+    let autoClick = savedData.autoClick || false;
+    let lastPlayed = savedData.lastPlayed || Date.now();
+    let autoClickInterval;
 
-    if (username) {
-      document.querySelector('.login-screen').classList.remove('active');
-      document.querySelector('.game-container').classList.add('active');
-    }
+    const upgrades = Array.from({ length: 100 }, (_, i) => ({
+      name: `Upgrade ${i + 1}`,
+      cost: 50 * (i + 1),
+      multiplier: 1 + (i + 1) * 0.05
+    }));
 
-    function login() {
-      const input = document.getElementById('username');
-      const errorBox = document.getElementById('errorBox');
-      if (!input.value.trim()) {
-        errorBox.innerText = 'Please enter a username.';
-        errorBox.style.display = 'block';
-        return;
-      }
-      username = input.value.trim();
-      localStorage.setItem('username', username);
-      document.querySelector('.login-screen').classList.remove('active');
-      document.querySelector('.game-container').classList.add('active');
-    }
+    let ownedUpgrades = savedData.ownedUpgrades || Array(100).fill(false);
 
-    function toggleMenu() {
-      const container = document.getElementById('sideContainer');
-      const shop = document.getElementById("shopPanel");
-      const leaderboard = document.getElementById("leaderboardPanel");
-      container.classList.toggle('hidden');
-      if (container.classList.contains('hidden')) {
-        shop.classList.remove("active");
-        leaderboard.classList.remove("active");
-      }
-    }
+    const planets = [
+      "Earth", "Mars", "Jupiter", "Venus", "Neptune",
+      "Saturn", "Uranus", "Mercury", "Pluto", "Kepler-22b",
+      "Proxima b", "Titan", "Europa", "Ganymede", "Io"
+    ];
 
-    function togglePanel(panel) {
-      const shop = document.getElementById('shopPanel');
-      const leaderboard = document.getElementById('leaderboardPanel');
-      shop.classList.remove('active');
-      leaderboard.classList.remove('active');
-      if (panel === 'shop') shop.classList.add('active');
-      else if (panel === 'leaderboard') leaderboard.classList.add('active');
-    }
-
-    function clickerClick() {
-      money += clickValue;
-      updateCurrency();
-    }
-
-    function updateCurrency() {
-      document.getElementById('currency').innerText = `Money: $${money}`;
-    }
-
-    function previousPlanet() {
-      currentPlanet = (currentPlanet - 1 + planets.length) % planets.length;
-      updatePlanet();
-    }
-
-    function nextPlanet() {
-      currentPlanet = (currentPlanet + 1) % planets.length;
-      updatePlanet();
-    }
-
-    function updatePlanet() {
-      document.getElementById('planetName').innerText = planets[currentPlanet];
-    }
-
-    function showPlanets() {
+    function showUpgrades() {
       const store = document.getElementById('planetStore');
       store.innerHTML = '';
-      planets.forEach((p, index) => {
-        const item = document.createElement('div');
-        item.innerText = `Buy planet: ${p}`;
-        item.style.background = '#333';
-        item.style.padding = '10px';
-        item.style.borderRadius = '10px';
-        item.style.cursor = 'pointer';
-        item.onclick = () => {
-          currentPlanet = index;
-          updatePlanet();
-          alert(`Switched to ${p}`);
+      upgrades.forEach((u, i) => {
+        if (ownedUpgrades[i]) return;
+        const btn = document.createElement('div');
+        btn.innerText = `${u.name} ($${u.cost})`;
+        btn.onclick = () => {
+          if (money >= u.cost) {
+            money -= u.cost;
+            clickValue *= u.multiplier;
+            upgrades[i].cost = Math.floor(upgrades[i].cost * 1.5);
+            ownedUpgrades[i] = true;
+            alert(`${u.name} purchased!`);
+            updateCurrency();
+            saveData();
+            showUpgrades();
+          } else {
+            showError(`Not enough money for ${u.name}`);
+          }
         };
-        store.appendChild(item);
+        store.appendChild(btn);
       });
     }
 
-    function showLeaderboard(type) {
-      document.getElementById('leaderboardContent').innerText = `Showing: ${type}`;
+    function showError(message) {
+      const box = document.getElementById('errorBox');
+      box.innerText = message;
+      box.style.display = 'block';
+      setTimeout(() => box.style.display = 'none', 3000);
+    }
+
+    function updateCurrency() {
+      const suffixes = ["", "K", "M", "B", "T", "Q"];
+      let display = money;
+      let index = 0;
+      while (display >= 1000 && index < suffixes.length - 1) {
+        display /= 1000;
+        index++;
+      }
+      document.getElementById('currency').innerText = `Money: $${display.toFixed(2)}${suffixes[index]}`;
     }
   </script>
 </body>
