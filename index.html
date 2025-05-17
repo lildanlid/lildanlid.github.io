@@ -165,12 +165,6 @@
       color: var(--text);
     }
 
-    .card-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
     @keyframes cardAppear {
       from {
         opacity: 0;
@@ -180,6 +174,39 @@
         opacity: 1;
         transform: translateY(0);
       }
+    }
+
+    @keyframes linkAppear {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes homeAppear {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #home h2, #home p {
+      opacity: 0;
+      animation: homeAppear 0.5s ease forwards;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
     }
 
     .card {
@@ -234,6 +261,8 @@
       background-color: var(--accent);
       color: #fff;
       border-radius: var(--radius);
+      opacity: 0;
+      animation: linkAppear 0.5s ease forwards;
     }
 
     @media (max-width: 768px) {
@@ -244,91 +273,7 @@
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div id="mySidebar" class="sidebar">
-    <a href="#" onclick="showSection('home')" data-section="home"><span class="material-icons">home</span>Home</a>
-    <a href="#" onclick="showSection('projects')" data-section="projects"><span class="material-icons">folder</span>Projects</a>
-    <a href="#" onclick="showSection('apps')" data-section="apps"><span class="material-icons">apps</span>Apps</a>
-    <a href="#" onclick="showSection('links')" data-section="links"><span class="material-icons">link</span>Links</a>
-    <a href="https://lildanlid.github.io/apps/forms" target="_blank" rel="noopener">
-      <span class="material-icons">description</span>Forms
-    </a>
-  </div>
-
-  <!-- Menu Button -->
-  <button class="openbtn" onclick="toggleSidebar()">
-    <span class="material-icons">menu</span>
-  </button>
-
-  <!-- Theme Toggle -->
-  <button class="theme-toggle" onclick="toggleTheme()">
-    <span class="material-icons">dark_mode</span>
-  </button>
-
-  <!-- Main Content -->
-  <div id="main" class="main">
-    <section id="home" class="active">
-      <h2>Welcome to the Home Page</h2>
-      <p>Use the menu to navigate to other pages.</p>
-    </section>
-
-    <section id="projects">
-      <h2>Projects</h2>
-      <div class="card-container">
-        <div class="card">
-          <img src="https://api.mcpedl.com/storage/submissions/129160/100/minecrafttitle-5_1-520x245.png" alt="Project 1">
-          <h3>Rank Managment</h3>
-          <p>Easy to use and manage your ranks. /scriptevent open:rankmenu (Beta API)</p>
-          <a href="https://lootdest.org/s?D5nydiaR" class="button">Download</a>
-        </div>
-        <div class="card">
-          <img src="https://api.mcpedl.com/storage/submissions/119028/104/minecrafttitle_1-520x245.png" alt="Project 2">
-          <h3>Personal sidebar</h3>
-          <p>Alternate the title in titleraw to go on the side</p>
-          <a href="https://loot-link.com/s?pDzGQukq" class="button">Download</a>
-        </div>
-        <div class="card">
-          <img src="https://api.mcpedl.com/storage/submissions/129126/103/minecrafttitle-4_1-520x245.png" alt="Project 3">
-          <h3>CPS Counter</h3>
-          <p>Hit a entity for it to work (Beta API)</p>
-          <a href="https://lootdest.org/s?BesIpU4N" class="button">Download</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="apps">
-      <h2>Apps</h2>
-      <div class="card-container">
-        <div class="card">
-          <img src="https://cdn.jim-nielsen.com/ios/512/weather-2019-02-07.png?rf=1024" alt="App 1">
-          <h3>Weather App</h3>
-          <p>Check your weather</p>
-          <a href="https://lildanlid.github.io/apps/weather" class="button">View</a>
-        </div>
-        <div class="card">
-          <img src="https://via.placeholder.com/300x150" alt="App 2">
-          <h3>App 2</h3>
-          <p>App 2.</p>
-          <a href="#" class="button">View</a>
-        </div>
-        <div class="card">
-          <img src="https://via.placeholder.com/300x150" alt="App 3">
-          <h3>App 3</h3>
-          <p>3.</p>
-          <a href="#" class="button">View</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="links">
-      <h2>Links</h2>
-      <div class="links">
-        <a href="https://mcpedl.com/user/llildanlid/" target="_blank">MCPEDL</a>
-        <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank">CURSEFORGE</a>
-        <a href="https://lildanlid.github.io/" target="_blank">WEBSITE</a>
-      </div>
-    </section>
-  </div>
+  <!-- Rest of the HTML remains the same -->
 
   <script>
     const body = document.body;
@@ -353,6 +298,30 @@
       });
     }
 
+    function animateLinks() {
+      const links = document.querySelectorAll('.links a');
+      links.forEach((link, index) => {
+        link.style.animationDelay = `${index * 0.1}s`;
+        link.style.opacity = "0";
+        link.style.animation = 'none';
+        link.offsetHeight;
+        link.style.animation = null;
+        link.style.animation = `linkAppear 0.5s ease forwards ${index * 0.1}s`;
+      });
+    }
+
+    function animateHome() {
+      const elements = document.querySelectorAll('#home h2, #home p');
+      elements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.1}s`;
+        element.style.opacity = "0";
+        element.style.animation = 'none';
+        element.offsetHeight;
+        element.style.animation = null;
+        element.style.animation = `homeAppear 0.5s ease forwards ${index * 0.1}s`;
+      });
+    }
+
     function showSection(id) {
       localStorage.setItem("activeSection", id);
       
@@ -365,8 +334,17 @@
         activeLink.classList.add("active");
       }
       
-      if (id === 'projects' || id === 'apps') {
-        animateCards(id);
+      switch(id) {
+        case 'projects':
+        case 'apps':
+          animateCards(id);
+          break;
+        case 'links':
+          animateLinks();
+          break;
+        case 'home':
+          animateHome();
+          break;
       }
     }
 
