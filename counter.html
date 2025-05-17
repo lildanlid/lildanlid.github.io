@@ -5,82 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visitor Counter</title>
     <style>
+        :root {
+            --bg-color-dark: #121212;
+            --text-color-light: #ffffff;
+            --box-bg-color: #1c1c1c;
+            --box-shadow-color: #4A90E2;
+        }
         body {
             font-family: Arial, sans-serif;
-            background: #121212;
-            color: #fff;
-            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-light);
+        }
+        .container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
         .counter-box {
-            background: #1c1c1c;
-            padding: 35px 40px;
+            flex: 1 1 260px;
+            max-width: 350px;
+            min-width: 260px;
+            min-height: 180px;
+            padding: 22px 18px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px #4A90E2;
+            background-color: var(--box-bg-color);
             text-align: center;
+            box-shadow: 0 4px 10px var(--box-shadow-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        input, select {
-            padding: 6px 10px;
-            border-radius: 4px;
-            border: none;
-            margin-bottom: 10px;
+        h1 {
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 2.2em;
         }
-        button {
-            background: #00c8ff;
-            color: #000;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            padding: 7px 16px;
-            cursor: pointer;
+        h2 {
+            margin-bottom: 17px;
+            font-size: 1.3em;
         }
-        .note {
-            font-size: 13px;
-            color: #aaa;
-            margin-top: 1.2em;
+        p {
+            font-size: 1.05em;
+            margin: 5px 0;
+        }
+        @media (max-width: 1400px) {
+            .container {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+        @media (max-width: 1200px) {
+            .counter-box {
+                min-width: 220px;
+                max-width: 270px;
+            }
+        }
+        @media (max-width: 900px) {
+            .counter-box {
+                min-width: 170px;
+                max-width: 230px;
+                padding: 15px 8px;
+            }
+        }
+        @media (max-width: 700px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .counter-box {
+                min-width: 80vw;
+                max-width: 90vw;
+            }
         }
     </style>
     <script>
-    // Default siteKey to use (should match the one used on the tracked website)
-    let currentSiteKey = localStorage.getItem('lastCounterKey') || 'siteVisitors_MYSITENAME';
-
-    function displayCounter() {
-        const visitors = JSON.parse(localStorage.getItem(currentSiteKey) || '[]');
-        document.getElementById('visitorCount').innerText = visitors.length;
-        document.getElementById('currentSiteKey').innerText = currentSiteKey;
-    }
-
-    function changeSiteKey() {
-        const key = document.getElementById('siteKeyInput').value.trim();
-        if (key) {
-            currentSiteKey = key;
-            localStorage.setItem('lastCounterKey', currentSiteKey);
-            displayCounter();
+        function getCounts(timestamps) {
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
+            let yesterdayCount = 0;
+            let totalCount = timestamps.length;
+            timestamps.forEach(timestamp => {
+                const timeAgo = now - timestamp;
+                if (timeAgo <= oneDay && timeAgo > 0) yesterdayCount++;
+            });
+            return { yesterdayCount, totalCount };
         }
-    }
-
-    document.addEventListener('DOMContentLoaded', displayCounter);
+        function displayCounters() {
+            const counters = [
+                { key: 'homeTimestamps',   yesterday: 'mainYesterdayCount',   total: 'mainTotalCount',    label: 'Main Website' },
+                { key: 'weatherTimestamps',yesterday: 'weatherYesterdayCount',total: 'weatherTotalCount', label: 'Weather Website' },
+                { key: 'freeTimestamps',   yesterday: 'freeYesterdayCount',   total: 'freeTotalCount',    label: 'Free Website' },
+                { key: 'formsTimestamps',  yesterday: 'formsYesterdayCount',  total: 'formsTotalCount',   label: 'Forms Website' },
+            ];
+            counters.forEach(counter => {
+                const timestamps = JSON.parse(localStorage.getItem(counter.key) || '[]');
+                const counts = getCounts(timestamps);
+                document.getElementById(counter.yesterday).innerText = `Yesterday's Visits: ${counts.yesterdayCount}`;
+                document.getElementById(counter.total).innerText = `Total Visits: ${counts.totalCount}`;
+            });
+        }
+        document.addEventListener('DOMContentLoaded', displayCounters);
     </script>
 </head>
 <body>
-    <div class="counter-box">
-        <h2>Visitor Counter</h2>
-        <div>
-            <label for="siteKeyInput">Site Key:</label>
-            <input type="text" id="siteKeyInput" placeholder="e.g. siteVisitors_blog" value="siteVisitors_MYSITENAME"/>
-            <button onclick="changeSiteKey()">Show</button>
+    <h1>Visitor Counter</h1>
+    <div class="container">
+        <div class="counter-box">
+            <h2>Main Website</h2>
+            <p id="mainYesterdayCount">Yesterday's Visits: Loading...</p>
+            <p id="mainTotalCount">Total Visits: Loading...</p>
         </div>
-        <p style="margin-top:1em;font-size:1.5em;">
-            <span id="visitorCount">0</span>
-        </p>
-        <div class="note">
-            <span>Current site key: <span id="currentSiteKey"></span></span><br>
-            <span>Counts each browser/device once. No global sync between sites!<br>
-            For a global counter, you need a backend.</span>
+        <div class="counter-box">
+            <h2>Weather Website</h2>
+            <p id="weatherYesterdayCount">Yesterday's Visits: Loading...</p>
+            <p id="weatherTotalCount">Total Visits: Loading...</p>
+        </div>
+        <div class="counter-box">
+            <h2>Free Website</h2>
+            <p id="freeYesterdayCount">Yesterday's Visits: Loading...</p>
+            <p id="freeTotalCount">Total Visits: Loading...</p>
+        </div>
+        <div class="counter-box">
+            <h2>Forms Website</h2>
+            <p id="formsYesterdayCount">Yesterday's Visits: Loading...</p>
+            <p id="formsTotalCount">Total Visits: Loading...</p>
         </div>
     </div>
 </body>
