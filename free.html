@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Resources</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            height: 100vh;
+            background-color: #333;
+            padding: 20px;
+            position: fixed;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #444;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar button:hover {
+            background-color: #555;
+        }
+
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+            width: calc(100% - 200px);
+        }
+
+        .section {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .section.active {
+            display: grid;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .card h3 {
+            margin: 10px 0;
+        }
+
+        .card p {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .buy-btn {
+            padding: 8px 20px;
+            background-color: #ffd700;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .download-btn {
+            padding: 8px 20px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <button onclick="showSection('home')">Home</button>
+            <button onclick="showSection('addons')">Addons</button>
+            <button onclick="showSection('worlds')">Worlds</button>
+            <button onclick="showSection('textures')">Texture Packs</button>
+        </div>
+
+        <div class="content">
+            <div id="home" class="section active">
+                <h1>Welcome to Minecraft Resources</h1>
+                <p>Browse our collection of addons, worlds, and texture packs!</p>
+            </div>
+
+            <div id="addons" class="section"></div>
+            <div id="worlds" class="section"></div>
+            <div id="textures" class="section"></div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function createCard(title, description, isPaid, section) {
+            return `
+                <div class="card">
+                    <img src="https://via.placeholder.com/300x200" alt="${title}">
+                    <h3>${title}</h3>
+                    <p>${description}</p>
+                    <div class="card-buttons">
+                        ${isPaid ? 
+                            '<button class="buy-btn">BUY</button>' : 
+                            '<button class="download-btn">Download</button>'
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        // Generate cards for each section
+        const sections = ['addons', 'worlds', 'textures'];
+        sections.forEach(section => {
+            const container = document.getElementById(section);
+            for (let i = 1; i <= 10; i++) {
+                const isPaid = i % 2 === 0; // Alternate between paid and free
+                container.innerHTML += createCard(
+                    `${section.charAt(0).toUpperCase() + section.slice(1)} ${i}`,
+                    `This is a great ${section.slice(0, -1)} that adds amazing features to your game!`,
+                    isPaid
+                );
+            }
+        });
+    </script>
+</body>
+</html>
