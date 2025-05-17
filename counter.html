@@ -73,12 +73,12 @@
 </head>
 <body>
   <div class="counter-container">
-    <h1>Total Visitors</h1>
-    <div class="counter-label">Across all lildanlid websites</div>
+    <h1>Total Visitors (This Device/Browser)</h1>
+    <div class="counter-label">You have visited this portfolio:</div>
     <div class="counter-value" id="visitorCount">...</div>
     <div class="counter-update" id="updateTime"></div>
     <div class="sites-list">
-      <div><strong>Tracked Sites:</strong></div>
+      <div><strong>Tracked Sites (on this device/browser):</strong></div>
       <ul style="margin:0 0 0 15px;padding:0;">
         <li>lildanlid.github.io</li>
         <li>lildanlid.github.io/apps/weather</li>
@@ -88,64 +88,14 @@
     </div>
   </div>
   <script>
-    /**
-     * This demo uses countapi.xyz but will only increment the counter
-     * if the user has never visited before (via localStorage).
-     * On all your sites, use this same logic to only count a unique visitor once.
-     * 
-     * For local development, each browser/device will count only once.
-     */
-
-    const NAMESPACE = "lildanlid-main-portfolio";
-    const KEY = "all-sites-total-visitors";
-    const LOCAL_KEY = "lildanlid-unique-visitor";
-    const daysToRemember = 3650; // 10 years
-
-    function getUniqueVisitorFlag() {
-      // Returns boolean: has this user already been counted?
-      try {
-        const v = localStorage.getItem(LOCAL_KEY);
-        return v === "true";
-      } catch (e) {
-        return false;
-      }
+    // Simple: Only shows "1" if user has visited on this device/browser, "0" if not.
+    function updateVisitorCount() {
+      var visited = localStorage.getItem('lildanlid_unique_visitor') === 'true';
+      document.getElementById("visitorCount").textContent = visited ? "1" : "0";
+      document.getElementById("updateTime").textContent =
+        "Last checked: " + new Date().toLocaleString();
     }
-    function setUniqueVisitorFlag() {
-      try {
-        localStorage.setItem(LOCAL_KEY, "true");
-        // Optionally store a timestamp for analytics
-        localStorage.setItem(LOCAL_KEY + "-date", new Date().toISOString());
-      } catch (e) {}
-    }
-
-    async function countVisitIfUnique() {
-      if (!getUniqueVisitorFlag()) {
-        // Unique visitor, increment count once ever for this browser
-        try {
-          await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
-        } catch(e) {}
-        setUniqueVisitorFlag();
-      }
-    }
-
-    async function fetchVisitorCount() {
-      try {
-        const res = await fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`);
-        const data = await res.json();
-        document.getElementById("visitorCount").textContent =
-          typeof data.value !== "undefined" ? data.value.toLocaleString() : "0";
-        document.getElementById("updateTime").textContent =
-          "Last updated: " + new Date().toLocaleString();
-      } catch (e) {
-        document.getElementById("visitorCount").textContent = "Error";
-        document.getElementById("updateTime").textContent = "";
-      }
-    }
-
-    // Only count once per unique visitor (per browser)
-    countVisitIfUnique();
-    fetchVisitorCount();
-    setInterval(fetchVisitorCount, 30000); // Refresh every 30s
+    updateVisitorCount();
   </script>
 </body>
 </html>
