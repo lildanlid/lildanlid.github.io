@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FREE. Marketplace</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
@@ -13,9 +13,15 @@
             font-family: Arial, sans-serif;
         }
 
-        body {
+        html, body {
+            overflow-x: hidden;
+            position: relative;
             background-color: #1a1a1a;
             color: #fff;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         .container {
@@ -24,7 +30,7 @@
 
         .sidebar {
             width: 250px;
-            height: 100vh;
+            height: 100dvh;
             background-color: #2a2a2a;
             padding: 30px 20px;
             position: fixed;
@@ -55,6 +61,7 @@
             cursor: pointer;
             padding: 5px;
             transition: transform 0.3s ease;
+            min-height: 44px;
         }
 
         .sidebar.collapsed .toggle-sidebar {
@@ -77,6 +84,7 @@
             font-size: 16px;
             border-radius: 8px;
             position: relative;
+            min-height: 44px;
         }
 
         .sidebar button:hover {
@@ -131,6 +139,8 @@
             padding: 20px;
             background-color: #2a2a2a;
             transition: all 0.3s ease;
+            will-change: transform;
+            contain: content;
         }
 
         .card:hover {
@@ -144,7 +154,7 @@
 
         .card-meta {
             display: flex;
-            gap: 15px;
+            gap: 8px;
             margin: 15px 0;
             flex-wrap: wrap;
         }
@@ -157,14 +167,18 @@
             padding: 5px 10px;
             border-radius: 15px;
             font-size: 0.9em;
+            flex: 0 1 auto;
+            white-space: nowrap;
         }
 
         .card img {
             width: 100%;
-            height: 200px;
+            height: auto;
+            min-height: 150px;
             object-fit: cover;
             border-radius: 8px;
             transition: transform 0.3s ease;
+            max-width: 100%;
         }
 
         .card:hover img {
@@ -186,6 +200,7 @@
             height: 24px;
             object-fit: contain;
             margin: 0;
+            min-height: auto;
         }
 
         .card h3 {
@@ -219,6 +234,7 @@
             font-weight: bold;
             flex: 1;
             transition: all 0.3s;
+            min-height: 44px;
         }
 
         .buy-btn {
@@ -250,6 +266,106 @@
         @keyframes slideIn {
             from { width: 0; }
             to { width: 100%; }
+        }
+
+        /* Media Queries */
+        @media (max-width: 1200px) {
+            .section {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+
+            .section {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 60px;
+                padding: 30px 10px;
+            }
+
+            .sidebar .button-text {
+                display: none;
+            }
+
+            .sidebar button {
+                padding: 15px 10px;
+            }
+
+            .content {
+                margin-left: 60px;
+                width: calc(100% - 60px);
+                padding: 15px;
+            }
+
+            .section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card h3 {
+                font-size: 1.2em;
+            }
+
+            .price {
+                font-size: 1.2em;
+            }
+
+            .card-buttons {
+                flex-direction: column;
+            }
+
+            .buy-btn, .download-btn {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .sidebar {
+                width: 50px;
+            }
+
+            .content {
+                margin-left: 50px;
+                width: calc(100% - 50px);
+                padding: 10px;
+            }
+
+            .card {
+                padding: 10px;
+            }
+
+            .meta-item {
+                padding: 3px 6px;
+                font-size: 0.8em;
+            }
+        }
+
+        @media (hover: none) {
+            .card:active {
+                transform: scale(0.98);
+            }
+
+            .buy-btn:active,
+            .download-btn:active {
+                transform: scale(0.95);
+            }
         }
     </style>
 </head>
@@ -357,7 +473,7 @@
         function createCard(item, section) {
             let cardHTML = `
                 <div class="card">
-                    <img src="${item.image}" alt="${item.title}">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
                     <div class="card-details">
                         <h3>${item.title}</h3>
                         <p>${item.description}</p>
@@ -419,12 +535,14 @@
             });
         }
 
+        // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             generateSections();
 
             const lastActiveSection = localStorage.getItem('lastActiveSection') || 'home';
             showSection(lastActiveSection);
 
+            // Handle sidebar toggle
             document.querySelector('.toggle-sidebar').addEventListener('click', () => {
                 const sidebar = document.querySelector('.sidebar');
                 const content = document.querySelector('.content');
@@ -434,8 +552,23 @@
                 localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
             });
 
+            // Restore sidebar state
             const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (sidebarCollapsed) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+
+            // Auto-collapse sidebar on mobile
+            if (window.innerWidth <= 576) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 576) {
                 document.querySelector('.sidebar').classList.add('collapsed');
                 document.querySelector('.content').classList.add('expanded');
             }
