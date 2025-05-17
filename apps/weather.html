@@ -136,11 +136,6 @@
       animation: slideIn 0.3s ease forwards;
     }
 
-    .side-menu.hidden ~ .shop-panel,
-    .side-menu.hidden ~ .leaderboard-panel {
-      display: none !important;
-    }
-
     .shop-panel.active, .leaderboard-panel.active {
       display: flex;
     }
@@ -166,6 +161,12 @@
       border-radius: 20px;
       margin-top: 10px;
       animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .planet-store {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     @keyframes slideIn {
@@ -196,9 +197,10 @@
 
     <div class="shop-panel" id="shopPanel">
       <div class="tab-buttons">
-        <button onclick="alert('Show Planets')">Planets</button>
+        <button onclick="showPlanets()">Planets</button>
         <button onclick="alert('Show Upgrades')">Upgrades</button>
       </div>
+      <div class="planet-store" id="planetStore"></div>
     </div>
 
     <div class="leaderboard-panel" id="leaderboardPanel">
@@ -285,8 +287,30 @@
     function togglePanel(panel) {
       document.getElementById("shopPanel").classList.remove("active");
       document.getElementById("leaderboardPanel").classList.remove("active");
+      if (document.getElementById('sideMenu').classList.contains('hidden')) return;
       if (panel === "shop") document.getElementById("shopPanel").classList.add("active");
       if (panel === "leaderboard") document.getElementById("leaderboardPanel").classList.add("active");
+    }
+
+    function showPlanets() {
+      const store = document.getElementById("planetStore");
+      store.innerHTML = planets.map((planet, i) => {
+        const owned = ownedPlanets[i];
+        const canBuy = money >= 100 && !owned;
+        return `<div>
+          ${planet} - ${owned ? 'Owned' : `<button onclick="buyPlanet(${i})">Buy for $100</button>`}
+        </div>`;
+      }).join('');
+    }
+
+    function buyPlanet(i) {
+      if (!ownedPlanets[i] && money >= 100) {
+        money -= 100;
+        ownedPlanets[i] = true;
+        updateUI();
+        saveData();
+        showPlanets();
+      }
     }
 
     function showLeaderboard(type) {
@@ -347,14 +371,16 @@
     function toggleMenu() {
       const menu = document.getElementById('sideMenu');
       const toggle = document.getElementById('menuToggle');
-      menu.classList.toggle('hidden');
-    }
 
-    function resetAllAccounts() {
-      Object.keys(localStorage).forEach(k => {
-        if (k.startsWith("user-")) localStorage.removeItem(k);
-      });
-      localStorage.removeItem("lastUser");
+      const shop = document.getElementById("shopPanel");
+      const leaderboard = document.getElementById("leaderboardPanel");
+
+      menu.classList.toggle('hidden');
+
+      if (menu.classList.contains('hidden')) {
+        shop.classList.remove("active");
+        leaderboard.classList.remove("active");
+      }
     }
   </script>
 </body>
