@@ -171,6 +171,23 @@
             transform: scale(1.05);
         }
 
+        .price {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
+        }
+
+        .price img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            margin: 0;
+        }
+
         .card h3 {
             margin: 10px 0;
             color: #fff;
@@ -180,13 +197,6 @@
         .card p {
             color: #aaa;
             line-height: 1.5;
-            margin: 10px 0;
-        }
-
-        .price {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #ffd700;
             margin: 10px 0;
         }
 
@@ -279,7 +289,8 @@
     </div>
 
     <script>
-        // Data structure for all cards
+        const CURRENCY_IMAGE = "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/4ca016b3-d741-47d7-97b0-08668e38be61/actionsandstuff_Thumbnail_0.jpg";
+
         const cardData = {
             addons: [
                 {
@@ -339,6 +350,8 @@
             
             document.querySelector(`.sidebar button[onclick="showSection('${sectionId}')"]`).classList.add('active');
             document.getElementById(sectionId).classList.add('active');
+
+            localStorage.setItem('lastActiveSection', sectionId);
         }
 
         function createCard(item, section) {
@@ -374,7 +387,10 @@
 
             cardHTML += `
                         </div>
-                        <div class="price">$${item.price}</div>
+                        <div class="price">
+                            <img src="${CURRENCY_IMAGE}" alt="currency">
+                            ${item.price}
+                        </div>
                         <div class="card-buttons">
                             <a href="${item.buyUrl}" target="_blank" class="buy-btn">
                                 <span class="material-icons">shopping_cart</span>
@@ -392,11 +408,10 @@
             return cardHTML;
         }
 
-        // Generate cards for each section
         function generateSections() {
             Object.keys(cardData).forEach(section => {
                 const container = document.getElementById(section);
-                container.innerHTML = ''; // Clear existing content
+                container.innerHTML = '';
                 
                 cardData[section].forEach(item => {
                     container.innerHTML += createCard(item, section);
@@ -404,14 +419,27 @@
             });
         }
 
-        // Toggle sidebar
-        document.querySelector('.toggle-sidebar').addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
-            document.querySelector('.content').classList.toggle('expanded');
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSections();
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', generateSections);
+            const lastActiveSection = localStorage.getItem('lastActiveSection') || 'home';
+            showSection(lastActiveSection);
+
+            document.querySelector('.toggle-sidebar').addEventListener('click', () => {
+                const sidebar = document.querySelector('.sidebar');
+                const content = document.querySelector('.content');
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+                
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+        });
     </script>
 </body>
 </html>
