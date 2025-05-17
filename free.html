@@ -131,9 +131,6 @@
             padding: 20px;
             background-color: #2a2a2a;
             transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.5s ease forwards;
         }
 
         .card:hover {
@@ -141,12 +138,32 @@
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
         }
 
+        .card-details {
+            padding: 15px 0;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0, 123, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
         .card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 15px;
             transition: transform 0.3s ease;
         }
 
@@ -157,20 +174,30 @@
         .card h3 {
             margin: 10px 0;
             color: #fff;
+            font-size: 1.5em;
         }
 
         .card p {
-            margin-bottom: 20px;
             color: #aaa;
             line-height: 1.5;
+            margin: 10px 0;
+        }
+
+        .price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
         }
 
         .card-buttons {
             display: flex;
             gap: 10px;
+            margin-top: 15px;
         }
 
         .buy-btn, .download-btn {
+            text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -186,11 +213,7 @@
 
         .buy-btn {
             background-color: #ffd700;
-        }
-
-        .buy-btn:hover {
-            background-color: #ffed4a;
-            transform: scale(1.05);
+            color: black;
         }
 
         .download-btn {
@@ -198,9 +221,9 @@
             color: white;
         }
 
-        .download-btn:hover {
-            background-color: #45a049;
+        .buy-btn:hover, .download-btn:hover {
             transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         @keyframes fadeInUp {
@@ -215,35 +238,8 @@
         }
 
         @keyframes slideIn {
-            from {
-                width: 0;
-            }
-            to {
-                width: 100%;
-            }
-        }
-
-        #home {
-            color: #fff;
-            padding: 20px;
-        }
-
-        #home h1 {
-            margin-bottom: 20px;
-            color: #007bff;
-            animation: fadeInUp 0.5s ease;
-        }
-
-        #home p {
-            font-size: 18px;
-            line-height: 1.6;
-            color: #aaa;
-            animation: fadeInUp 0.5s ease 0.2s forwards;
-            opacity: 0;
-        }
-
-        .material-icons {
-            font-size: 24px;
+            from { width: 0; }
+            to { width: 100%; }
         }
     </style>
 </head>
@@ -276,7 +272,6 @@
                 <h1>Welcome to Minecraft Resources</h1>
                 <p>Browse our collection of addons, worlds, and texture packs!</p>
             </div>
-
             <div id="addons" class="section"></div>
             <div id="worlds" class="section"></div>
             <div id="textures" class="section"></div>
@@ -284,6 +279,56 @@
     </div>
 
     <script>
+        // Data structure for all cards
+        const cardData = {
+            addons: [
+                {
+                    title: "Super Tools Addon",
+                    description: "Enhance your gameplay with powerful tools including super pickaxe, mega sword, and ultimate shovel!",
+                    image: "https://via.placeholder.com/300x200",
+                    price: "4.99",
+                    buyUrl: "https://example.com/buy/super-tools",
+                    downloadUrl: "https://example.com/download/super-tools",
+                    category: "Tools",
+                    version: "1.19.2"
+                },
+                {
+                    title: "Fantasy Creatures",
+                    description: "Add dragons, unicorns, and magical beings to your Minecraft world!",
+                    image: "https://via.placeholder.com/300x200",
+                    price: "5.99",
+                    buyUrl: "https://example.com/buy/fantasy-creatures",
+                    downloadUrl: "https://example.com/download/fantasy-creatures",
+                    category: "Mobs",
+                    version: "1.19.2"
+                }
+            ],
+            worlds: [
+                {
+                    title: "Medieval Kingdom",
+                    description: "Explore a vast medieval kingdom with castles, villages, and dungeons!",
+                    image: "https://via.placeholder.com/300x200",
+                    price: "7.99",
+                    buyUrl: "https://example.com/buy/medieval-kingdom",
+                    downloadUrl: "https://example.com/download/medieval-kingdom",
+                    size: "500MB",
+                    gameMode: "Survival"
+                }
+            ],
+            textures: [
+                {
+                    title: "Ultra Realistic HD",
+                    description: "Transform your game with stunning 256x256 realistic textures!",
+                    image: "https://via.placeholder.com/300x200",
+                    price: "3.99",
+                    buyUrl: "https://example.com/buy/ultra-realistic",
+                    downloadUrl: "https://example.com/download/ultra-realistic",
+                    resolution: "256x",
+                    format: "Java & Bedrock"
+                }
+            ]
+        };
+
         function showSection(sectionId) {
             document.querySelectorAll('.sidebar button').forEach(button => {
                 button.classList.remove('active');
@@ -296,24 +341,67 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
-        function createCard(title, description, section, index) {
-            return `
-                <div class="card" style="animation-delay: ${index * 0.1}s">
-                    <img src="https://via.placeholder.com/300x200" alt="${title}">
-                    <h3>${title}</h3>
-                    <p>${description}</p>
-                    <div class="card-buttons">
-                        <button class="buy-btn">
-                            <span class="material-icons">shopping_cart</span>
-                            BUY
-                        </button>
-                        <button class="download-btn">
-                            <span class="material-icons">download</span>
-                            Download
-                        </button>
+        function createCard(item, section) {
+            let cardHTML = `
+                <div class="card">
+                    <img src="${item.image}" alt="${item.title}">
+                    <div class="card-details">
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
+                        <div class="card-meta">
+            `;
+
+            switch(section) {
+                case 'addons':
+                    cardHTML += `
+                        <span class="meta-item"><i class="material-icons">category</i>${item.category}</span>
+                        <span class="meta-item"><i class="material-icons">numbers</i>${item.version}</span>
+                    `;
+                    break;
+                case 'worlds':
+                    cardHTML += `
+                        <span class="meta-item"><i class="material-icons">storage</i>${item.size}</span>
+                        <span class="meta-item"><i class="material-icons">sports_esports</i>${item.gameMode}</span>
+                    `;
+                    break;
+                case 'textures':
+                    cardHTML += `
+                        <span class="meta-item"><i class="material-icons">high_quality</i>${item.resolution}</span>
+                        <span class="meta-item"><i class="material-icons">devices</i>${item.format}</span>
+                    `;
+                    break;
+            }
+
+            cardHTML += `
+                        </div>
+                        <div class="price">$${item.price}</div>
+                        <div class="card-buttons">
+                            <a href="${item.buyUrl}" target="_blank" class="buy-btn">
+                                <span class="material-icons">shopping_cart</span>
+                                BUY
+                            </a>
+                            <a href="${item.downloadUrl}" target="_blank" class="download-btn">
+                                <span class="material-icons">download</span>
+                                Download
+                            </a>
+                        </div>
                     </div>
                 </div>
             `;
+
+            return cardHTML;
+        }
+
+        // Generate cards for each section
+        function generateSections() {
+            Object.keys(cardData).forEach(section => {
+                const container = document.getElementById(section);
+                container.innerHTML = ''; // Clear existing content
+                
+                cardData[section].forEach(item => {
+                    container.innerHTML += createCard(item, section);
+                });
+            });
         }
 
         // Toggle sidebar
@@ -322,19 +410,8 @@
             document.querySelector('.content').classList.toggle('expanded');
         });
 
-        // Generate cards for each section
-        const sections = ['addons', 'worlds', 'textures'];
-        sections.forEach(section => {
-            const container = document.getElementById(section);
-            for (let i = 1; i <= 10; i++) {
-                container.innerHTML += createCard(
-                    `${section.charAt(0).toUpperCase() + section.slice(1)} ${i}`,
-                    `This is a great ${section.slice(0, -1)} that adds amazing features to your game! Click buy to support the creator or download for free.`,
-                    section,
-                    i
-                );
-            }
-        });
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', generateSections);
     </script>
 </body>
 </html>
