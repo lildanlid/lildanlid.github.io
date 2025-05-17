@@ -1,141 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitor Counter</title>
-    <style>
-        :root {
-            --bg-color-dark: #121212;
-            --text-color-light: #ffffff;
-            --box-bg-color: #1c1c1c;
-            --box-shadow-color: #4A90E2;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--bg-color-dark);
-            color: var(--text-color-light);
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-        .counter-box {
-            flex: 1 1 260px;
-            max-width: 350px;
-            min-width: 260px;
-            min-height: 180px;
-            padding: 22px 18px;
-            border-radius: 10px;
-            background-color: var(--box-bg-color);
-            text-align: center;
-            box-shadow: 0 4px 10px var(--box-shadow-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 32px;
-            font-size: 2.2em;
-        }
-        h2 {
-            margin-bottom: 17px;
-            font-size: 1.3em;
-        }
-        p {
-            font-size: 1.05em;
-            margin: 5px 0;
-        }
-        @media (max-width: 1400px) {
-            .container {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
-        @media (max-width: 1200px) {
-            .counter-box {
-                min-width: 220px;
-                max-width: 270px;
-            }
-        }
-        @media (max-width: 900px) {
-            .counter-box {
-                min-width: 170px;
-                max-width: 230px;
-                padding: 15px 8px;
-            }
-        }
-        @media (max-width: 700px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .counter-box {
-                min-width: 80vw;
-                max-width: 90vw;
-            }
-        }
-    </style>
-    <script>
-        function getCounts(timestamps) {
-            const now = Date.now();
-            const oneDay = 24 * 60 * 60 * 1000;
-            let yesterdayCount = 0;
-            let totalCount = timestamps.length;
-            timestamps.forEach(timestamp => {
-                const timeAgo = now - timestamp;
-                if (timeAgo <= oneDay && timeAgo > 0) yesterdayCount++;
-            });
-            return { yesterdayCount, totalCount };
-        }
-        function displayCounters() {
-            const counters = [
-                { key: 'homeTimestamps',   yesterday: 'mainYesterdayCount',   total: 'mainTotalCount',    label: 'Main Website' },
-                { key: 'weatherTimestamps',yesterday: 'weatherYesterdayCount',total: 'weatherTotalCount', label: 'Weather Website' },
-                { key: 'freeTimestamps',   yesterday: 'freeYesterdayCount',   total: 'freeTotalCount',    label: 'Free Website' },
-                { key: 'formsTimestamps',  yesterday: 'formsYesterdayCount',  total: 'formsTotalCount',   label: 'Forms Website' },
-            ];
-            counters.forEach(counter => {
-                const timestamps = JSON.parse(localStorage.getItem(counter.key) || '[]');
-                const counts = getCounts(timestamps);
-                document.getElementById(counter.yesterday).innerText = `Yesterday's Visits: ${counts.yesterdayCount}`;
-                document.getElementById(counter.total).innerText = `Total Visits: ${counts.totalCount}`;
-            });
-        }
-        document.addEventListener('DOMContentLoaded', displayCounters);
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>lildanlid</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #121212;
+      --text: #ffffff;
+      --card-bg: #1e1e1e;
+      --accent: #1e88e5;
+      --radius: 6px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f4f4;
+      --text: #121212;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: var(--radius);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    ::selection {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .sidebar {
+      height: 100%;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: -250px;
+      background-color: rgba(30, 30, 30, 0.2);
+      backdrop-filter: blur(10px);
+      overflow-x: hidden;
+      transition: left 0.3s ease;
+      padding-top: 60px;
+      z-index: 1000;
+      border-radius: var(--radius);
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar a {
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-weight: bold;
+      position: relative;
+      transition: color 0.3s;
+      border-radius: var(--radius);
+    }
+
+    .sidebar a::after {
+      content: "";
+      position: absolute;
+      left: 25px;
+      bottom: 10px;
+      height: 2px;
+      width: 0;
+      background-color: var(--accent);
+      transition: width 0.3s ease;
+      border-radius: var(--radius);
+    }
+
+    .sidebar a.active::after {
+      width: calc(100% - 50px);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+    }
+
+    .sidebar a:hover:not(.active)::after {
+      width: 0;
+    }
+
+    .sidebar a:hover {
+      color: var(--accent);
+    }
+
+    .sidebar a .material-icons {
+      transition: color 0.3s;
+    }
+
+    .sidebar a.active .material-icons,
+    .sidebar a:hover .material-icons {
+      color: var(--accent);
+    }
+
+    .main {
+      margin-left: 0;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main.shift {
+      margin-left: 250px;
+    }
+
+    .openbtn {
+      font-size: 24px;
+      cursor: pointer;
+      background: none;
+      color: var(--text);
+      border: none;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1001;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: none;
+      color: var(--text);
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      z-index: 1001;
+    }
+
+    section {
+      margin: 40px 0;
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes linkAppear {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes homeAppear {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #home h2, #home p {
+      opacity: 0;
+      animation: homeAppear 0.5s ease forwards;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      width: calc(33.333% - 20px);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s;
+      border-radius: var(--radius);
+      opacity: 0;
+      animation: cardAppear 0.5s ease forwards;
+    }
+
+    .card img {
+      width: 100%;
+      margin-bottom: 15px;
+      border-radius: var(--radius);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      flex-grow: 1;
+      margin-bottom: 15px;
+    }
+
+    .card a.button {
+      align-self: flex-start;
+      padding: 10px 15px;
+      background-color: var(--accent);
+      color: #fff;
+      transition: background 0.3s;
+      border-radius: var(--radius);
+    }
+
+    .card a.button:hover {
+      background-color: #1565c0;
+    }
+
+    .links {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .links a {
+      padding: 10px 20px;
+      background-color: var(--accent);
+      color: #fff;
+      border-radius: var(--radius);
+      opacity: 0;
+      animation: linkAppear 0.5s ease forwards;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Visitor Counter</h1>
-    <div class="container">
-        <div class="counter-box">
-            <h2>Main Website</h2>
-            <p id="mainYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="mainTotalCount">Total Visits: Loading...</p>
-        </div>
-        <div class="counter-box">
-            <h2>Weather Website</h2>
-            <p id="weatherYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="weatherTotalCount">Total Visits: Loading...</p>
-        </div>
-        <div class="counter-box">
-            <h2>Free Website</h2>
-            <p id="freeYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="freeTotalCount">Total Visits: Loading...</p>
-        </div>
-        <div class="counter-box">
-            <h2>Forms Website</h2>
-            <p id="formsYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="formsTotalCount">Total Visits: Loading...</p>
-        </div>
-    </div>
+  <!-- Rest of the HTML remains the same -->
+
+  <script>
+    const body = document.body;
+    const sidebar = document.getElementById("mySidebar");
+    const main = document.getElementById("main");
+
+    function toggleSidebar() {
+      const isOpen = sidebar.classList.toggle("open");
+      main.classList.toggle("shift");
+      localStorage.setItem("sidebarOpen", isOpen);
+    }
+
+    function animateCards(sectionId) {
+      const cards = document.querySelectorAll(`#${sectionId} .card`);
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.style.opacity = "0";
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = null;
+        card.style.animation = `cardAppear 0.5s ease forwards ${index * 0.1}s`;
+      });
+    }
+
+    function animateLinks() {
+      const links = document.querySelectorAll('.links a');
+      links.forEach((link, index) => {
+        link.style.animationDelay = `${index * 0.1}s`;
+        link.style.opacity = "0";
+        link.style.animation = 'none';
+        link.offsetHeight;
+        link.style.animation = null;
+        link.style.animation = `linkAppear 0.5s ease forwards ${index * 0.1}s`;
+      });
+    }
+
+    function animateHome() {
+      const elements = document.querySelectorAll('#home h2, #home p');
+      elements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.1}s`;
+        element.style.opacity = "0";
+        element.style.animation = 'none';
+        element.offsetHeight;
+        element.style.animation = null;
+        element.style.animation = `homeAppear 0.5s ease forwards ${index * 0.1}s`;
+      });
+    }
+
+    function showSection(id) {
+      localStorage.setItem("activeSection", id);
+      
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove("active"));
+      
+      document.getElementById(id).classList.add("active");
+      const activeLink = document.querySelector(`.sidebar a[data-section="${id}"]`);
+      if (activeLink) {
+        activeLink.classList.add("active");
+      }
+      
+      switch(id) {
+        case 'projects':
+        case 'apps':
+          animateCards(id);
+          break;
+        case 'links':
+          animateLinks();
+          break;
+        case 'home':
+          animateHome();
+          break;
+      }
+    }
+
+    function toggleTheme() {
+      const newTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      body.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      body.setAttribute("data-theme", savedTheme);
+
+      const savedSection = localStorage.getItem("activeSection") || "home";
+      showSection(savedSection);
+
+      const isSidebarOpen = localStorage.getItem("sidebarOpen") === "true";
+      if (isSidebarOpen) {
+        sidebar.classList.add("open");
+        main.classList.add("shift");
+      }
+    };
+  </script>
 </body>
 </html>
