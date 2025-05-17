@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unique Visitor Counter</title>
+    <title>Visitor Counter</title>
     <style>
         :root {
             --bg-color-dark: #121212;
             --text-color-light: #ffffff;
             --box-bg-color: #1c1c1c;
             --box-shadow-color: #4A90E2;
-            --accent: #00c8ff;
         }
         body {
             font-family: Arial, sans-serif;
@@ -21,19 +20,17 @@
         }
         .container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
         .counter-box {
-            flex: 1;
             min-width: 260px;
             max-width: 400px;
-            height: 220px;
-            padding: 24px;
-            border-radius: 10px;
+            height: 200px;
+            padding: 20px;
+            border-radius: 8px;
             background-color: var(--box-bg-color);
             text-align: center;
             box-shadow: 0 4px 10px var(--box-shadow-color);
@@ -42,119 +39,38 @@
             justify-content: center;
             align-items: center;
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2 {
-            margin-bottom: 15px;
+        h1, h2 {
+            margin-bottom: 20px;
         }
         p {
-            font-size: 18px;
-            margin: 7px 0;
+            font-size: 24px;
+            margin: 20px 0;
         }
-        .footer {
-            text-align: center;
-            margin-top: 40px;
+        .note {
             color: #888;
-            font-size: 15px;
-        }
-        .id-info {
-            font-size: 14px;
-            color: #77eaff;
-            margin-top: 12px;
-            word-break: break-all;
-        }
-        .reset-btn {
-            background: var(--accent);
-            border: none;
-            color: #000;
-            font-weight: bold;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .reset-btn:active {
-            opacity: 0.7;
+            margin-top: 25px;
+            font-size: 13px;
         }
     </style>
     <script>
-    // Utility to generate a random unique ID (UUID v4 style)
-    function generateId() {
-        return 'xxxxxxxxyxxxxyxxxyxxxxyxxxyxxxxyx'.replace(/[xy]/g, function(c) {
-            var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
-        });
-    }
-
-    // --- CONFIG ---
-    // You can change the 'counterKey' to use this counter on different pages
-    const counterKey = 'uniqueVisitors'; // Change this to something else if you want a different page counter
-
-    // Try to get a unique visitor ID, or create one if missing
-    function getOrCreateVisitorId() {
-        let id = localStorage.getItem('uniqueVisitorId');
-        if (!id) {
-            id = generateId();
-            localStorage.setItem('uniqueVisitorId', id);
-        }
-        return id;
-    }
-
-    // Only count a visitor once
-    function registerUniqueVisit() {
-        const visitorId = getOrCreateVisitorId();
-        // Get the list of already counted visitors
-        let visitorList = JSON.parse(localStorage.getItem(counterKey) || '[]');
-        // If not already counted, add this visitor
-        if (!visitorList.includes(visitorId)) {
-            visitorList.push(visitorId);
-            localStorage.setItem(counterKey, JSON.stringify(visitorList));
-        }
-    }
-
-    // Get the total unique count
-    function getUniqueCount() {
-        let visitorList = JSON.parse(localStorage.getItem(counterKey) || '[]');
-        return visitorList.length;
-    }
-
     function displayCounter() {
-        registerUniqueVisit();
-        const count = getUniqueCount();
-        document.getElementById('uniqueCount').innerText = `Unique Visitors: ${count}`;
-        // For transparency, display the user's visitor ID
-        document.getElementById('idInfo').innerText =
-            "Your unique visitor ID: " + getOrCreateVisitorId();
+        var visitors = JSON.parse(localStorage.getItem('siteVisitors') || '[]');
+        document.getElementById('visitorCount').innerText = visitors.length;
     }
-
-    function resetCounter() {
-        if (confirm("Are you sure you want to reset the counter for everyone? This cannot be undone.")) {
-            localStorage.removeItem(counterKey);
-            displayCounter();
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', displayCounter);
     </script>
 </head>
 <body>
-    <h1>Unique Visitor Counter</h1>
     <div class="container">
         <div class="counter-box">
-            <h2>Website Unique Visitors</h2>
-            <p id="uniqueCount">Loading...</p>
-            <div class="id-info" id="idInfo"></div>
-            <button class="reset-btn" onclick="resetCounter()">Reset Counter</button>
+            <h1>Visitor Counter</h1>
+            <p id="visitorCount">0</p>
+            <h2>Total Unique Visitors</h2>
+        </div>
+        <div class="note">
+            Counts each device/browser once.<br>
+            <b>Note:</b> This is local to your browser; for a global counter, a backend/server is required.
         </div>
     </div>
-    <div class="footer">
-        &copy; <span id="year"></span> Unique Visitor Counter. Counts each device/browser only once.<br>
-        <span style="font-size:12px;">(This demo uses browser localStorage only; for a global online counter, you need a backend.)</span>
-    </div>
-    <script>
-        document.getElementById('year').innerText = new Date().getFullYear();
-    </script>
 </body>
 </html>
