@@ -1,84 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Lildanlid's Visitor Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Lildanlid Visitor Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     :root {
-      --glow-color: #00ffff;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      --glow: #00ffff;
+      --bg: #111;
+      --card-bg: #1c1c1c;
+      --font: 'Segoe UI', sans-serif;
     }
 
     body {
-      background: #111;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
       padding: 2rem;
-      text-align: center;
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px var(--glow), 0 0 20px var(--glow);
+      color: var(--glow);
       margin-bottom: 1rem;
-      text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
-      color: var(--glow-color);
     }
 
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 1.5rem;
-      color: #ccc;
+    .card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00ffff44;
+      margin: 1rem;
+      width: 100%;
+      max-width: 600px;
     }
 
     select {
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
-      margin-bottom: 2rem;
-      background-color: #222;
-      color: #fff;
-      box-shadow: 0 0 10px #00ffff55;
-    }
-
-    #visitor-counter {
-      font-size: 1.5rem;
-      background: #222;
-      padding: 12px 20px;
-      border-radius: 10px;
-      margin-bottom: 2rem;
-      box-shadow: 0 0 15px #00ffff66;
-      color: #0ff;
-    }
-
-    .websites {
-      background: #1a1a1a;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #0ff4;
-      color: #ccc;
-      max-width: 500px;
       width: 100%;
+      padding: 0.7rem;
+      background: #222;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: 0 0 8px var(--glow);
+      margin-bottom: 1rem;
     }
 
-    .websites ul {
-      list-style: none;
+    .counter-display {
+      font-size: 1.5rem;
+      color: var(--glow);
+      margin-top: 1rem;
     }
 
-    .websites li {
-      margin: 0.5rem 0;
+    .code-box {
+      background: #000;
       color: #0ff;
+      font-family: monospace;
+      padding: 1rem;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      box-shadow: 0 0 10px #00ffff55;
     }
 
     a {
@@ -89,72 +78,99 @@
     a:hover {
       text-decoration: underline;
     }
+
+    .material-icons {
+      vertical-align: middle;
+      margin-right: 6px;
+      color: var(--glow);
+    }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
   </style>
 </head>
 <body>
-  <h1>Lildanlid's Visitor Tracker</h1>
-  <p>Tracking visitors across all connected sites</p>
+  <h1>Lildanlid Visitor Tracker</h1>
 
-  <div id="visitor-counter">Loading visitors...</div>
+  <!-- Card: Dropdown + Count -->
+  <div class="card">
+    <h2><span class="material-icons">visibility</span>View Visitor Count by Page</h2>
+    <select id="pageSelect">
+      <option value="">Select a page</option>
+      <option value="home">Main Page</option>
+      <option value="free">Free Marketplace</option>
+      <option value="weather">Weather App</option>
+      <option value="bypass">Bypass Lootlabs</option>
+    </select>
+    <div id="selectedCount" class="counter-display">Please choose a page</div>
+  </div>
 
-  <select onchange="location.href=this.value">
-    <option value="#">Choose a page to view</option>
-    <option value="https://lildanlid.github.io/">🏠 Home</option>
-    <option value="https://lildanlid.github.io/free/">🆓 Free Tools</option>
-    <option value="https://lildanlid.github.io/apps/weather/">🌦 Weather App</option>
-    <option value="https://lildanlid.github.io/bypass/">🕶 Bypass Page</option>
-  </select>
-
-  <div class="websites">
-    <h3>📌 Websites Being Tracked:</h3>
-    <ul>
-      <li><a href="https://lildanlid.github.io/" target="_blank">/</a></li>
-      <li><a href="https://lildanlid.github.io/free/" target="_blank">/free/</a></li>
-      <li><a href="https://lildanlid.github.io/apps/weather/" target="_blank">/apps/weather/</a></li>
-      <li><a href="https://lildanlid.github.io/bypass/" target="_blank">/bypass/</a></li>
-    </ul>
+  <!-- Card: Sites being tracked -->
+  <div class="card">
+    <h2><span class="material-icons">push_pin</span>Websites Being Tracked</h2>
+    <div class="code-box">
+/ - https://lildanlid.github.io/  
+/free - https://lildanlid.github.io/free/  
+/apps/weather - https://lildanlid.github.io/apps/weather/  
+/bypass - https://lildanlid.github.io/bypass/
+    </div>
   </div>
 
   <script>
-    const BIN_ID = "682869458960c979a59b4ce3"; // e.g. 665fc259acd3cb34a8463ed9
-    const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    const STORAGE_KEY = "visited_lildanlid";
+    const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O"; 
 
-    async function getVisitorCount() {
-      const res = await fetch(API_URL, {
+    const bins = {
+      "home": { id: "BIN_ID_1", name: "/", url: "https://lildanlid.github.io/" },
+      "free": { id: "BIN_ID_2", name: "/free", url: "https://lildanlid.github.io/free/" },
+      "weather": { id: "BIN_ID_3", name: "/apps/weather", url: "https://lildanlid.github.io/apps/weather/" },
+      "bypass": { id: "BIN_ID_4", name: "/bypass", url: "https://lildanlid.github.io/bypass/" }
+    };
+
+    async function fetchVisitorCount(binId, storageKey) {
+      const url = `https://api.jsonbin.io/v3/b/${binId}`;
+      const response = await fetch(url, {
         headers: { "X-Master-Key": API_KEY }
       });
-      const data = await res.json();
-      return data.record.visitors;
-    }
+      const data = await response.json();
+      let count = data.record.visitors;
 
-    async function updateVisitorCount(newCount) {
-      await fetch(API_URL, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": API_KEY
-        },
-        body: JSON.stringify({ visitors: newCount })
-      });
-    }
-
-    async function main() {
-      let count = await getVisitorCount();
-
-      if (!localStorage.getItem(STORAGE_KEY)) {
+      if (!localStorage.getItem(storageKey)) {
         count++;
-        await updateVisitorCount(count);
-        localStorage.setItem(STORAGE_KEY, "true");
+        await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+          },
+          body: JSON.stringify({ visitors: count })
+        });
+        localStorage.setItem(storageKey, "true");
       }
 
-      document.getElementById("visitor-counter").textContent = `🌍 Total Visitors: ${count}`;
+      return count;
     }
 
-    main().catch(err => {
-      console.error("Visitor counter error:", err);
-      document.getElementById("visitor-counter").textContent = "Error loading count.";
+    document.getElementById("pageSelect").addEventListener("change", async (e) => {
+      const key = e.target.value;
+      const display = document.getElementById("selectedCount");
+
+      if (!key) {
+        display.textContent = "Please choose a page";
+        return;
+      }
+
+      display.textContent = "Loading...";
+      try {
+        const bin = bins[key];
+        const count = await fetchVisitorCount(bin.id, `visited_${key}`);
+        display.textContent = `👁️ ${bin.name} has ${count} visitors`;
+      } catch (err) {
+        console.error(err);
+        display.textContent = "Error fetching count.";
+      }
     });
   </script>
 </body>
