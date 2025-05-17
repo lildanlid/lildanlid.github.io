@@ -2,100 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Total Visitor Counter</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitor Counter</title>
   <style>
     body {
-      background: #141b2d;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
+      margin-top: 100px;
     }
-    .counter-container {
-      background: #1e233b;
-      padding: 36px 28px 28px 28px;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px #0006;
-      text-align: center;
-      min-width: 300px;
-      max-width: 95vw;
-    }
-    .counter-container h1 {
-      font-size: 2em;
-      margin-bottom: 12px;
-      color: #1e88e5;
-      letter-spacing: 1px;
-    }
-    .counter-label {
-      font-size: 1.14em;
-      letter-spacing: 0.04em;
-      margin-bottom: 10px;
-      color: #c0d4ef;
-      font-weight: 500;
-    }
-    .counter-value {
-      font-size: 2.8em;
-      font-weight: 700;
-      margin: 17px 0 10px 0;
-      letter-spacing: 3px;
-      color: #fff;
-      text-shadow: 0 2px 16px #1e88e560;
-      background: linear-gradient(90deg, #42a5f5 10%, #1565c0 90%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .counter-update {
-      font-size: 0.98em;
-      color: #8f9db8;
-      margin-top: 16px;
-    }
-    .sites-list {
-      margin: 24px 0 0 0;
-      text-align: left;
-      color: #adc6ea;
-      font-size: 1em;
-      font-family: "JetBrains Mono", "Fira Mono", "monospace", monospace;
-      background: #181b27;
-      border-radius: 9px;
-      padding: 10px 12px;
-    }
-    .sites-list strong {
-      color: #89c3ff;
-    }
-    @media (max-width: 420px) {
-      .counter-container { padding: 14px 4vw 18px 4vw; min-width: 0; }
+    #counter {
+      font-size: 2rem;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="counter-container">
-    <h1>Total Visitors (This Device/Browser)</h1>
-    <div class="counter-label">You have visited this portfolio:</div>
-    <div class="counter-value" id="visitorCount">...</div>
-    <div class="counter-update" id="updateTime"></div>
-    <div class="sites-list">
-      <div><strong>Tracked Sites (on this device/browser):</strong></div>
-      <ul style="margin:0 0 0 15px;padding:0;">
-        <li>lildanlid.github.io</li>
-        <li>lildanlid.github.io/apps/weather</li>
-        <li>lildanlid.github.io/counter.html</li>
-        <!-- Add more of your sites here -->
-      </ul>
-    </div>
-  </div>
+  <h1>Welcome to My Website</h1>
+  <div id="counter">Loading visitors...</div>
+
   <script>
-    // Simple: Only shows "1" if user has visited on this device/browser, "0" if not.
-    function updateVisitorCount() {
-      var visited = localStorage.getItem('lildanlid_unique_visitor') === 'true';
-      document.getElementById("visitorCount").textContent = visited ? "1" : "0";
-      document.getElementById("updateTime").textContent =
-        "Last checked: " + new Date().toLocaleString();
+    const BIN_ID = "682869458960c979a59b4ce3";
+    const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+    const LOCAL_KEY = "hasVisited";
+
+    async function getVisitorCount() {
+      const response = await fetch(API_URL, {
+        headers: {
+          "X-Master-Key": API_KEY
+        }
+      });
+      const data = await response.json();
+      return data.record.visitors;
     }
-    updateVisitorCount();
+
+    async function updateVisitorCount(newCount) {
+      await fetch(API_URL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify({ visitors: newCount })
+      });
+    }
+
+    async function main() {
+      let count = await getVisitorCount();
+
+      // If user hasn't visited before
+      if (!localStorage.getItem(LOCAL_KEY)) {
+        count += 1;
+        await updateVisitorCount(count);
+        localStorage.setItem(LOCAL_KEY, "true");
+      }
+
+      document.getElementById("counter").textContent = `Total Visitors: ${count}`;
+    }
+
+    main().catch(err => {
+      document.getElementById("counter").textContent = "Error loading visitor count.";
+      console.error(err);
+    });
   </script>
 </body>
 </html>
