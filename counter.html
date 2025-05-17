@@ -1,141 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitor Counter</title>
-    <style>
-        :root {
-            --bg-color-dark: #121212;
-            --text-color-light: #ffffff;
-            --box-bg-color: #1c1c1c;
-            --box-shadow-color: #4A90E2;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--bg-color-dark);
-            color: var(--text-color-light);
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-        .counter-box {
-            flex: 1 1 260px;
-            max-width: 350px;
-            min-width: 260px;
-            min-height: 180px;
-            padding: 22px 18px;
-            border-radius: 10px;
-            background-color: var(--box-bg-color);
-            text-align: center;
-            box-shadow: 0 4px 10px var(--box-shadow-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 32px;
-            font-size: 2.2em;
-        }
-        h2 {
-            margin-bottom: 17px;
-            font-size: 1.3em;
-        }
-        p {
-            font-size: 1.05em;
-            margin: 5px 0;
-        }
-        @media (max-width: 1400px) {
-            .container {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
-        @media (max-width: 1200px) {
-            .counter-box {
-                min-width: 220px;
-                max-width: 270px;
-            }
-        }
-        @media (max-width: 900px) {
-            .counter-box {
-                min-width: 170px;
-                max-width: 230px;
-                padding: 15px 8px;
-            }
-        }
-        @media (max-width: 700px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .counter-box {
-                min-width: 80vw;
-                max-width: 90vw;
-            }
-        }
-    </style>
-    <script>
-        function getCounts(timestamps) {
-            const now = Date.now();
-            const oneDay = 24 * 60 * 60 * 1000;
-            let yesterdayCount = 0;
-            let totalCount = timestamps.length;
-            timestamps.forEach(timestamp => {
-                const timeAgo = now - timestamp;
-                if (timeAgo <= oneDay && timeAgo > 0) yesterdayCount++;
-            });
-            return { yesterdayCount, totalCount };
-        }
-        function displayCounters() {
-            const counters = [
-                { key: 'homeTimestamps',   yesterday: 'mainYesterdayCount',   total: 'mainTotalCount',    label: 'Main Website' },
-                { key: 'weatherTimestamps',yesterday: 'weatherYesterdayCount',total: 'weatherTotalCount', label: 'Weather Website' },
-                { key: 'freeTimestamps',   yesterday: 'freeYesterdayCount',   total: 'freeTotalCount',    label: 'Free Website' },
-                { key: 'formsTimestamps',  yesterday: 'formsYesterdayCount',  total: 'formsTotalCount',   label: 'Forms Website' },
-            ];
-            counters.forEach(counter => {
-                const timestamps = JSON.parse(localStorage.getItem(counter.key) || '[]');
-                const counts = getCounts(timestamps);
-                document.getElementById(counter.yesterday).innerText = `Yesterday's Visits: ${counts.yesterdayCount}`;
-                document.getElementById(counter.total).innerText = `Total Visits: ${counts.totalCount}`;
-            });
-        }
-        document.addEventListener('DOMContentLoaded', displayCounters);
-    </script>
+  <meta charset="UTF-8">
+  <title>Total Visitor Counter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #141b2d;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .counter-container {
+      background: #1e233b;
+      padding: 36px 28px 28px 28px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px #0006;
+      text-align: center;
+      min-width: 300px;
+      max-width: 95vw;
+    }
+    .counter-container h1 {
+      font-size: 2em;
+      margin-bottom: 12px;
+      color: #1e88e5;
+      letter-spacing: 1px;
+    }
+    .counter-label {
+      font-size: 1.14em;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      color: #c0d4ef;
+      font-weight: 500;
+    }
+    .counter-value {
+      font-size: 2.8em;
+      font-weight: 700;
+      margin: 17px 0 10px 0;
+      letter-spacing: 3px;
+      color: #fff;
+      text-shadow: 0 2px 16px #1e88e560;
+      background: linear-gradient(90deg, #42a5f5 10%, #1565c0 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .counter-update {
+      font-size: 0.98em;
+      color: #8f9db8;
+      margin-top: 16px;
+    }
+    .sites-list {
+      margin: 24px 0 0 0;
+      text-align: left;
+      color: #adc6ea;
+      font-size: 1em;
+      font-family: "JetBrains Mono", "Fira Mono", "monospace", monospace;
+      background: #181b27;
+      border-radius: 9px;
+      padding: 10px 12px;
+    }
+    .sites-list strong {
+      color: #89c3ff;
+    }
+    @media (max-width: 420px) {
+      .counter-container { padding: 14px 4vw 18px 4vw; min-width: 0; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Visitor Counter</h1>
-    <div class="container">
-        <div class="counter-box">
-            <h2>Main Website</h2>
-            <p id="mainYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="mainTotalCount">Total Visits: Loading...</p>
-        </div>
-        <div class="counter-box">
-            <h2>Weather Website</h2>
-            <p id="weatherYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="weatherTotalCount">Total Visits: Loading...</p>
-        </div>
-        <div class="counter-box">
-            <h2>Free Website</h2>
-            <p id="freeYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="freeTotalCount">Total Visits: Loading...</p>
-        </div>
-        <div class="counter-box">
-            <h2>Forms Website</h2>
-            <p id="formsYesterdayCount">Yesterday's Visits: Loading...</p>
-            <p id="formsTotalCount">Total Visits: Loading...</p>
-        </div>
+  <div class="counter-container">
+    <h1>Total Visitors</h1>
+    <div class="counter-label">Across all lildanlid websites</div>
+    <div class="counter-value" id="visitorCount">...</div>
+    <div class="counter-update" id="updateTime"></div>
+    <div class="sites-list">
+      <div><strong>Tracked Sites:</strong></div>
+      <ul style="margin:0 0 0 15px;padding:0;">
+        <li>lildanlid.github.io</li>
+        <li>lildanlid.github.io/apps/weather</li>
+        <li>lildanlid.github.io/counter.html</li>
+        <!-- Add more of your sites here -->
+      </ul>
     </div>
+  </div>
+  <script>
+    /**
+     * This demo uses countapi.xyz but will only increment the counter
+     * if the user has never visited before (via localStorage).
+     * On all your sites, use this same logic to only count a unique visitor once.
+     * 
+     * For local development, each browser/device will count only once.
+     */
+
+    const NAMESPACE = "lildanlid-main-portfolio";
+    const KEY = "all-sites-total-visitors";
+    const LOCAL_KEY = "lildanlid-unique-visitor";
+    const daysToRemember = 3650; // 10 years
+
+    function getUniqueVisitorFlag() {
+      // Returns boolean: has this user already been counted?
+      try {
+        const v = localStorage.getItem(LOCAL_KEY);
+        return v === "true";
+      } catch (e) {
+        return false;
+      }
+    }
+    function setUniqueVisitorFlag() {
+      try {
+        localStorage.setItem(LOCAL_KEY, "true");
+        // Optionally store a timestamp for analytics
+        localStorage.setItem(LOCAL_KEY + "-date", new Date().toISOString());
+      } catch (e) {}
+    }
+
+    async function countVisitIfUnique() {
+      if (!getUniqueVisitorFlag()) {
+        // Unique visitor, increment count once ever for this browser
+        try {
+          await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
+        } catch(e) {}
+        setUniqueVisitorFlag();
+      }
+    }
+
+    async function fetchVisitorCount() {
+      try {
+        const res = await fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`);
+        const data = await res.json();
+        document.getElementById("visitorCount").textContent =
+          typeof data.value !== "undefined" ? data.value.toLocaleString() : "0";
+        document.getElementById("updateTime").textContent =
+          "Last updated: " + new Date().toLocaleString();
+      } catch (e) {
+        document.getElementById("visitorCount").textContent = "Error";
+        document.getElementById("updateTime").textContent = "";
+      }
+    }
+
+    // Only count once per unique visitor (per browser)
+    countVisitIfUnique();
+    fetchVisitorCount();
+    setInterval(fetchVisitorCount, 30000); // Refresh every 30s
+  </script>
 </body>
 </html>
