@@ -96,7 +96,7 @@
     }
 
     .sidebar a:hover:not(.active)::after {
-      width: 0; /* Prevent hover from showing an underline */
+      width: 0;
     }
 
     .sidebar a:hover {
@@ -171,6 +171,17 @@
       gap: 20px;
     }
 
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .card {
       background-color: var(--card-bg);
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
@@ -180,6 +191,8 @@
       flex-direction: column;
       transition: background 0.3s;
       border-radius: var(--radius);
+      opacity: 0;
+      animation: cardAppear 0.5s ease forwards;
     }
 
     .card img {
@@ -328,19 +341,32 @@
       localStorage.setItem("sidebarOpen", isOpen);
     }
 
-    function showSection(id) {
-      // Save the selected section in localStorage
-      localStorage.setItem("activeSection", id);
+    function animateCards(sectionId) {
+      const cards = document.querySelectorAll(`#${sectionId} .card`);
+      cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.style.opacity = "0";
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = null;
+        card.style.animation = `cardAppear 0.5s ease forwards ${index * 0.1}s`;
+      });
+    }
 
-      // Remove active class from all sections and buttons
+    function showSection(id) {
+      localStorage.setItem("activeSection", id);
+      
       document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
       document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove("active"));
-
-      // Add active class to the selected section and button
+      
       document.getElementById(id).classList.add("active");
       const activeLink = document.querySelector(`.sidebar a[data-section="${id}"]`);
       if (activeLink) {
         activeLink.classList.add("active");
+      }
+      
+      if (id === 'projects' || id === 'apps') {
+        animateCards(id);
       }
     }
 
@@ -351,15 +377,12 @@
     }
 
     window.onload = () => {
-      // Load saved theme
       const savedTheme = localStorage.getItem("theme") || "dark";
       body.setAttribute("data-theme", savedTheme);
 
-      // Load saved section
       const savedSection = localStorage.getItem("activeSection") || "home";
       showSection(savedSection);
 
-      // Check if the sidebar was open previously
       const isSidebarOpen = localStorage.getItem("sidebarOpen") === "true";
       if (isSidebarOpen) {
         sidebar.classList.add("open");
