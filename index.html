@@ -11,7 +11,7 @@
       --text: #ffffff;
       --card-bg: #1e1e1e;
       --accent: #1e88e5;
-      --radius: 999px;
+      --radius: 12px;
       --skeleton-bg: #252525;
       --skeleton-light: #2c2c2c;
       --sidebar-margin: 20px;
@@ -90,7 +90,7 @@
       gap: 0;
     }
 
-    .sidebar a {
+    .sidebar a, .sidebar .sidebar-settings-btn {
       padding: 15px 25px;
       display: flex;
       align-items: center;
@@ -98,11 +98,20 @@
       color: var(--text);
       font-weight: bold;
       position: relative;
-      transition: color 0.3s;
-      border-radius: var(--radius) !important;
+      transition: color 0.3s, background 0.3s;
+      border-radius: var(--radius);
+      background: none;
+      border: none;
+      font-size: 1.05em;
+      cursor: pointer;
+      outline: none;
     }
 
-    .sidebar a::after {
+    .sidebar a[data-section], .sidebar a[onclick] {
+      cursor: pointer;
+    }
+
+    .sidebar a::after, .sidebar .sidebar-settings-btn::after {
       content: "";
       position: absolute;
       left: 25px;
@@ -118,56 +127,35 @@
       width: calc(100% - 50px);
     }
 
-    .sidebar a.active {
+    .sidebar a.active, .sidebar .sidebar-settings-btn.active {
       color: var(--accent);
     }
 
-    .sidebar a:hover:not(.active)::after {
+    .sidebar a:hover:not(.active)::after, .sidebar .sidebar-settings-btn:hover:not(.active)::after {
       width: 0;
     }
 
-    .sidebar a:hover {
+    .sidebar a:hover, .sidebar .sidebar-settings-btn:hover {
       color: var(--accent);
+      background: rgba(30,30,30,0.08);
     }
 
-    .sidebar a .material-icons {
+    .sidebar a .material-icons, .sidebar .sidebar-settings-btn .material-icons {
       transition: color 0.3s;
     }
 
     .sidebar a.active .material-icons,
-    .sidebar a:hover .material-icons {
+    .sidebar a:hover .material-icons,
+    .sidebar .sidebar-settings-btn:hover .material-icons,
+    .sidebar .sidebar-settings-btn.active .material-icons {
       color: var(--accent);
     }
 
     .sidebar .sidebar-settings-btn {
       width: 100%;
-      border: none;
-      background: none;
-      color: var(--text);
-      font-size: 1.1em;
-      font-weight: bold;
-      cursor: pointer;
-      padding: 15px 25px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-radius: var(--radius) !important;
       margin-top: auto;
       margin-bottom: 10px;
-      position: relative;
-      transition: color 0.3s, background 0.3s;
-    }
-    .sidebar .sidebar-settings-btn:hover {
-      color: var(--accent);
-      background: rgba(30,30,30,0.08);
-    }
-    .sidebar .sidebar-settings-btn .material-icons {
-      font-size: 1.3em;
-      color: var(--text);
-      transition: color 0.3s;
-    }
-    .sidebar .sidebar-settings-btn:hover .material-icons {
-      color: var(--accent);
+      justify-content: flex-start;
     }
 
     .main {
@@ -265,7 +253,7 @@
       opacity: 0;
       transform: translateY(10px);
       transition: opacity 0.4s ease, transform 0.4s ease;
-      border-radius: var(--radius) !important;
+      border-radius: var(--radius);
     }
 
     section.active {
@@ -293,7 +281,7 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
-      border-radius: var(--radius) !important;
+      border-radius: var(--radius);
       opacity: 0;
       transform: translateY(20px) scale(0.97);
       animation: cardFadeIn 0.7s cubic-bezier(.48,.04,.36,1.32) forwards;
@@ -317,7 +305,7 @@
       overflow: hidden;
     }
     .skeleton-img, .skeleton-title, .skeleton-text, .skeleton-btn {
-      border-radius: var(--radius) !important;
+      border-radius: var(--radius);
       background: linear-gradient(
         90deg,
         var(--skeleton-bg) 25%,
@@ -354,7 +342,7 @@
     .card img {
       width: 100%;
       margin-bottom: 15px;
-      border-radius: var(--radius) !important;
+      border-radius: var(--radius);
       opacity: 0;
       animation: imgFadeIn 0.5s cubic-bezier(.48,.04,.36,1.32) forwards;
       animation-delay: 0.5s;
@@ -379,7 +367,7 @@
       background-color: var(--accent);
       color: #fff;
       transition: background 0.3s;
-      border-radius: var(--radius) !important;
+      border-radius: var(--radius);
       opacity: 0;
       animation: btnFadeIn 0.6s cubic-bezier(.48,.04,.36,1.32) forwards;
       animation-delay: 0.7s;
@@ -403,7 +391,7 @@
       padding: 10px 20px;
       background-color: var(--accent);
       color: #fff;
-      border-radius: var(--radius) !important;
+      border-radius: var(--radius);
     }
 
     .more-soon {
@@ -414,7 +402,7 @@
       font-size: 1em;
       opacity: 0.7;
       letter-spacing: 0.02em;
-      border-radius: var(--radius) !important;
+      border-radius: var(--radius);
     }
 
     @media (max-width: 1100px) {
@@ -455,37 +443,37 @@
   <!-- Sidebar -->
   <div id="mySidebar" class="sidebar">
     <div class="sidebar-links">
-      <a href="#" onclick="showSection('home')" data-section="home"><span class="material-icons">home</span>Home</a>
-      <a href="#" onclick="showSection('projects')" data-section="projects"><span class="material-icons">folder</span>Projects</a>
-      <a href="#" onclick="showSection('apps')" data-section="apps"><span class="material-icons">apps</span>Apps</a>
-      <a href="#" onclick="showSection('links')" data-section="links"><span class="material-icons">link</span>Links</a>
+      <a href="#" data-section="home"><span class="material-icons">home</span>Home</a>
+      <a href="#" data-section="projects"><span class="material-icons">folder</span>Projects</a>
+      <a href="#" data-section="apps"><span class="material-icons">apps</span>Apps</a>
+      <a href="#" data-section="links"><span class="material-icons">link</span>Links</a>
       <a href="https://lildanlid.github.io/apps/forms" target="_blank" rel="noopener">
         <span class="material-icons">description</span>Forms
       </a>
     </div>
-    <button class="sidebar-settings-btn" onclick="openSettings()">
+    <button class="sidebar-settings-btn" type="button">
       <span class="material-icons">settings</span>Settings
     </button>
   </div>
 
   <!-- Menu Button -->
-  <button class="openbtn" onclick="toggleSidebar()">
+  <button class="openbtn" type="button">
     <span class="material-icons">menu</span>
   </button>
   <!-- Theme Toggle (hidden, used in settings modal) -->
-  <button class="theme-toggle" onclick="toggleTheme()">
+  <button class="theme-toggle" type="button">
     <span class="material-icons">dark_mode</span>
   </button>
   <!-- Settings Modal -->
   <div id="settingsModal" class="settings-modal">
     <div class="settings-content">
-      <button class="close-settings" onclick="closeSettings()">
+      <button class="close-settings" type="button">
         <span class="material-icons">close</span>
       </button>
       <h3>Settings</h3>
       <div class="settings-row">
         <span>Theme:</span>
-        <button id="themeSwitch" onclick="toggleThemeModal()" class="theme-toggle-modal">
+        <button id="themeSwitch" type="button" class="theme-toggle-modal">
           <span id="themeSwitchIcon" class="material-icons"></span>
           <span id="themeSwitchText"></span>
         </button>
@@ -526,6 +514,7 @@
   </div>
 
   <script>
+    // DOM ELEMENTS
     const body = document.body;
     const sidebar = document.getElementById("mySidebar");
     const main = document.getElementById("main");
@@ -533,67 +522,10 @@
     const themeSwitch = document.getElementById("themeSwitch");
     const themeSwitchIcon = document.getElementById("themeSwitchIcon");
     const themeSwitchText = document.getElementById("themeSwitchText");
-
-    function toggleSidebar() {
-      const isOpen = sidebar.classList.toggle("open");
-      if(window.innerWidth > 700) {
-        main.classList.toggle("shift", isOpen);
-      }
-      localStorage.setItem("sidebarOpen", isOpen);
-    }
-
-    function showSection(id) {
-      localStorage.setItem("activeSection", id);
-      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-      document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      const activeLink = document.querySelector(`.sidebar a[data-section="${id}"]`);
-      if (activeLink) {
-        activeLink.classList.add("active");
-      }
-      // Animate cards in that section if it has cards
-      if (id === "projects") {
-        loadCards("projects");
-      }
-      if (id === "apps") {
-        loadCards("apps");
-      }
-    }
-
-    function setThemeButtonUI() {
-      const theme = body.getAttribute("data-theme");
-      if (theme === "dark") {
-        themeSwitchIcon.innerText = "dark_mode";
-        themeSwitchText.innerText = "Dark";
-      } else {
-        themeSwitchIcon.innerText = "light_mode";
-        themeSwitchText.innerText = "Light";
-      }
-    }
-
-    function toggleTheme() {
-      const newTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      body.setAttribute("data-theme", newTheme);
-      localStorage.setItem("theme", newTheme);
-      setThemeButtonUI();
-    }
-    function toggleThemeModal() {
-      toggleTheme();
-    }
-
-    function openSettings() {
-      settingsModal.classList.add("active");
-      setThemeButtonUI();
-    }
-    function closeSettings() {
-      settingsModal.classList.remove("active");
-    }
-    settingsModal.addEventListener("click", function(e) {
-      if (e.target === settingsModal) {
-        closeSettings();
-      }
-    });
-
+    const openbtn = document.querySelector('.openbtn');
+    const sidebarSettingsBtn = document.querySelector('.sidebar-settings-btn');
+    const closeSettingsBtn = document.querySelector('.close-settings');
+    const sidebarLinks = document.querySelectorAll('.sidebar-links a[data-section]');
     // Card data
     const projectsCards = [
       {
@@ -628,6 +560,90 @@
       }
     ];
 
+    // SIDEBAR FUNCTIONALITY
+    function toggleSidebar() {
+      const isOpen = sidebar.classList.toggle("open");
+      if(window.innerWidth > 700) {
+        main.classList.toggle("shift", isOpen);
+      }
+      localStorage.setItem("sidebarOpen", isOpen);
+    }
+    openbtn.addEventListener('click', toggleSidebar);
+
+    // SECTION NAVIGATION
+    function showSection(id) {
+      // Save
+      localStorage.setItem("activeSection", id);
+      // Section visibility
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      // Sidebar links active state
+      sidebarLinks.forEach(link => {
+        if (link.dataset.section === id) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      });
+      // Animate cards in that section if it has cards
+      if (id === "projects") {
+        loadCards("projects");
+      }
+      if (id === "apps") {
+        loadCards("apps");
+      }
+    }
+    // Attach click event to sidebar links
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        showSection(this.dataset.section);
+        toggleSidebar(); // close sidebar on small screens
+      });
+    });
+
+    // THEME
+    function setThemeButtonUI() {
+      const theme = body.getAttribute("data-theme");
+      if (theme === "dark") {
+        themeSwitchIcon.innerText = "dark_mode";
+        themeSwitchText.innerText = "Dark";
+      } else {
+        themeSwitchIcon.innerText = "light_mode";
+        themeSwitchText.innerText = "Light";
+      }
+    }
+    function toggleTheme() {
+      const newTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      body.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      setThemeButtonUI();
+    }
+    function toggleThemeModal() {
+      toggleTheme();
+    }
+    themeSwitch.addEventListener('click', toggleThemeModal);
+
+    // SETTINGS MODAL
+    sidebarSettingsBtn.addEventListener('click', function() {
+      openSettings();
+      toggleSidebar();
+    });
+    function openSettings() {
+      settingsModal.classList.add("active");
+      setThemeButtonUI();
+    }
+    function closeSettings() {
+      settingsModal.classList.remove("active");
+    }
+    closeSettingsBtn.addEventListener('click', closeSettings);
+    settingsModal.addEventListener("click", function(e) {
+      if (e.target === settingsModal) {
+        closeSettings();
+      }
+    });
+
+    // CARDS
     function showCardSkeletons(containerId, count) {
       const container = document.getElementById(containerId);
       let skeletonsHtml = "";
@@ -643,7 +659,6 @@
       }
       container.innerHTML = skeletonsHtml;
     }
-
     function renderCards(containerId, cards) {
       const container = document.getElementById(containerId);
       container.innerHTML = cards.map((c, i) => `
@@ -655,8 +670,6 @@
         </div>
       `).join('');
     }
-
-    // Load cards with skeleton animation
     function loadCards(section) {
       const containerId = section + "-cards";
       let cards = section === "projects" ? projectsCards : appsCards;
@@ -666,6 +679,7 @@
       }, 1000); // 1 second skeleton
     }
 
+    // INITIALIZATION
     window.onload = () => {
       // Theme
       let savedTheme = localStorage.getItem("theme");
