@@ -573,6 +573,26 @@
                 document.querySelector('.content').classList.add('expanded');
             }
         });
+
+        // ---- visitor tracker ----
+(function() {
+  // Page key: customize for each page if you want per-page stats, or use just "siteVisitors" for whole-site unique count.
+  var counterKey = 'siteVisitors';
+  var idKey = counterKey + '_visitor_id';
+  // Get or set visitor ID
+  var visitorId = localStorage.getItem(idKey);
+  if (!visitorId) {
+    // Generate a simple unique ID
+    visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+    localStorage.setItem(idKey, visitorId);
+  }
+  // Get current visitor list
+  var visitors = JSON.parse(localStorage.getItem(counterKey) || '[]');
+  if (!visitors.includes(visitorId)) {
+    visitors.push(visitorId);
+    localStorage.setItem(counterKey, JSON.stringify(visitors));
+  }
+})();
     </script>
 </body>
 </html>
