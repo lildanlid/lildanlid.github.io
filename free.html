@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft Resources</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -27,10 +28,43 @@
             background-color: #2a2a2a;
             padding: 30px 20px;
             position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+            padding: 30px 10px;
+        }
+
+        .sidebar.collapsed .button-text {
+            display: none;
+        }
+
+        .sidebar.collapsed button {
+            padding: 15px 10px;
+        }
+
+        .toggle-sidebar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed .toggle-sidebar {
+            transform: rotate(180deg);
         }
 
         .sidebar button {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             width: 100%;
             padding: 15px 20px;
             margin-bottom: 15px;
@@ -47,6 +81,7 @@
 
         .sidebar button:hover {
             background-color: rgba(0, 123, 255, 0.1);
+            transform: translateX(5px);
         }
 
         .sidebar button.active {
@@ -62,22 +97,32 @@
             height: 3px;
             background-color: #007bff;
             border-radius: 3px;
+            animation: slideIn 0.3s ease;
         }
 
         .content {
             margin-left: 250px;
             padding: 30px;
             width: calc(100% - 250px);
+            transition: all 0.3s ease;
+        }
+
+        .content.expanded {
+            margin-left: 70px;
+            width: calc(100% - 70px);
         }
 
         .section {
             display: none;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
+            opacity: 0;
+            transform: translateY(20px);
         }
 
         .section.active {
             display: grid;
+            animation: fadeInUp 0.5s ease forwards;
         }
 
         .card {
@@ -85,7 +130,10 @@
             border-radius: 12px;
             padding: 20px;
             background-color: #2a2a2a;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
         }
 
         .card:hover {
@@ -99,6 +147,11 @@
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.05);
         }
 
         .card h3 {
@@ -117,35 +170,57 @@
             gap: 10px;
         }
 
-        .buy-btn {
+        .buy-btn, .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
             padding: 10px 20px;
-            background-color: #ffd700;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             flex: 1;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+        }
+
+        .buy-btn {
+            background-color: #ffd700;
         }
 
         .buy-btn:hover {
             background-color: #ffed4a;
+            transform: scale(1.05);
         }
 
         .download-btn {
-            padding: 10px 20px;
             background-color: #4CAF50;
-            border: none;
-            border-radius: 6px;
             color: white;
-            cursor: pointer;
-            font-weight: bold;
-            flex: 1;
-            transition: background-color 0.3s;
         }
 
         .download-btn:hover {
             background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
         }
 
         #home {
@@ -156,22 +231,44 @@
         #home h1 {
             margin-bottom: 20px;
             color: #007bff;
+            animation: fadeInUp 0.5s ease;
         }
 
         #home p {
             font-size: 18px;
             line-height: 1.6;
             color: #aaa;
+            animation: fadeInUp 0.5s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .material-icons {
+            font-size: 24px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="sidebar">
-            <button onclick="showSection('home')" class="active">Home</button>
-            <button onclick="showSection('addons')">Addons</button>
-            <button onclick="showSection('worlds')">Worlds</button>
-            <button onclick="showSection('textures')">Texture Packs</button>
+            <button class="toggle-sidebar">
+                <span class="material-icons">menu</span>
+            </button>
+            <button onclick="showSection('home')" class="active">
+                <span class="material-icons">home</span>
+                <span class="button-text">Home</span>
+            </button>
+            <button onclick="showSection('addons')">
+                <span class="material-icons">extension</span>
+                <span class="button-text">Addons</span>
+            </button>
+            <button onclick="showSection('worlds')">
+                <span class="material-icons">public</span>
+                <span class="button-text">Worlds</span>
+            </button>
+            <button onclick="showSection('textures')">
+                <span class="material-icons">texture</span>
+                <span class="button-text">Texture Packs</span>
+            </button>
         </div>
 
         <div class="content">
@@ -188,7 +285,6 @@
 
     <script>
         function showSection(sectionId) {
-            // Remove active class from all buttons and sections
             document.querySelectorAll('.sidebar button').forEach(button => {
                 button.classList.remove('active');
             });
@@ -196,24 +292,35 @@
                 section.classList.remove('active');
             });
             
-            // Add active class to clicked button and section
             document.querySelector(`.sidebar button[onclick="showSection('${sectionId}')"]`).classList.add('active');
             document.getElementById(sectionId).classList.add('active');
         }
 
-        function createCard(title, description, section) {
+        function createCard(title, description, section, index) {
             return `
-                <div class="card">
+                <div class="card" style="animation-delay: ${index * 0.1}s">
                     <img src="https://via.placeholder.com/300x200" alt="${title}">
                     <h3>${title}</h3>
                     <p>${description}</p>
                     <div class="card-buttons">
-                        <button class="buy-btn">BUY</button>
-                        <button class="download-btn">Download</button>
+                        <button class="buy-btn">
+                            <span class="material-icons">shopping_cart</span>
+                            BUY
+                        </button>
+                        <button class="download-btn">
+                            <span class="material-icons">download</span>
+                            Download
+                        </button>
                     </div>
                 </div>
             `;
         }
+
+        // Toggle sidebar
+        document.querySelector('.toggle-sidebar').addEventListener('click', () => {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            document.querySelector('.content').classList.toggle('expanded');
+        });
 
         // Generate cards for each section
         const sections = ['addons', 'worlds', 'textures'];
@@ -223,6 +330,8 @@
                 container.innerHTML += createCard(
                     `${section.charAt(0).toUpperCase() + section.slice(1)} ${i}`,
                     `This is a great ${section.slice(0, -1)} that adds amazing features to your game! Click buy to support the creator or download for free.`,
+                    section,
+                    i
                 );
             }
         });
