@@ -688,26 +688,11 @@
   </div>
 
   <script>
-    // VISITOR COUNTER -- Only counts a unique person once per browser, but does NOT display any counter on this site
-    const NAMESPACE = "lildanlid-main-portfolio";
-    const KEY = "all-sites-total-visitors";
-    const LOCAL_KEY = "lildanlid-unique-visitor";
-    function getUniqueVisitorFlag() {
-      try { return localStorage.getItem(LOCAL_KEY) === "true"; } catch { return false; }
-    }
-    function setUniqueVisitorFlag() {
+(function() {
       try {
-        localStorage.setItem(LOCAL_KEY, "true");
-        localStorage.setItem(LOCAL_KEY + "-date", new Date().toISOString());
-      } catch {}
-    }
-    async function countVisitIfUnique() {
-      if (!getUniqueVisitorFlag()) {
-        try { await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`); } catch(e){}
-        setUniqueVisitorFlag();
-      }
-    }
-    countVisitIfUnique();
+        localStorage.setItem('lildanlid_unique_visitor', 'true');
+      } catch (e) {}
+    })();
 
     // CARD DATA
     const projectsCards = [
