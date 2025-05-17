@@ -1,242 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Modern Clicker Game</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/7c8801c017.js" crossorigin="anonymous"></script>
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
+      border: 0;
+      outline: none;
+      box-sizing: border-box;
     }
 
     body {
-      background: #121212;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
       height: 100vh;
-      overflow: hidden;
-    }
-
-    .login-screen, .game-container {
-      display: none;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
+      background: #06283D;
     }
 
-    .login-screen.active, .game-container.active {
-      display: flex;
-    }
-
-    input, button {
-      border: none;
-      padding: 12px 16px;
-      margin: 10px;
-      border-radius: 20px;
-      background-color: #1e1e1e;
-      color: white;
-      font-size: 16px;
-      outline: none;
-      transition: 0.3s ease;
-    }
-
-    input:focus, button:hover {
-      background-color: #2c2c2c;
-    }
-
-    .side-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      transition: transform 0.3s ease;
-      z-index: 10;
-    }
-
-    .side-container.hidden {
-      transform: translateX(-60px);
-    }
-
-    .side-menu {
-      height: 100%;
-      width: 60px;
-      background-color: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 20px;
-      gap: 20px;
-      z-index: 5;
-    }
-
-    .menu-toggle {
-      top: 10px;
-      left: 0;
-      background: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 10;
-      transition: left 0.3s ease;
+    .container {
       position: relative;
+      width: 400px;
+      height: 105px;
+      background: #fff;
+      padding: 28px 32px;
+      overflow: hidden;
+      border-radius: 18px;
+      font-family: 'Roboto', sans-serif;
+      transition: 0.6s ease-out;
     }
 
-    .clicker-area {
-      width: 300px;
-      height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      padding: 20px;
-      background-color: #1e1e1e;
-      border-radius: 20px;
-      margin: 40px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    }
-
-    .click-btn {
-      font-size: 40px;
-      background: none;
-      cursor: pointer;
-    }
-
-    .planet-nav {
+    .search-box {
+      width: 100%;
+      height: min-content;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 100%;
     }
 
-    .planet-nav button {
-      background: none;
-      color: white;
+    .search-box input {
+      color: #06283D;
+      width: 80%;
       font-size: 24px;
+      font-weight: 500;
+      text-transform: uppercase;
+      padding-left: 32px;
     }
 
-    .shop-panel, .leaderboard-panel {
+    .search-box input::placeholder {
+      font-size: 20px;
+      font-weight: 500;
+      color: #06283D;
+      text-transform: capitalize;
+    }
+
+    .search-box button {
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      color: #06283D;
+      background: #dff6ff;
+      border-radius: 50%;
+      font-size: 22px;
+      transition: 0.4s ease;
+    }
+
+    .search-box button:hover {
+      color: #fff;
+      background: #06283D;
+    }
+
+    .search-box i {
       position: absolute;
-      top: 0;
-      left: 60px;
-      width: 300px;
-      height: 100%;
-      background-color: #1e1e1e;
-      padding: 20px;
+      color: #06283D;
+      font-size: 28px;
+    }
+
+    .weather-box {
+      text-align: center;
+    }
+
+    .weather-box img {
+      width: 60%;
+      margin-top: 30px;
+    }
+
+    .weather-box .temperature {
+      position: relative;
+      color: #06283D;
+      font-size: 4rem;
+      font-weight: 800;
+      margin-top: 30px;
+      margin-left: -16px;
+    }
+
+    .weather-box .temperature span {
+      position: absolute;
+      margin-left: 4px;
+      font-size: 1.5rem;
+    }
+
+    .weather-box .description {
+      color: #06283D;
+      font-size: 22px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .weather-details {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .weather-details .humidity,
+    .weather-details .wind {
+      display: flex;
+      align-items: center;
+      width: 50%;
+      height: 100px;
+    }
+
+    .weather-details .humidity {
+      padding-left: 20px;
+      justify-content: flex-start;
+    }
+
+    .weather-details .wind {
+      padding-right: 20px;
+      justify-content: flex-end;
+    }
+
+    .weather-details i {
+      color: #06283D;
+      font-size: 26px;
+      margin-right: 10px;
+      margin-top: 6px;
+    }
+
+    .weather-details span {
+      color: #06283D;
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .weather-details p {
+      color: #06283D;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .not-found {
+      width: 100%;
+      text-align: center;
+      margin-top: 50px;
+      scale: 0;
+      opacity: 0;
       display: none;
-      flex-direction: column;
-      overflow-y: auto;
-      border-top-right-radius: 20px;
-      border-bottom-right-radius: 20px;
-      animation: slideIn 0.3s ease forwards;
     }
 
-    .shop-panel.active, .leaderboard-panel.active {
-      display: flex;
+    .not-found img {
+      width: 70%;
     }
 
-    .tab-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+    .not-found p {
+      color: #06283D;
+      font-size: 22px;
+      font-weight: 500;
+      margin-top: 12px;
     }
 
-    .dropdown {
-      background-color: #2a2a2a;
-      color: white;
-      border-radius: 20px;
-      padding: 10px;
-      outline: none;
+    .weather-box,
+    .weather-details {
+      scale: 0;
+      opacity: 0;
     }
 
-    .error-box {
-      background-color: #ff4c4c;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      margin-top: 10px;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .planet-store {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(-20px); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    .fadeIn {
+      animation: 0.5s fadeIn forwards;
+      animation-delay: 0.5s;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      to {
+        scale: 1;
+        opacity: 1;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="login-screen active">
-    <h2>Enter Username</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <button onclick="login()">Login</button>
-    <div id="errorBox" class="error-box" style="display:none"></div>
-  </div>
 
-  <div class="game-container">
-    <div class="side-container" id="sideContainer">
-      <div class="side-menu" id="sideMenu">
-        <button onclick="togglePanel('shop')"><span class="material-icons">shopping_cart</span></button>
-        <button onclick="togglePanel('leaderboard')"><span class="material-icons">leaderboard</span></button>
-      </div>
-      <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()"><span class="material-icons">menu</span></button>
+  <div class="container">
+    <div class="search-box">
+      <i class="fa-solid fa-location-dot"></i>
+      <input type="text" placeholder="Enter your location">
+      <button class="fa-solid fa-magnifying-glass"></button>
     </div>
 
-    <div class="shop-panel" id="shopPanel">
-      <div class="tab-buttons">
-        <button onclick="showPlanets()">Planets</button>
-        <button onclick="alert('Show Upgrades')">Upgrades</button>
-      </div>
-      <div class="planet-store" id="planetStore"></div>
+    <div class="not-found">
+      <img src="images/404.png">
+      <p>Oops! Invalid location :/</p>
     </div>
 
-    <div class="leaderboard-panel" id="leaderboardPanel">
-      <select class="dropdown" onchange="showLeaderboard(this.value)">
-        <option value="clicks">Most Clicks</option>
-        <option value="money">Most Money</option>
-        <option value="played">Most Played</option>
-      </select>
-      <div id="leaderboardContent"></div>
+    <div class="weather-box">
+      <img src="">
+      <p class="temperature"></p>
+      <p class="description"></p>
     </div>
 
-    <div class="clicker-area">
-      <div class="planet-nav">
-        <button onclick="previousPlanet()"><span class="material-icons">chevron_left</span></button>
-        <span id="planetName">Earth</span>
-        <button onclick="nextPlanet()"><span class="material-icons">chevron_right</span></button>
+    <div class="weather-details">
+      <div class="humidity">
+        <i class="fa-solid fa-water"></i>
+        <div class="text">
+          <span></span>
+          <p>Humidity</p>
+        </div>
       </div>
-      <div id="currency">Money: $0</div>
-      <button class="click-btn material-icons" onclick="clickerClick()">touch_app</button>
+      <div class="wind">
+        <i class="fa-solid fa-wind"></i>
+        <div class="text">
+          <span></span>
+          <p>Wind Speed</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    function toggleMenu() {
-      const container = document.getElementById('sideContainer');
-      const shop = document.getElementById("shopPanel");
-      const leaderboard = document.getElementById("leaderboardPanel");
-      container.classList.toggle('hidden');
-      if (container.classList.contains('hidden')) {
-        shop.classList.remove("active");
-        leaderboard.classList.remove("active");
-      }
-    }
+    const container = document.querySelector('.container');
+    const search = document.querySelector('.search-box button');
+    const weatherBox = document.querySelector('.weather-box');
+    const weatherDetails = document.querySelector('.weather-details');
+    const error404 = document.querySelector('.not-found');
+
+    search.addEventListener('click', () => {
+      const APIKey = '7f9eacad67666c1461fe8c839e4b0890';
+      const city = document.querySelector('.search-box input').value;
+
+      if (city === '') return;
+
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${APIKey}`)
+        .then(response => response.json())
+        .then(json => {
+          if (json.cod === '404') {
+            container.style.height = '400px';
+            weatherBox.style.display = 'none';
+            weatherDetails.style.display = 'none';
+            error404.style.display = 'block';
+            error404.classList.add('fadeIn');
+            return;
+          }
+
+          error404.style.display = 'none';
+          error404.classList.remove('fadeIn');
+
+          const image = document.querySelector('.weather-box img');
+          const temperature = document.querySelector('.weather-box .temperature');
+          const description = document.querySelector('.weather-box .description');
+          const humidity = document.querySelector('.weather-details .humidity span');
+          const wind = document.querySelector('.weather-details .wind span');
+
+          switch (json.weather[0].main) {
+            case 'Clear':
+              image.src = 'images/clear.png';
+              break;
+            case 'Rain':
+              image.src = 'images/rain.png';
+              break;
+            case 'Snow':
+              image.src = 'images/snow.png';
+              break;
+            case 'Clouds':
+              image.src = 'images/cloud.png';
+              break;
+            case 'Haze':
+              image.src = 'images/mist.png';
+              break;
+            default:
+              image.src = '';
+          }
+
+          temperature.innerHTML = `${parseInt(json.main.temp)}<span>°C</span>`;
+          description.innerHTML = `${json.weather[0].description}`;
+          humidity.innerHTML = `${json.main.humidity}%`;
+          wind.innerHTML = `${parseInt(json.wind.speed)}Km/h`;
+
+          weatherBox.style.display = '';
+          weatherDetails.style.display = '';
+          weatherBox.classList.add('fadeIn');
+          weatherDetails.classList.add('fadeIn');
+          container.style.height = '590px';
+        });
+    });
   </script>
 </body>
+
 </html>
