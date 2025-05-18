@@ -440,6 +440,27 @@
       }
     }
 
+.card-container.with-sidebar-open .card {
+      width: calc(28% - 20px); /* Shrink cards when sidebar is open */
+    }
+    .card-container.with-sidebar-closed .card {
+      width: calc(33.333% - 20px); /* Default card size */
+    }
+
+    @media (max-width: 1100px) {
+      .card-container.with-sidebar-open .card,
+      .card-container.with-sidebar-closed .card {
+        width: calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .card-container.with-sidebar-open .card,
+      .card-container.with-sidebar-closed .card {
+        width: 100%;
+      }
+    }
+
     .card-skeleton {
       background: var(--skeleton-bg);
       position: relative;
