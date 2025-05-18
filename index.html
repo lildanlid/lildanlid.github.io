@@ -214,160 +214,88 @@
     .main.shift-collapsed {
       margin-left: calc(var(--sidebar-width-collapsed) + var(--sidebar-margin) + 2px);
     }
-    .theme-toggle {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: none;
-      color: var(--text);
-      font-size: 24px;
-      border: none;
-      cursor: pointer;
-      z-index: 1001;
-      border-radius: var(--radius);
-      display: none;
+    /* PROJECTS CARD CONTAINER BEHAVIOR */
+    #projects .card-container {
+      /* By default, set margin-top to push below the title */
+      margin-top: 28px;
+      margin-bottom: 0;
+      /* We will override margin-left/right below */
+      transition: margin 0.3s, max-width 0.3s, width 0.3s;
     }
-    .settings-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--settings-modal-bg);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-      animation: none;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s cubic-bezier(.33,1,.68,1);
+    /* When sidebar is open: cards are smaller and closer to sidebar (not centered) */
+    .main.shift #projects .card-container {
+      margin-left: 0;
+      margin-right: auto;
+      max-width: 680px;
+      width: 90vw;
     }
-    .settings-modal.active {
-      display: flex;
-      animation: settingsFadeIn 0.25s cubic-bezier(.33,1,.68,1) both;
-      opacity: 1;
-      pointer-events: all;
+    /* When sidebar is collapsed: cards are wider and shift left to fill space */
+    .main.shift-collapsed #projects .card-container {
+      margin-left: 0;
+      margin-right: auto;
+      max-width: 1100px;
+      width: 98vw;
     }
-    @keyframes settingsFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .settings-content {
-      background: var(--card-bg);
-      color: var(--text);
-      padding: 36px 32px 24px 32px;
-      min-width: 320px;
-      max-width: 96vw;
-      border-radius: calc(var(--radius) * 1.25);
-      box-shadow: 0 8px 48px 6px rgba(15,20,40,0.22);
-      position: relative;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(40px) scale(0.98);
-      animation: none;
-      transition: box-shadow 0.3s;
-    }
-    .settings-modal.active .settings-content {
-      animation: settingsPanelIn 0.35s cubic-bezier(.33,1,.68,1) 0.08s both;
-    }
-    @keyframes settingsPanelIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.96);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+    /* Always keep a gap between sidebar and cards */
+    @media (min-width: 700px) {
+      .main.shift #projects .card-container,
+      .main.shift-collapsed #projects .card-container {
+        margin-left: 24px; /* gap from sidebar edge */
       }
     }
-    .settings-content h3 {
-      margin-bottom: 16px;
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      font-size: 1.3em;
-      text-align: left;
+    @media (max-width: 1100px) {
+      .card, .card-skeleton {
+        width: calc(50% - 20px);
+      }
     }
-    .settings-list {
-      margin: 16px 0 0 0;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 100%;
-      align-items: stretch;
+    @media (max-width: 900px) {
+      .card, .card-skeleton {
+        width: 100%;
+        min-width: 220px;
+      }
     }
-    .settings-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(70,80,110,0.10);
-      padding: 14px 18px;
-      border-radius: calc(var(--radius) * 0.9);
-      font-size: 1.08em;
-      transition: background 0.2s;
-      min-height: 44px;
+    @media (max-width: 700px) {
+      .sidebar {
+        width: 85vw;
+        min-width: 0;
+        left: 4px;
+      }
+      .sidebar.closed {
+        width: var(--sidebar-width-collapsed);
+        left: 4px;
+      }
+      .main.shift {
+        margin-left: 0 !important;
+      }
+      .main.shift-collapsed {
+        margin-left: calc(var(--sidebar-width-collapsed) + 8px);
+      }
+      .main.shift #projects .card-container,
+      .main.shift-collapsed #projects .card-container {
+        margin-left: 0 !important;
+        margin-right: 0;
+        width: 100vw !important;
+        max-width: 100vw !important;
+      }
+      .card, .card-skeleton {
+        width: 100%;
+        min-width: 0;
+      }
+      .settings-content {
+        min-width: 90vw;
+      }
+      section { padding-left: 0 !important; padding-right: 0 !important; }
     }
-    .settings-row:active {
-      background: rgba(30,80,180,0.13);
+    @media (max-width: 500px) {
+      .settings-content {
+        padding: 22px 8px 16px 8px;
+        min-width: 0;
+      }
+      .sidebar {
+        padding-top: 44px;
+      }
+      .main { padding: 8px; }
     }
-    .settings-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 500;
-      font-size: 1.04em;
-    }
-    .settings-row button.theme-toggle-modal {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      outline: none;
-      font-size: 1em;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7.5px 21px;
-      border-radius: calc(var(--radius) * 0.7);
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      font-weight: 600;
-      box-shadow: 0 2px 7px 0 rgba(30, 136, 229, 0.07);
-    }
-    .settings-row button.theme-toggle-modal:hover {
-      background: #1565c0;
-    }
-    .close-settings {
-      position: absolute;
-      top: 18px; right: 18px;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 26px;
-      cursor: pointer;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.22s, color 0.22s;
-    }
-    .close-settings:hover {
-      background: rgba(60,70,90,0.12);
-      color: var(--accent);
-    }
-    .settings-coming-soon {
-      margin-top: 32px;
-      font-size: 0.99em;
-      color: #888;
-      opacity: 0.8;
-      text-align: left;
-      border-top: 1px solid rgba(120,120,120,0.14);
-      padding-top: 16px;
-      font-style: italic;
-      display: block;
-    }
-
     .card-container {
       display: flex;
       flex-wrap: wrap;
@@ -378,23 +306,7 @@
       box-sizing: border-box;
       max-width: 100vw;
       overflow-x: auto;
-      /* Don't set width/max-width here, overridden below */
     }
-
-    /* Project card container expands/collapses depending on sidebar */
-    #projects .card-container.projects-expanded {
-      max-width: 1150px;
-      width: 95vw;
-      margin: 0 auto;
-      transition: max-width 0.3s, width 0.3s;
-    }
-    #projects .card-container.projects-collapsed {
-      max-width: 880px;
-      width: 80vw;
-      margin: 0 auto;
-      transition: max-width 0.3s, width 0.3s;
-    }
-
     .card,
     .card-skeleton {
       background-color: var(--card-bg);
@@ -417,14 +329,12 @@
     .card[data-anim-order="3"], .card-skeleton[data-anim-order="3"] { animation-delay: 0.3s; }
     .card[data-anim-order="4"], .card-skeleton[data-anim-order="4"] { animation-delay: 0.4s; }
     .card[data-anim-order="5"], .card-skeleton[data-anim-order="5"] { animation-delay: 0.5s; }
-
     @keyframes cardFadeIn {
       to {
         opacity: 1;
         transform: translateY(0) scale(1);
       }
     }
-
     .card-skeleton {
       background: var(--skeleton-bg);
       position: relative;
@@ -464,7 +374,6 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
-
     .card img {
       width: 100%;
       margin-bottom: 15px;
@@ -476,18 +385,15 @@
       max-height: 180px;
       min-height: 80px;
     }
-
     @keyframes imgFadeIn {
       to { opacity: 1; }
     }
-
     .card h3 {
       margin-bottom: 10px;
       font-size: 1.15em;
       word-break: break-word;
       overflow-wrap: anywhere;
     }
-
     .card p {
       flex-grow: 1;
       margin-bottom: 15px;
@@ -495,7 +401,6 @@
       word-break: break-word;
       overflow-wrap: anywhere;
     }
-
     .card a.button {
       align-self: flex-start;
       padding: 10px 15px;
@@ -511,15 +416,12 @@
       overflow-wrap: anywhere;
       white-space: normal;
     }
-
     @keyframes btnFadeIn {
       to { opacity: 1; }
     }
-
     .card a.button:hover {
       background-color: #1565c0;
     }
-
     .links {
       display: flex;
       gap: 15px;
@@ -530,7 +432,6 @@
       box-sizing: border-box;
       overflow-x: auto;
     }
-
     .links a {
       padding: 10px 20px;
       background-color: var(--accent);
@@ -538,53 +439,6 @@
       border-radius: var(--radius);
       word-break: break-word;
       overflow-wrap: anywhere;
-    }
-
-    @media (max-width: 1100px) {
-      .card, .card-skeleton {
-        width: calc(50% - 20px);
-      }
-    }
-    @media (max-width: 900px) {
-      .card, .card-skeleton {
-        width: 100%;
-        min-width: 220px;
-      }
-    }
-    @media (max-width: 700px) {
-      .sidebar {
-        width: 85vw;
-        min-width: 0;
-        left: 4px;
-      }
-      .sidebar.closed {
-        width: var(--sidebar-width-collapsed);
-        left: 4px;
-      }
-      .main.shift {
-        margin-left: 0 !important;
-      }
-      .main.shift-collapsed {
-        margin-left: calc(var(--sidebar-width-collapsed) + 8px);
-      }
-      .card, .card-skeleton {
-        width: 100%;
-        min-width: 0;
-      }
-      .settings-content {
-        min-width: 90vw;
-      }
-      section { padding-left: 0 !important; padding-right: 0 !important; }
-    }
-    @media (max-width: 500px) {
-      .settings-content {
-        padding: 22px 8px 16px 8px;
-        min-width: 0;
-      }
-      .sidebar {
-        padding-top: 44px;
-      }
-      .main { padding: 8px; }
     }
     section {
       max-width: 100vw;
@@ -768,19 +622,11 @@
         main.classList.add("shift-collapsed");
         main.classList.remove("shift");
         toggleSidebarBtn.querySelector('.material-icons').innerText = "chevron_right";
-        // Resize projects card container
-        const projCards = document.getElementById("projects-cards");
-        projCards.classList.remove('projects-expanded');
-        projCards.classList.add('projects-collapsed');
       } else {
         sidebar.classList.remove("closed");
         main.classList.add("shift");
         main.classList.remove("shift-collapsed");
         toggleSidebarBtn.querySelector('.material-icons').innerText = "chevron_left";
-        // Resize projects card container
-        const projCards = document.getElementById("projects-cards");
-        projCards.classList.remove('projects-collapsed');
-        projCards.classList.add('projects-expanded');
       }
       localStorage.setItem("sidebarClosed", closed ? "true" : "false");
     }
@@ -803,16 +649,6 @@
       });
       if (id === "projects") loadCards("projects");
       if (id === "apps") loadCards("apps");
-
-      // For projects, ensure correct card-container class after cards load
-      if (id === "projects") {
-        setTimeout(() => {
-          const projCards = document.getElementById("projects-cards");
-          const closed = sidebar.classList.contains("closed");
-          projCards.classList.toggle('projects-collapsed', closed);
-          projCards.classList.toggle('projects-expanded', !closed);
-        }, 1100); // after cards/skeleton finish animating
-      }
     }
     sidebarLinks.forEach(link => {
       link.addEventListener('click', function(e) {
@@ -883,16 +719,6 @@
       // Cards
       if (savedSection === "projects") loadCards("projects");
       if (savedSection === "apps") loadCards("apps");
-
-      // Projects card container width class on startup
-      const projCards = document.getElementById("projects-cards");
-      if (sidebarClosed) {
-        projCards.classList.remove('projects-expanded');
-        projCards.classList.add('projects-collapsed');
-      } else {
-        projCards.classList.remove('projects-collapsed');
-        projCards.classList.add('projects-expanded');
-      }
     };
 
   const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O"; 
