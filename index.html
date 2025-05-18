@@ -19,6 +19,7 @@
       --sidebar-width-collapsed: 56px;
       --sidebar-btn-size: 36px;
       --settings-modal-bg: rgba(20, 27, 45, 0.75);
+      --card-shrink-amount: 10px;
     }
 
     [data-theme="light"] {
@@ -149,7 +150,6 @@
 
     .sidebar a.active::after {
       width: calc(100% - 32px);
-      /* 16px left + 16px right padding, so underline matches text, not full width */
     }
 
     .sidebar a.active, .sidebar .sidebar-settings-btn.active {
@@ -408,10 +408,28 @@
       box-sizing: border-box;
       max-width: 100vw;
       overflow-x: auto;
+      transition: gap 0.3s cubic-bezier(.48,.04,.36,1.32);
     }
 
-    .card,
-    .card-skeleton {
+    /* Card shrink animation */
+    .card-container.card-shrink-anim .card {
+      animation: cardShrinkAnim 0.35s cubic-bezier(.48,.04,.36,1.32);
+    }
+    .card-container.card-grow-anim .card {
+      animation: cardGrowAnim 0.35s cubic-bezier(.48,.04,.36,1.32);
+    }
+
+    @keyframes cardShrinkAnim {
+      from { width: var(--card-width-normal); }
+      to { width: var(--card-width-shrink); }
+    }
+    @keyframes cardGrowAnim {
+      from { width: var(--card-width-shrink); }
+      to { width: var(--card-width-normal); }
+    }
+
+    /* Default card widths, will be overridden via JS for animation */
+    .card, .card-skeleton {
       background-color: var(--card-bg);
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
       width: calc(33.333% - 20px);
@@ -426,6 +444,7 @@
       animation: cardFadeIn 0.7s cubic-bezier(.48,.04,.36,1.32) forwards;
       box-sizing: border-box;
       overflow: hidden;
+      transition: width 0.3s cubic-bezier(.48,.04,.36,1.32);
     }
     .card[data-anim-order="1"], .card-skeleton[data-anim-order="1"] { animation-delay: 0.1s; }
     .card[data-anim-order="2"], .card-skeleton[data-anim-order="2"] { animation-delay: 0.2s; }
@@ -440,17 +459,26 @@
       }
     }
 
-.card-container.with-sidebar-open .card {
-      width: calc(28% - 20px); /* Shrink cards when sidebar is open */
+    /* Responsive card sizing based on sidebar state, with animation */
+    .card-container.with-sidebar-open .card {
+      width: calc(33.333% - 30px); /* Shrink 10px from normal */
+      --card-width-normal: calc(33.333% - 20px);
+      --card-width-shrink: calc(33.333% - 30px);
+      transition: width 0.35s cubic-bezier(.48,.04,.36,1.32);
     }
     .card-container.with-sidebar-closed .card {
-      width: calc(33.333% - 20px); /* Default card size */
+      width: calc(33.333% - 20px);
+      --card-width-normal: calc(33.333% - 20px);
+      --card-width-shrink: calc(33.333% - 30px);
+      transition: width 0.35s cubic-bezier(.48,.04,.36,1.32);
     }
 
     @media (max-width: 1100px) {
       .card-container.with-sidebar-open .card,
       .card-container.with-sidebar-closed .card {
         width: calc(50% - 20px);
+        --card-width-normal: calc(50% - 20px);
+        --card-width-shrink: calc(50% - 30px);
       }
     }
 
@@ -458,6 +486,8 @@
       .card-container.with-sidebar-open .card,
       .card-container.with-sidebar-closed .card {
         width: 100%;
+        --card-width-normal: 100%;
+        --card-width-shrink: calc(100% - 10px);
       }
     }
 
@@ -797,8 +827,8 @@
     const toggleSidebarBtn = document.querySelector('.toggle-sidebar-btn');
     const sidebarLinks = document.querySelectorAll('.sidebar-links a[data-section]');
 
-    // SIDEBAR FUNCTIONALITY
-    function setSidebarState(closed) {
+    // --- SIDEBAR FUNCTIONALITY WITH CARD SHRINK ANIMATION ---
+    function setSidebarState(closed, animate = true) {
       if (closed) {
         sidebar.classList.add("closed");
         main.classList.add("shift-collapsed");
@@ -811,11 +841,50 @@
         toggleSidebarBtn.querySelector('.material-icons').innerText = "chevron_left";
       }
       localStorage.setItem("sidebarClosed", closed ? "true" : "false");
+
+      // Animate card shrink/grow only on the projects page
+      const projectsSection = document.getElementById('projects');
+      if (projectsSection && projectsSection.classList.contains('active')) {
+        const cardContainer = document.getElementById('projects-cards');
+        if (cardContainer) {
+          cardContainer.classList.remove('card-shrink-anim', 'card-grow-anim');
+          if (closed) {
+            // Sidebar is closed, grow cards
+            cardContainer.classList.remove('with-sidebar-open');
+            cardContainer.classList.add('with-sidebar-closed');
+            if (animate) {
+              cardContainer.classList.add('card-grow-anim');
+              setTimeout(() => cardContainer.classList.remove('card-grow-anim'), 350);
+            }
+          } else {
+            // Sidebar is open, shrink cards
+            cardContainer.classList.remove('with-sidebar-closed');
+            cardContainer.classList.add('with-sidebar-open');
+            if (animate) {
+              cardContainer.classList.add('card-shrink-anim');
+              setTimeout(() => cardContainer.classList.remove('card-shrink-anim'), 350);
+            }
+          }
+        }
+      }
     }
     function toggleSidebar() {
       setSidebarState(!sidebar.classList.contains("closed"));
     }
     toggleSidebarBtn.addEventListener('click', toggleSidebar);
+
+    // On projects section show, update card container class for sidebar state
+    function updateProjectsCardContainerClass() {
+      const projectsContainer = document.getElementById('projects-cards');
+      if (!projectsContainer) return;
+      if (sidebar.classList.contains('closed')) {
+        projectsContainer.classList.remove('with-sidebar-open');
+        projectsContainer.classList.add('with-sidebar-closed');
+      } else {
+        projectsContainer.classList.remove('with-sidebar-closed');
+        projectsContainer.classList.add('with-sidebar-open');
+      }
+    }
 
     // SECTION NAVIGATION
     function showSection(id) {
@@ -829,7 +898,10 @@
           link.classList.remove("active");
         }
       });
-      if (id === "projects") loadCards("projects");
+      if (id === "projects") {
+        loadCards("projects");
+        setTimeout(() => updateProjectsCardContainerClass(), 1100); // after cards rendered
+      }
       if (id === "apps") loadCards("apps");
     }
     sidebarLinks.forEach(link => {
@@ -896,7 +968,12 @@
 
       // Sidebar: use new closed/collapsed logic
       const sidebarClosed = localStorage.getItem("sidebarClosed") === "true";
-      setSidebarState(sidebarClosed);
+      setSidebarState(sidebarClosed, false);
+
+      // Card container class for project section
+      if (savedSection === "projects") {
+        setTimeout(() => updateProjectsCardContainerClass(), 1100);
+      }
 
       // Cards
       if (savedSection === "projects") loadCards("projects");
