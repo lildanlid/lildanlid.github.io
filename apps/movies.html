@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PixelPlay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #15151e;
+      --accent: #f31260;
+      --card: #232336;
+      --text: #eeeeee;
+      --muted: #b5b5c5;
+      --radius: 14px;
+      --trans: 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem 1rem;
+      font-size: 2.1rem;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    .input-section {
+      display: flex;
+      gap: 1rem;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      box-shadow: 0 2px 14px 0 rgba(0,0,0,0.06);
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .input-section input {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      border-radius: var(--radius);
+      border: none;
+      background: #181828;
+      color: var(--text);
+      font-size: 1.1rem;
+      outline: none;
+      transition: background var(--trans);
+    }
+    .input-section input:focus {
+      background: #23233d;
+    }
+    .input-section button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1.1rem;
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+      transition: background var(--trans), box-shadow var(--trans);
+      box-shadow: 0 2px 8px 0 rgba(237, 45, 105, 0.08);
+    }
+    .input-section button:hover {
+      background: #e00e60;
+    }
+    .movie-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      box-shadow: 0 2px 18px 0 rgba(0,0,0,0.12);
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
+      animation: fadeIn 0.8s;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(40px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+    .poster {
+      width: 150px;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,0.16);
+      object-fit: cover;
+    }
+    .details {
+      flex: 1;
+    }
+    .title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 0.7rem;
+    }
+    .description {
+      font-size: 1.08rem;
+      margin-bottom: 1.2rem;
+      color: #dddded;
+    }
+    .actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .actions button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background var(--trans);
+    }
+    .actions button:hover {
+      background: #e00e60;
+    }
+    .seasons {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .season-btn {
+      background: #23233d;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 0.4rem 1.1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background var(--trans), color var(--trans);
+    }
+    .season-btn.active,
+    .season-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .episodes {
+      margin-top: 0.8rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .episode-btn {
+      background: #23233d;
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.4rem 0.7rem;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: background var(--trans);
+      text-align: left;
+    }
+    .episode-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .player-section {
+      background: #181828;
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 18px 0 rgba(0,0,0,0.10);
+      animation: fadeIn 0.7s;
+    }
+    video {
+      width: 100%;
+      border-radius: var(--radius);
+      background: #000;
+      margin-bottom: 1rem;
+    }
+    .dl-link {
+      display: inline-block;
+      color: var(--accent);
+      text-decoration: none;
+      background: #23233d;
+      padding: 0.4rem 1.2rem;
+      border-radius: var(--radius);
+      margin-right: 1rem;
+      transition: background var(--trans), color var(--trans);
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+    .dl-link:hover { background: var(--accent); color: white; }
+    .msg {
+      text-align: center;
+      padding: 1rem 0;
+      color: var(--muted);
+    }
+    @media (max-width: 700px) {
+      .movie-card {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.1rem 0.8rem;
+      }
+      .poster {
+        width: 85vw;
+        max-width: 240px;
+      }
+      .details { width: 100%; }
+    }
+    ::selection {
+      background: var(--accent);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    🎬 PixelPlay
+    <div style="font-size:1rem;font-weight:400;margin-top:8px;color:#b5b5c5;">
+      Stream & Download Movies or Shows by URL
+    </div>
+  </header>
+  <div class="container">
+    <form class="input-section" id="urlForm" autocomplete="off">
+      <input type="url" id="movieUrl" placeholder="Paste movie/show URL (e.g. Netflix, Hulu, ...)" required>
+      <button type="submit">Add URL</button>
+    </form>
+    <div id="msg" class="msg"></div>
+    <div id="content"></div>
+    <div id="player"></div>
+  </div>
+  <script>
+    // NOTE: Due to browser security, you CANNOT directly play or download content from Netflix, Hulu, or other DRM streaming platforms.
+    // This UI is for demonstration: it can play direct public video URLs (MP4, M3U8 streams, etc.) and fetch info for public movies/shows via OMDb API.
+    // For Netflix/Hulu URLs, it will display info but CANNOT stream/download due to DRM restrictions.
+
+    const OMDB_KEY = "fa8c5c4d"; // Demo OMDb key, get your own at https://www.omdbapi.com/apikey.aspx
+
+    const urlForm = document.getElementById('urlForm');
+    const movieUrl = document.getElementById('movieUrl');
+    const msg = document.getElementById('msg');
+    const content = document.getElementById('content');
+    const playerSec = document.getElementById('player');
+
+    // Helper: guess title from url
+    function guessTitleFromURL(url) {
+      try {
+        const parsed = new URL(url);
+        let path = parsed.pathname.split('/').filter(Boolean);
+        // Netflix: /watch/12345678 or /title/12345678
+        if (parsed.hostname.includes('netflix.com')) {
+          const id = path.includes('title') ? path[path.indexOf('title')+1] : path[path.indexOf('watch')+1];
+          return id ? `Netflix ${id}` : '';
+        }
+        // Hulu: /watch/xxxxxx
+        if (parsed.hostname.includes('hulu.com')) {
+          const idx = path.indexOf('watch');
+          if (idx !== -1 && path.length > idx+1) return `Hulu ${path[idx+1]}`;
+        }
+        // Direct video: filename
+        let last = path[path.length-1];
+        if (last && last.match(/\.(mp4|mkv|webm|mov|m3u8)$/i))
+          return last.replace(/\.(mp4|mkv|webm|mov|m3u8)$/i, '');
+        // Otherwise, fallback to host
+        return parsed.hostname.replace('www.','');
+      } catch (e) { return ''; }
+    }
+
+    // OMDb fetch
+    async function getOMDbData(title) {
+      if (!title) return null;
+      let url = `https://www.omdbapi.com/?apikey=${OMDB_KEY}&t=${encodeURIComponent(title)}`;
+      let res = await fetch(url);
+      if (!res.ok) return null;
+      let data = await res.json();
+      if (data.Response === "True") return data;
+      // Try search
+      url = `https://www.omdbapi.com/?apikey=${OMDB_KEY}&s=${encodeURIComponent(title)}`;
+      res = await fetch(url);
+      if (!res.ok) return null;
+      let datalist = await res.json();
+      if (datalist.Response === "True" && datalist.Search.length) {
+        // Try first result
+        url = `https://www.omdbapi.com/?apikey=${OMDB_KEY}&i=${datalist.Search[0].imdbID}`;
+        res = await fetch(url);
+        if (!res.ok) return null;
+        return await res.json();
+      }
+      return null;
+    }
+
+    // Main handler
+    urlForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const url = movieUrl.value.trim();
+      msg.textContent = '';
+      playerSec.innerHTML = '';
+      content.innerHTML = '';
+      if (!url) return;
+      let title = guessTitleFromURL(url);
+      msg.textContent = 'Fetching movie/show details...';
+      let omdbData = await getOMDbData(title);
+      if (!omdbData) {
+        msg.textContent = "❗️Could not find details for this URL. Try a direct video URL or check your spelling.";
+        return;
+      }
+      msg.textContent = '';
+      renderCard(omdbData, url);
+    };
+
+    // Render card
+    function renderCard(data, originalUrl) {
+      let html = `<div class="movie-card">
+        <img class="poster" src="${(data.Poster && data.Poster !== "N/A") ? data.Poster : 'https://via.placeholder.com/150x220?text=No+Poster'}" alt="Poster">
+        <div class="details">
+          <div class="title">${data.Title || ''}</div>
+          <div class="meta">${data.Year ? data.Year + ' • ' : ''}${data.Rated && data.Rated !== 'N/A' ? data.Rated + ' • ' : ''}${data.Runtime || ''}</div>
+          <div class="meta">${data.Genre || ''}</div>
+          <div class="description">${data.Plot || ''}</div>`;
+
+      // Download/Stream Actions
+      if (isDirectVideo(originalUrl)) {
+        html += `<div class="actions">
+          <button onclick="playVideo('${originalUrl.replace(/'/g,"\\'")}')">▶ Play</button>
+          <a class="dl-link" href="${originalUrl}" download target="_blank">⬇ Download</a>
+        </div>`;
+      } else {
+        html += `<div class="msg" style="color:#e00e60;margin-top:1.2rem;">
+          <b>Note:</b> Streaming/Downloading from Netflix, Hulu, etc is NOT supported in browser due to DRM.
+        </div>`;
+      }
+
+      // Seasons/Episodes if Series
+      if (data.Type === 'series') {
+        html += `<div class="seasons" id="seasons"></div>
+          <div class="episodes" id="episodes"></div>`;
+      }
+      html += `</div></div>`;
+      content.innerHTML = html;
+
+      // If series, render seasons
+      if (data.Type === 'series') {
+        renderSeasons(data, originalUrl);
+      }
+    }
+
+    // Check if URL is a direct video file/stream
+    function isDirectVideo(url) {
+      return !!url.match(/\.(mp4|webm|mkv|mov|m3u8)(\?|$)/i);
+    }
+
+    // Play video in player section
+    window.playVideo = function(url) {
+      playerSec.innerHTML = `
+        <div class="player-section">
+          <video src="${url}" controls autoplay></video>
+        </div>`;
+      window.scrollTo({top: playerSec.offsetTop-40, behavior: 'smooth'});
+    };
+
+    // Render seasons for series using OMDb
+    async function renderSeasons(data, originalUrl) {
+      if (!data.imdbID) return;
+      msg.textContent = "Fetching seasons...";
+      // OMDb: get total seasons
+      let totalSeasons = parseInt(data.totalSeasons || "1");
+      let seasonsHtml = "";
+      for (let i = 1; i <= totalSeasons; ++i) {
+        seasonsHtml += `<button class="season-btn" onclick="selectSeason('${data.imdbID}',${i},this)">${i}</button>`;
+      }
+      document.getElementById('seasons').innerHTML = seasonsHtml;
+      msg.textContent = "";
+    }
+
+    // Select season, fetch episodes
+    window.selectSeason = async function(imdbID, season, btn) {
+      // UI highlight
+      let all = document.querySelectorAll('.season-btn');
+      all.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      msg.textContent = "Loading episodes...";
+      let url = `https://www.omdbapi.com/?apikey=${OMDB_KEY}&i=${imdbID}&Season=${season}`;
+      let res = await fetch(url);
+      if (!res.ok) { msg.textContent="Failed to load episodes."; return; }
+      let data = await res.json();
+      if (!data.Episodes) { msg.textContent="No episode data."; return; }
+      let episodesHtml = "";
+      data.Episodes.forEach(ep => {
+        episodesHtml += `<button class="episode-btn" title="${ep.Title}">${ep.Episode}. ${ep.Title}</button>`;
+      });
+      document.getElementById('episodes').innerHTML = episodesHtml;
+      msg.textContent = "";
+    };
+
+    // Prefill for demo/test
+    movieUrl.value = "https://www.netflix.com/title/80057281";
+  </script>
+</body>
+</html>
