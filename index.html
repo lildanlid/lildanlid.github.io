@@ -30,28 +30,24 @@
       --settings-modal-bg: rgba(244,244,244,0.85);
     }
 
-    /* SMOOTH THEME TRANSITIONS */
     body, .card, .sidebar, .main, .settings-content, section, .card-skeleton {
       transition: 
         background-color 0.4s cubic-bezier(.44,0,.56,1),
         color 0.4s cubic-bezier(.44,0,.56,1),
         box-shadow 0.3s, border-color 0.3s;
     }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       border-radius: var(--radius) !important;
     }
-
     html, body {
       height: 100%;
       min-height: 100%;
       width: 100vw;
       overflow-x: hidden;
     }
-
     body {
       font-family: Arial, sans-serif;
       background-color: var(--bg);
@@ -60,17 +56,14 @@
       width: 100vw;
       overflow-x: hidden;
     }
-
     a {
       text-decoration: none;
       color: inherit;
     }
-
     ::selection {
       background-color: var(--accent);
       color: white;
     }
-
     .sidebar {
       height: calc(100% - (2 * var(--sidebar-margin)));
       width: var(--sidebar-width);
@@ -95,19 +88,16 @@
       min-width: var(--sidebar-width-collapsed);
       max-width: 96vw;
     }
-
     .sidebar.closed {
       width: var(--sidebar-width-collapsed);
       min-width: var(--sidebar-width-collapsed);
     }
-
     .sidebar .sidebar-links {
       flex: 1 1 auto;
       display: flex;
       flex-direction: column;
       gap: 0;
     }
-
     .sidebar a, .sidebar .sidebar-settings-btn {
       padding: 12px 16px;
       display: flex;
@@ -129,17 +119,14 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
     .sidebar.closed a, .sidebar.closed .sidebar-settings-btn {
       justify-content: center;
       padding-left: 10px;
       padding-right: 10px;
     }
-
     .sidebar a[data-section], .sidebar a[onclick] {
       cursor: pointer;
     }
-
     .sidebar a::after, .sidebar .sidebar-settings-btn::after {
       content: "";
       position: absolute;
@@ -153,56 +140,46 @@
       border-radius: var(--radius);
       opacity: 0.9;
     }
-
     .sidebar a.active::after {
       width: calc(100% - 32px);
     }
-
     .sidebar a.active, .sidebar .sidebar-settings-btn.active {
       color: var(--accent);
     }
-
     .sidebar a:hover:not(.active)::after, .sidebar .sidebar-settings-btn:hover:not(.active)::after {
       width: 0;
     }
-
     .sidebar a:hover, .sidebar .sidebar-settings-btn:hover {
       color: var(--accent);
       background: rgba(30,30,30,0.08);
     }
-
     .sidebar a .material-icons, .sidebar .sidebar-settings-btn .material-icons {
       transition: color 0.3s, margin 0.3s;
       min-width: 24px;
       min-height: 24px;
       font-size: 24px;
     }
-
     .sidebar a.active .material-icons,
     .sidebar a:hover .material-icons,
     .sidebar .sidebar-settings-btn:hover .material-icons,
     .sidebar .sidebar-settings-btn.active .material-icons {
       color: var(--accent);
     }
-
     .sidebar.closed a span:not(.material-icons),
     .sidebar.closed .sidebar-settings-btn span:not(.material-icons) {
       display: none;
     }
-
     .sidebar.closed a .material-icons,
     .sidebar.closed .sidebar-settings-btn .material-icons {
       margin: 0 auto;
       display: block;
     }
-
     .sidebar .sidebar-settings-btn {
       width: 100%;
       margin-top: auto;
       margin-bottom: 10px;
       justify-content: flex-start;
     }
-
     .sidebar .toggle-sidebar-btn {
       position: absolute;
       top: 8px;
@@ -228,7 +205,6 @@
       background: rgba(30,30,30,0.11);
       color: var(--accent);
     }
-
     .main {
       margin-left: 0;
       padding: 20px;
@@ -238,14 +214,12 @@
       max-width: 100vw;
       overflow-x: hidden;
     }
-
     .main.shift {
       margin-left: calc(var(--sidebar-width) + var(--sidebar-margin) + 2px);
     }
     .main.shift-collapsed {
       margin-left: calc(var(--sidebar-width-collapsed) + var(--sidebar-margin) + 2px);
     }
-
     .theme-toggle {
       position: fixed;
       top: 15px;
@@ -259,7 +233,6 @@
       border-radius: var(--radius);
       display: none;
     }
-
     .settings-modal {
       display: none;
       position: fixed;
@@ -283,7 +256,6 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
     .settings-content {
       background: var(--card-bg);
       color: var(--text);
@@ -312,7 +284,6 @@
         transform: translateY(0) scale(1);
       }
     }
-
     .settings-content h3 {
       margin-bottom: 16px;
       color: var(--accent);
@@ -402,7 +373,6 @@
       font-style: italic;
       display: block;
     }
-
     .card-container {
       display: flex;
       flex-wrap: wrap;
@@ -415,8 +385,6 @@
       overflow-x: auto;
       transition: gap 0.3s cubic-bezier(.48,.04,.36,1.32);
     }
-
-    /* Card sizing for projects page */
     .card-container.projects-size-normal .card,
     .card-container.projects-size-normal .card-skeleton {
       width: calc(33.333% - 20px);
@@ -427,7 +395,6 @@
       width: calc(20% - 20px);
       transition: width 0.3s cubic-bezier(.48,.04,.36,1.32);
     }
-
     @media (max-width: 1100px) {
       .card-container.projects-size-normal .card,
       .card-container.projects-size-normal .card-skeleton,
@@ -444,8 +411,6 @@
         width: 100%;
       }
     }
-
-    /* Default card width for all others */
     .card,
     .card-skeleton {
       background-color: var(--card-bg);
@@ -467,14 +432,12 @@
     .card[data-anim-order="3"], .card-skeleton[data-anim-order="3"] { animation-delay: 0.3s; }
     .card[data-anim-order="4"], .card-skeleton[data-anim-order="4"] { animation-delay: 0.4s; }
     .card[data-anim-order="5"], .card-skeleton[data-anim-order="5"] { animation-delay: 0.5s; }
-
     @keyframes cardFadeIn {
       to {
         opacity: 1;
         transform: translateY(0) scale(1);
       }
     }
-
     .card-skeleton {
       background: var(--skeleton-bg);
       position: relative;
@@ -514,7 +477,6 @@
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
-
     .card img {
       width: 100%;
       margin-bottom: 15px;
@@ -526,18 +488,15 @@
       max-height: 180px;
       min-height: 80px;
     }
-
     @keyframes imgFadeIn {
       to { opacity: 1; }
     }
-
     .card h3 {
       margin-bottom: 10px;
       font-size: 1.15em;
       word-break: break-word;
       overflow-wrap: anywhere;
     }
-
     .card p {
       flex-grow: 1;
       margin-bottom: 15px;
@@ -545,7 +504,6 @@
       word-break: break-word;
       overflow-wrap: anywhere;
     }
-
     .card a.button {
       align-self: flex-start;
       padding: 10px 15px;
@@ -561,16 +519,14 @@
       overflow-wrap: anywhere;
       white-space: normal;
     }
-
     @keyframes btnFadeIn {
       to { opacity: 1; }
     }
-
     .card a.button:hover {
       background-color: #1565c0;
     }
 
-    /* -- HOME: Text Animate In Row -- */
+    /* HOME: Text Animate In Row */
     #home-content h2, #home-content p {
       opacity: 0;
       transform: translateY(20px);
@@ -578,7 +534,6 @@
     }
     #home-content h2 { animation-delay: 0.12s; }
     #home-content p { animation-delay: 0.28s; }
-
     @keyframes homeRowFadeIn {
       to {
         opacity: 1;
@@ -586,18 +541,17 @@
       }
     }
 
-    /* -- LINKS: Row Animate Buttons -- */
-    .links a {
+    /* LINKS: Row Animate Buttons */
+    .links .button-box a {
       opacity: 0;
       transform: translateY(16px) scale(0.98);
       animation: linkBtnFadeIn 0.5s cubic-bezier(.44,0,.56,1) forwards;
     }
-    .links a:nth-child(1) { animation-delay: 0.12s; }
-    .links a:nth-child(2) { animation-delay: 0.23s; }
-    .links a:nth-child(3) { animation-delay: 0.34s; }
-    .links a:nth-child(4) { animation-delay: 0.45s; }
-    .links a:nth-child(5) { animation-delay: 0.56s; }
-
+    .links .button-box a:nth-child(1) { animation-delay: 0.12s; }
+    .links .button-box a:nth-child(2) { animation-delay: 0.23s; }
+    .links .button-box a:nth-child(3) { animation-delay: 0.34s; }
+    .links .button-box a:nth-child(4) { animation-delay: 0.45s; }
+    .links .button-box a:nth-child(5) { animation-delay: 0.56s; }
     @keyframes linkBtnFadeIn {
       to {
         opacity: 1;
@@ -605,6 +559,33 @@
       }
     }
 
+    .links {
+      width: 100%;
+      max-width: 100vw;
+      box-sizing: border-box;
+      overflow-x: auto;
+    }
+    .button-box {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .links a {
+      padding: 10px 20px;
+      background-color: var(--accent);
+      color: #fff;
+      border-radius: var(--radius);
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      min-width: 70px;
+      text-align: center;
+      transition: background 0.3s;
+      opacity: 1;
+    }
+    .links a:hover {
+      background-color: #1565c0;
+    }
     @media (max-width: 1100px) {
       .card, .card-skeleton {
         width: calc(50% - 20px);
@@ -731,7 +712,13 @@
     </section>
     <section id="links">
       <h2>Links</h2>
-      <div class="links" id="links-list"></div>
+      <div class="links" id="links-list">
+        <div class="button-box">
+          <a href="https://mcpedl.com/user/llildanlid/" target="_blank">MCPEDL</a>
+          <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank">CURSEFORGE</a>
+          <a href="https://lildanlid.github.io/" target="_blank">WEBSITE</a>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -818,7 +805,6 @@
       }, 1000); // 1 second skeleton
     }
 
-    // SIDEBAR + GENERAL APP FUNCTIONALITY (unchanged from your previous setup)
     const body = document.body;
     const sidebar = document.getElementById("mySidebar");
     const main = document.getElementById("main");
@@ -938,13 +924,14 @@
       }
     });
 
-    // --- LINKS: Animate in a row on load ---
+    // LINKS: Animate in a row on load, with button box
     function renderLinks() {
       const linksList = document.getElementById("links-list");
-      linksList.innerHTML = linksData.map(link =>
-        `<a href="${link.href}" target="_blank">${link.text}</a>`
-      ).join('');
-      // Remove animation classes if rerendered
+      linksList.innerHTML = `<div class="button-box">${
+        linksData.map(link =>
+          `<a href="${link.href}" target="_blank">${link.text}</a>`
+        ).join('')
+      }</div>`;
       setTimeout(() => {
         linksList.querySelectorAll('a').forEach(a => {
           a.style.animation = '';
@@ -1020,7 +1007,6 @@
   // Run the update when the page loads
   const path = window.location.pathname;
   let pageKey = Object.keys(pages).find(key => pages[key] === path);
-  
   if (pageKey) {
     updateVisitorCount(pageKey);
   }
