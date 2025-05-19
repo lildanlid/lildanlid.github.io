@@ -30,6 +30,14 @@
       --settings-modal-bg: rgba(244,244,244,0.85);
     }
 
+    /* SMOOTH THEME TRANSITIONS */
+    body, .card, .sidebar, .main, .settings-content, section, .card-skeleton {
+      transition: 
+        background-color 0.4s cubic-bezier(.44,0,.56,1),
+        color 0.4s cubic-bezier(.44,0,.56,1),
+        box-shadow 0.3s, border-color 0.3s;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -48,7 +56,6 @@
       font-family: Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      transition: background 0.3s, color 0.3s;
       min-height: 100vh;
       width: 100vw;
       overflow-x: hidden;
@@ -149,7 +156,6 @@
 
     .sidebar a.active::after {
       width: calc(100% - 32px);
-      /* 16px left + 16px right padding, so underline matches text, not full width */
     }
 
     .sidebar a.active, .sidebar .sidebar-settings-btn.active {
@@ -226,7 +232,6 @@
     .main {
       margin-left: 0;
       padding: 20px;
-      transition: margin-left 0.3s ease;
       min-height: 100vh;
       box-sizing: border-box;
       width: 100%;
@@ -419,7 +424,7 @@
     }
     .card-container.projects-size-small .card,
     .card-container.projects-size-small .card-skeleton {
-      width: calc(25% - 30px);
+      width: calc(20% - 20px);
       transition: width 0.3s cubic-bezier(.48,.04,.36,1.32);
     }
 
@@ -565,6 +570,54 @@
       background-color: #1565c0;
     }
 
+    /* -- LOADING SKELETON FOR HOMEPAGE TEXT -- */
+    .skeleton-text-loader {
+      height: 28px;
+      width: 60%;
+      margin: 14px 0;
+      border-radius: var(--radius);
+      background: linear-gradient(
+        90deg,
+        var(--skeleton-bg) 25%,
+        var(--skeleton-light) 37%,
+        var(--skeleton-bg) 63%
+      );
+      background-size: 400% 100%;
+      animation: skeletonShimmer 1.2s linear infinite;
+    }
+    .skeleton-subtext-loader {
+      height: 18px;
+      width: 40%;
+      margin: 10px 0 10px 0;
+      border-radius: var(--radius);
+      background: linear-gradient(
+        90deg,
+        var(--skeleton-bg) 25%,
+        var(--skeleton-light) 37%,
+        var(--skeleton-bg) 63%
+      );
+      background-size: 400% 100%;
+      animation: skeletonShimmer 1.2s linear infinite;
+    }
+
+    /* -- LOADING SKELETON FOR LINKS BUTTONS -- */
+    .links .skeleton-link-btn {
+      display: inline-block;
+      height: 38px;
+      width: 110px;
+      margin: 0 12px 16px 0;
+      border-radius: var(--radius);
+      background: linear-gradient(
+        90deg,
+        var(--skeleton-bg) 25%,
+        var(--skeleton-light) 37%,
+        var(--skeleton-bg) 63%
+      );
+      background-size: 400% 100%;
+      animation: skeletonShimmer 1.2s linear infinite;
+      vertical-align: middle;
+    }
+
     .links {
       display: flex;
       gap: 15px;
@@ -583,6 +636,14 @@
       border-radius: var(--radius);
       word-break: break-word;
       overflow-wrap: anywhere;
+      min-width: 70px;
+      text-align: center;
+      transition: background 0.3s;
+      opacity: 1;
+    }
+
+    .links a:hover {
+      background-color: #1565c0;
     }
 
     @media (max-width: 1100px) {
@@ -696,8 +757,14 @@
   <!-- Main Content -->
   <div id="main" class="main">
     <section id="home" class="active">
-      <h2>Welcome to the Home Page</h2>
-      <p>Use the menu to navigate to other pages.</p>
+      <div id="home-loader">
+        <div class="skeleton-text-loader"></div>
+        <div class="skeleton-subtext-loader"></div>
+      </div>
+      <div id="home-content" style="display:none;">
+        <h2>Welcome to the Home Page</h2>
+        <p>Use the menu to navigate to other pages.</p>
+      </div>
     </section>
     <section id="projects">
       <h2>Projects</h2>
@@ -709,11 +776,7 @@
     </section>
     <section id="links">
       <h2>Links</h2>
-      <div class="links">
-        <a href="https://mcpedl.com/user/llildanlid/" target="_blank">MCPEDL</a>
-        <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank">CURSEFORGE</a>
-        <a href="https://lildanlid.github.io/" target="_blank">WEBSITE</a>
-      </div>
+      <div class="links" id="links-list"></div>
     </section>
   </div>
 
@@ -758,6 +821,13 @@
       }
     ];
 
+    // Links DATA
+    const linksData = [
+      { href: "https://mcpedl.com/user/llildanlid/", text: "MCPEDL" },
+      { href: "https://www.curseforge.com/members/lildanlid/projects", text: "CURSEFORGE" },
+      { href: "https://lildanlid.github.io/", text: "WEBSITE" }
+    ];
+
     function showCardSkeletons(containerId, count) {
       const container = document.getElementById(containerId);
       let skeletonsHtml = "";
@@ -793,6 +863,7 @@
       }, 1000); // 1 second skeleton
     }
 
+    // SIDEBAR + GENERAL APP FUNCTIONALITY (unchanged from your previous setup)
     const body = document.body;
     const sidebar = document.getElementById("mySidebar");
     const main = document.getElementById("main");
@@ -860,6 +931,8 @@
         }, 1100); // after cards render
       }
       if (id === "apps") loadCards("apps");
+      if (id === "home") showHomeLoader();
+      if (id === "links") showLinksLoader();
     }
     sidebarLinks.forEach(link => {
       link.addEventListener('click', function(e) {
@@ -911,6 +984,34 @@
       }
     });
 
+    // --- HOMEPAGE LOADER ---
+    function showHomeLoader() {
+      const homeLoader = document.getElementById("home-loader");
+      const homeContent = document.getElementById("home-content");
+      homeLoader.style.display = '';
+      homeContent.style.display = 'none';
+      setTimeout(() => {
+        homeLoader.style.display = 'none';
+        homeContent.style.display = '';
+      }, 1100);
+    }
+
+    // --- LINKS LOADER ---
+    function showLinksLoader() {
+      const linksList = document.getElementById("links-list");
+      // Skeletons
+      let skeleton = '';
+      for (let i = 0; i < linksData.length; i++) {
+        skeleton += '<span class="skeleton-link-btn"></span>';
+      }
+      linksList.innerHTML = skeleton;
+      setTimeout(() => {
+        linksList.innerHTML = linksData.map(link =>
+          `<a href="${link.href}" target="_blank">${link.text}</a>`
+        ).join('');
+      }, 1100);
+    }
+
     // INITIALIZATION
     window.onload = () => {
       // Theme
@@ -930,6 +1031,10 @@
       // Cards
       if (savedSection === "projects") loadCards("projects");
       if (savedSection === "apps") loadCards("apps");
+
+      // Home and Links loader
+      if (savedSection === "home") showHomeLoader();
+      if (savedSection === "links") showLinksLoader();
     };
 
   const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O"; 
