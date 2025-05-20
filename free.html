@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>FREE. Marketplace</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <style>
@@ -32,19 +32,6 @@
 
     .sidebar.collapsed {
       width: 64px;
-    }
-
-    .toggle-sidebar {
-      background-color: #111827;
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      margin-bottom: 10px;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .sidebar button {
@@ -81,6 +68,10 @@
       padding: 20px;
       overflow-y: auto;
       transition: margin-left 0.3s;
+    }
+
+    .content.expanded {
+      margin-left: -176px;
     }
 
     .section {
@@ -177,6 +168,15 @@
       border-radius: 4px;
     }
 
+    .toggle-sidebar {
+      background-color: #111827;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
     h1 {
       font-size: 2em;
       margin-bottom: 10px;
@@ -197,8 +197,8 @@
 </head>
 <body>
   <div class="container">
-    <div class="sidebar" id="sidebar">
-      <button class="toggle-sidebar" id="toggleSidebar">
+    <div class="sidebar">
+      <button class="toggle-sidebar">
         <span class="material-icons">menu</span>
       </button>
       <button onclick="showSection('home')" class="active">
@@ -219,7 +219,7 @@
       </button>
     </div>
 
-    <div class="content" id="content">
+    <div class="content">
       <div id="home" class="section active">
         <h1>FREE. Marketplace</h1>
         <p>Not many stuff will add more later!</p>
@@ -237,13 +237,23 @@
       addons: [
         {
           title: "World builder",
-          description: "Unleash your creativity with World Builder...",
+          description: "Unleash your creativity with World Builder, the ultimate building tool! With intuitive selection, effortless copy-pasting, quick undo/redo actions, & custom brushes, you can easily edit entire landscapes & structures. Crafting your dream world has never been simpler, or faster!",
           image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/9059015c-a8ed-4ae6-858d-458c52c95a9c/worldbuilder_Thumbnail_0.jpg",
           price: "990",
           buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/world-builder-1.6-add--on/c71645fb-e3ed-4777-a475-1545adb15b54",
           downloadUrl: "https://www.mediafire.com/file/oqsmftot8pwrzb2/World_Builder.mcaddon/file",
           category: "Utility",
           version: "1.6"
+        },
+        {
+          title: "Nothing",
+          description: "I dont know what to add.",
+          image: "https://via.placeholder.com/300x200",
+          price: "#",
+          buyUrl: "#",
+          downloadUrl: "#",
+          category: ".",
+          version: "."
         }
       ],
       worlds: [
@@ -253,13 +263,15 @@
           image: "https://via.placeholder.com/300x200",
           price: "#",
           buyUrl: "#",
-          downloadUrl: "#"
+          downloadUrl: "#",
+          size: ".",
+          gameMode: "."
         }
       ],
       textures: [
         {
           title: "Actions & Stuff 1.4",
-          description: "Bring your world to life with new animations, particles, and textures",
+          description: "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more",
           image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/4ca016b3-d741-47d7-97b0-08668e38be61/actionsandstuff_Thumbnail_0.jpg",
           price: "1690",
           buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/actions--stuff-1.4/61c7a786-d7ad-49e0-a710-817121cd9795",
@@ -278,8 +290,7 @@
         section.classList.remove('active');
       });
 
-      const targetButton = [...document.querySelectorAll('.sidebar button')].find(btn => btn.innerHTML.includes(sectionId.charAt(0).toUpperCase()));
-      if (targetButton) targetButton.classList.add('active');
+      document.querySelector(`.sidebar button[onclick="showSection('${sectionId}')"]`).classList.add('active');
       document.getElementById(sectionId).classList.add('active');
       localStorage.setItem('lastActiveSection', sectionId);
     }
@@ -294,8 +305,10 @@
             <div class="card-meta">
               ${item.category ? `<span class="meta-item">${item.category}</span>` : ''}
               ${item.version ? `<span class="meta-item">v${item.version}</span>` : ''}
+              ${item.size ? `<span class="meta-item">Size: ${item.size}</span>` : ''}
+              ${item.gameMode ? `<span class="meta-item">Mode: ${item.gameMode}</span>` : ''}
               ${item.resolution ? `<span class="meta-item">Res: ${item.resolution}</span>` : ''}
-              ${item.format ? `<span class="meta-item">${item.format}</span>` : ''}
+              ${item.format ? `<span class="meta-item">Format: ${item.format}</span>` : ''}
             </div>
             <div class="price">
               ${item.price !== "#" ? `<img src="${CURRENCY_IMAGE}" alt="currency"><span>${item.price}</span>` : '<span>Free</span>'}
@@ -316,6 +329,7 @@
       });
     }
 
+    // Load saved section from localStorage
     window.addEventListener('DOMContentLoaded', () => {
       renderCards();
       const saved = localStorage.getItem('lastActiveSection');
@@ -324,8 +338,10 @@
       }
     });
 
-    document.getElementById('toggleSidebar').addEventListener('click', () => {
-      document.getElementById('sidebar').classList.toggle('collapsed');
+    // Sidebar toggle
+    document.querySelector('.toggle-sidebar').addEventListener('click', () => {
+      document.querySelector('.sidebar').classList.toggle('collapsed');
+      document.querySelector('.content').classList.toggle('expanded');
     });
   </script>
 </body>
