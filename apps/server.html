@@ -28,6 +28,48 @@
             padding: 20px;
             text-align: center;
             margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background-color: #23272a;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background-color: #7289da;
+            transform: translateY(-2px);
+        }
+
+        .tab:hover {
+            background-color: #7289da;
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .submit-form {
@@ -35,6 +77,12 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .submit-form:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .form-group {
@@ -46,26 +94,47 @@
             margin-bottom: 5px;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 8px;
             border: 1px solid #7289da;
             border-radius: 4px;
             background-color: #2c2f33;
             color: white;
+            transition: all 0.3s ease;
         }
 
-        button {
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #5b6eae;
+            box-shadow: 0 0 5px rgba(114,137,218,0.5);
+        }
+
+        .search-filters {
+            background-color: #23272a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .filter-tag {
+            padding: 5px 15px;
             background-color: #7289da;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
+            border-radius: 20px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        button:hover {
+        .filter-tag.active {
             background-color: #5b6eae;
+            transform: scale(1.05);
         }
 
         .server-list {
@@ -78,32 +147,82 @@
             background-color: #23272a;
             padding: 15px;
             border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .admin-panel {
-            background-color: #23272a;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
+        .server-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .pending-server {
-            border: 1px solid #7289da;
-            padding: 10px;
-            margin-bottom: 10px;
+        .server-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
             border-radius: 4px;
+            font-size: 0.8em;
         }
 
-        .admin-controls {
+        .status-pending {
+            background-color: #ffd700;
+            color: black;
+        }
+
+        .status-approved {
+            background-color: #00ff00;
+            color: black;
+        }
+
+        .status-denied {
+            background-color: #ff0000;
+        }
+
+        .server-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
             margin-top: 10px;
         }
 
-        .login-form {
-            max-width: 400px;
-            margin: 0 auto;
+        .server-tag {
+            padding: 3px 8px;
+            background-color: #7289da;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        button {
+            background-color: #7289da;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5b6eae;
+            transform: translateY(-2px);
+        }
+
+        .tracking-id {
             background-color: #23272a;
             padding: 20px;
             border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        #statusCheck {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -113,100 +232,228 @@
     </header>
 
     <div class="container">
-        <div id="submit-section" class="submit-form">
-            <h2>Submit Your Server</h2>
-            <form id="serverSubmitForm">
-                <div class="form-group">
-                    <label for="serverName">Server Name:</label>
-                    <input type="text" id="serverName" required>
-                </div>
-                <div class="form-group">
-                    <label for="serverIP">Server IP/Address:</label>
-                    <input type="text" id="serverIP" required>
-                </div>
-                <div class="form-group">
-                    <label for="serverPort">Port:</label>
-                    <input type="number" id="serverPort" required>
-                </div>
-                <div class="form-group">
-                    <label for="serverDescription">Description:</label>
-                    <textarea id="serverDescription" rows="4" required></textarea>
-                </div>
-                <button type="submit">Submit Server</button>
-            </form>
+        <div class="tabs">
+            <button class="tab active" data-tab="browse">Browse Servers</button>
+            <button class="tab" data-tab="submit">Submit Server</button>
+            <button class="tab" data-tab="track">Track Submission</button>
+            <button class="tab" data-tab="admin">Admin</button>
         </div>
 
-        <div id="server-list" class="server-list">
-            <!-- Approved servers will be displayed here -->
+        <div id="browse" class="tab-content active">
+            <div class="search-filters">
+                <input type="text" id="searchBar" placeholder="Search servers..." class="search-input">
+                <div class="filter-tags">
+                    <div class="filter-tag" data-filter="pvp">PvP</div>
+                    <div class="filter-tag" data-filter="survival">Survival</div>
+                    <div class="filter-tag" data-filter="factions">Factions</div>
+                    <div class="filter-tag" data-filter="mining">Mining</div>
+                    <div class="filter-tag" data-filter="creative">Creative</div>
+                    <div class="filter-tag" data-filter="minigames">Minigames</div>
+                </div>
+            </div>
+            <div id="server-list" class="server-list">
+                <!-- Servers will be displayed here -->
+            </div>
         </div>
 
-        <div id="admin-login" class="login-form">
-            <h2>Admin Login</h2>
-            <form id="adminLoginForm">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit">Login</button>
-            </form>
+        <div id="submit" class="tab-content">
+            <div class="submit-form">
+                <h2>Submit Your Server</h2>
+                <form id="serverSubmitForm">
+                    <div class="form-group">
+                        <label for="serverName">Server Name:</label>
+                        <input type="text" id="serverName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serverIP">Server IP/Address:</label>
+                        <input type="text" id="serverIP" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serverPort">Port:</label>
+                        <input type="number" id="serverPort" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serverDescription">Description:</label>
+                        <textarea id="serverDescription" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Server Tags:</label>
+                        <div class="filter-tags">
+                            <div class="filter-tag" data-tag="pvp">PvP</div>
+                            <div class="filter-tag" data-tag="survival">Survival</div>
+                            <div class="filter-tag" data-tag="factions">Factions</div>
+                            <div class="filter-tag" data-tag="mining">Mining</div>
+                            <div class="filter-tag" data-tag="creative">Creative</div>
+                            <div class="filter-tag" data-tag="minigames">Minigames</div>
+                        </div>
+                    </div>
+                    <button type="submit">Submit Server</button>
+                </form>
+            </div>
         </div>
 
-        <div id="admin-panel" class="admin-panel" style="display: none;">
-            <h2>Admin Panel</h2>
-            <div id="pending-servers">
-                <!-- Pending servers will be displayed here -->
+        <div id="track" class="tab-content">
+            <div class="tracking-id">
+                <h2>Track Your Submission</h2>
+                <div class="form-group">
+                    <label for="trackingId">Enter Tracking ID:</label>
+                    <input type="text" id="trackingId">
+                </div>
+                <button onclick="checkStatus()">Check Status</button>
+                <div id="statusCheck"></div>
+            </div>
+        </div>
+
+        <div id="admin" class="tab-content">
+            <div id="admin-login" class="submit-form">
+                <h2>Admin Login</h2>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            <div id="admin-panel" style="display: none;">
+                <h2>Pending Servers</h2>
+                <div id="pending-servers"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Simulated database (in reality, you'd use a proper backend)
+        // Data structure
         let servers = {
             approved: [],
-            pending: []
+            pending: [],
+            denied: []
         };
 
-        // Admin credentials (in reality, these would be stored securely on a backend)
-        const adminCredentials = {
+        let activeFilters = new Set();
+        let adminCredentials = {
             username: 'admin',
             password: 'admin123'
         };
 
-        let isAdminLoggedIn = false;
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
 
-        // Server submission form handler
-        document.getElementById('serverSubmitForm').addEventListener('submit', function(e) {
+        // Filter tags
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                tag.classList.toggle('active');
+                const filter = tag.dataset.filter;
+                if (activeFilters.has(filter)) {
+                    activeFilters.delete(filter);
+                } else {
+                    activeFilters.add(filter);
+                }
+                updateServerList();
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchBar').addEventListener('input', (e) => {
+            updateServerList();
+        });
+
+        function updateServerList() {
+            const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+            const serverList = document.getElementById('server-list');
+            serverList.innerHTML = '';
+
+            servers.approved
+                .filter(server => {
+                    const matchesSearch = server.name.toLowerCase().includes(searchTerm) ||
+                                       server.description.toLowerCase().includes(searchTerm);
+                    const matchesFilters = activeFilters.size === 0 || 
+                                         server.tags.some(tag => activeFilters.has(tag));
+                    return matchesSearch && matchesFilters;
+                })
+                .forEach(server => {
+                    const serverCard = createServerCard(server);
+                    serverList.appendChild(serverCard);
+                });
+        }
+
+        function createServerCard(server) {
+            const card = document.createElement('div');
+            card.className = 'server-card';
+            card.innerHTML = `
+                <h3>${server.name}</h3>
+                <p>IP: ${server.ip}:${server.port}</p>
+                <p>${server.description}</p>
+                <div class="server-tags">
+                    ${server.tags.map(tag => `<span class="server-tag">${tag}</span>`).join('')}
+                </div>
+            `;
+            return card;
+        }
+
+        // Server submission
+        document.getElementById('serverSubmitForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            const trackingId = Date.now().toString(36) + Math.random().toString(36).substr(2);
             
             const serverData = {
                 id: Date.now(),
+                trackingId: trackingId,
                 name: document.getElementById('serverName').value,
                 ip: document.getElementById('serverIP').value,
                 port: document.getElementById('serverPort').value,
-                description: document.getElementById('serverDescription').value
+                description: document.getElementById('serverDescription').value,
+                tags: Array.from(document.querySelectorAll('.filter-tag.active')).map(tag => tag.dataset.tag),
+                status: 'pending',
+                submissionDate: new Date().toISOString()
             };
 
             servers.pending.push(serverData);
-            updatePendingServers();
-            this.reset();
-            alert('Server submitted for review!');
+            e.target.reset();
+            alert(`Server submitted! Your tracking ID is: ${trackingId}`);
         });
 
-        // Admin login form handler
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Status checking
+        function checkStatus() {
+            const trackingId = document.getElementById('trackingId').value;
+            const statusCheck = document.getElementById('statusCheck');
             
+            const pendingServer = servers.pending.find(s => s.trackingId === trackingId);
+            const approvedServer = servers.approved.find(s => s.trackingId === trackingId);
+            const deniedServer = servers.denied.find(s => s.trackingId === trackingId);
+
+            if (pendingServer) {
+                statusCheck.innerHTML = `<div class="server-status status-pending">Pending Review</div>`;
+            } else if (approvedServer) {
+                statusCheck.innerHTML = `<div class="server-status status-approved">Approved</div>`;
+            } else if (deniedServer) {
+                statusCheck.innerHTML = `<div class="server-status status-denied">Denied</div>`;
+            } else {
+                statusCheck.innerHTML = `<div class="server-status">Not Found</div>`;
+            }
+        }
+
+        // Admin functionality
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
             if (username === adminCredentials.username && password === adminCredentials.password) {
-                isAdminLoggedIn = true;
-                document.getElementById('admin-panel').style.display = 'block';
                 document.getElementById('admin-login').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
                 updatePendingServers();
             } else {
                 alert('Invalid credentials!');
@@ -214,66 +461,51 @@
         });
 
         function updatePendingServers() {
-            if (!isAdminLoggedIn) return;
-
             const pendingServersDiv = document.getElementById('pending-servers');
             pendingServersDiv.innerHTML = '';
 
             servers.pending.forEach(server => {
-                const serverElement = document.createElement('div');
-                serverElement.className = 'pending-server';
-                serverElement.innerHTML = `
-                    <h3>${server.name}</h3>
-                    <p>IP: ${server.ip}:${server.port}</p>
-                    <p>${server.description}</p>
-                    <div class="admin-controls">
-                        <button onclick="approveServer(${server.id})">Approve</button>
-                        <button onclick="denyServer(${server.id})">Deny</button>
-                    </div>
-                `;
-                pendingServersDiv.appendChild(serverElement);
-            });
-        }
-
-        function updateApprovedServers() {
-            const serverListDiv = document.getElementById('server-list');
-            serverListDiv.innerHTML = '';
-
-            servers.approved.forEach(server => {
                 const serverElement = document.createElement('div');
                 serverElement.className = 'server-card';
                 serverElement.innerHTML = `
                     <h3>${server.name}</h3>
                     <p>IP: ${server.ip}:${server.port}</p>
                     <p>${server.description}</p>
-                    ${isAdminLoggedIn ? `<button onclick="deleteServer(${server.id})">Delete</button>` : ''}
+                    <div class="server-tags">
+                        ${server.tags.map(tag => `<span class="server-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="admin-controls">
+                        <button onclick="approveServer('${server.trackingId}')">Approve</button>
+                        <button onclick="denyServer('${server.trackingId}')">Deny</button>
+                    </div>
                 `;
-                serverListDiv.appendChild(serverElement);
+                pendingServersDiv.appendChild(serverElement);
             });
         }
 
-        function approveServer(id) {
-            const serverIndex = servers.pending.findIndex(server => server.id === id);
+        function approveServer(trackingId) {
+            const serverIndex = servers.pending.findIndex(s => s.trackingId === trackingId);
             if (serverIndex !== -1) {
                 const server = servers.pending.splice(serverIndex, 1)[0];
+                server.status = 'approved';
                 servers.approved.push(server);
                 updatePendingServers();
-                updateApprovedServers();
+                updateServerList();
             }
         }
 
-        function denyServer(id) {
-            servers.pending = servers.pending.filter(server => server.id !== id);
-            updatePendingServers();
-        }
-
-        function deleteServer(id) {
-            servers.approved = servers.approved.filter(server => server.id !== id);
-            updateApprovedServers();
+        function denyServer(trackingId) {
+            const serverIndex = servers.pending.findIndex(s => s.trackingId === trackingId);
+            if (serverIndex !== -1) {
+                const server = servers.pending.splice(serverIndex, 1)[0];
+                server.status = 'denied';
+                servers.denied.push(server);
+                updatePendingServers();
+            }
         }
 
         // Initial render
-        updateApprovedServers();
+        updateServerList();
     </script>
 </body>
 </html>
