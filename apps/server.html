@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Bedrock Server Listings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #2c2f33;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #7289da;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .submit-form {
+            background-color: #23272a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #7289da;
+            border-radius: 4px;
+            background-color: #2c2f33;
+            color: white;
+        }
+
+        button {
+            background-color: #7289da;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #5b6eae;
+        }
+
+        .server-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .server-card {
+            background-color: #23272a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .admin-panel {
+            background-color: #23272a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .pending-server {
+            border: 1px solid #7289da;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .admin-controls {
+            margin-top: 10px;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #23272a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Minecraft Bedrock Server Listings</h1>
+    </header>
+
+    <div class="container">
+        <div id="submit-section" class="submit-form">
+            <h2>Submit Your Server</h2>
+            <form id="serverSubmitForm">
+                <div class="form-group">
+                    <label for="serverName">Server Name:</label>
+                    <input type="text" id="serverName" required>
+                </div>
+                <div class="form-group">
+                    <label for="serverIP">Server IP/Address:</label>
+                    <input type="text" id="serverIP" required>
+                </div>
+                <div class="form-group">
+                    <label for="serverPort">Port:</label>
+                    <input type="number" id="serverPort" required>
+                </div>
+                <div class="form-group">
+                    <label for="serverDescription">Description:</label>
+                    <textarea id="serverDescription" rows="4" required></textarea>
+                </div>
+                <button type="submit">Submit Server</button>
+            </form>
+        </div>
+
+        <div id="server-list" class="server-list">
+            <!-- Approved servers will be displayed here -->
+        </div>
+
+        <div id="admin-login" class="login-form">
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <div id="admin-panel" class="admin-panel" style="display: none;">
+            <h2>Admin Panel</h2>
+            <div id="pending-servers">
+                <!-- Pending servers will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated database (in reality, you'd use a proper backend)
+        let servers = {
+            approved: [],
+            pending: []
+        };
+
+        // Admin credentials (in reality, these would be stored securely on a backend)
+        const adminCredentials = {
+            username: 'admin',
+            password: 'admin123'
+        };
+
+        let isAdminLoggedIn = false;
+
+        // Server submission form handler
+        document.getElementById('serverSubmitForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const serverData = {
+                id: Date.now(),
+                name: document.getElementById('serverName').value,
+                ip: document.getElementById('serverIP').value,
+                port: document.getElementById('serverPort').value,
+                description: document.getElementById('serverDescription').value
+            };
+
+            servers.pending.push(serverData);
+            updatePendingServers();
+            this.reset();
+            alert('Server submitted for review!');
+        });
+
+        // Admin login form handler
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === adminCredentials.username && password === adminCredentials.password) {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('admin-login').style.display = 'none';
+                updatePendingServers();
+            } else {
+                alert('Invalid credentials!');
+            }
+        });
+
+        function updatePendingServers() {
+            if (!isAdminLoggedIn) return;
+
+            const pendingServersDiv = document.getElementById('pending-servers');
+            pendingServersDiv.innerHTML = '';
+
+            servers.pending.forEach(server => {
+                const serverElement = document.createElement('div');
+                serverElement.className = 'pending-server';
+                serverElement.innerHTML = `
+                    <h3>${server.name}</h3>
+                    <p>IP: ${server.ip}:${server.port}</p>
+                    <p>${server.description}</p>
+                    <div class="admin-controls">
+                        <button onclick="approveServer(${server.id})">Approve</button>
+                        <button onclick="denyServer(${server.id})">Deny</button>
+                    </div>
+                `;
+                pendingServersDiv.appendChild(serverElement);
+            });
+        }
+
+        function updateApprovedServers() {
+            const serverListDiv = document.getElementById('server-list');
+            serverListDiv.innerHTML = '';
+
+            servers.approved.forEach(server => {
+                const serverElement = document.createElement('div');
+                serverElement.className = 'server-card';
+                serverElement.innerHTML = `
+                    <h3>${server.name}</h3>
+                    <p>IP: ${server.ip}:${server.port}</p>
+                    <p>${server.description}</p>
+                    ${isAdminLoggedIn ? `<button onclick="deleteServer(${server.id})">Delete</button>` : ''}
+                `;
+                serverListDiv.appendChild(serverElement);
+            });
+        }
+
+        function approveServer(id) {
+            const serverIndex = servers.pending.findIndex(server => server.id === id);
+            if (serverIndex !== -1) {
+                const server = servers.pending.splice(serverIndex, 1)[0];
+                servers.approved.push(server);
+                updatePendingServers();
+                updateApprovedServers();
+            }
+        }
+
+        function denyServer(id) {
+            servers.pending = servers.pending.filter(server => server.id !== id);
+            updatePendingServers();
+        }
+
+        function deleteServer(id) {
+            servers.approved = servers.approved.filter(server => server.id !== id);
+            updateApprovedServers();
+        }
+
+        // Initial render
+        updateApprovedServers();
+    </script>
+</body>
+</html>
