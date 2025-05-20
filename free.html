@@ -1,6 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>FREE. Marketplace</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f4f6;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+    }
+
+    .sidebar {
+      width: 240px;
+      background-color: #1f2937;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      transition: width 0.3s;
+    }
+
+    .sidebar.collapsed {
+      width: 64px;
+    }
+
+    .sidebar button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 10px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .sidebar button.active,
+    .sidebar button:hover {
+      background-color: #374151;
+    }
+
+    .sidebar .material-icons {
+      margin-right: 10px;
+    }
+
+    .sidebar.collapsed .material-icons {
+      margin-right: 0;
+    }
+
+    .sidebar.collapsed .button-text {
+      display: none;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      transition: margin-left 0.3s;
+    }
+
+    .content.expanded {
+      margin-left: -176px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      width: 100%;
+      height: auto;
+    }
+
+    .card-details {
+      padding: 15px;
+    }
+
+    .card-details h3 {
+      margin: 0 0 10px;
+    }
+
+    .card-details p {
+      color: #4b5563;
+    }
+
+    .card-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .buy-btn,
+    .download-btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .buy-btn {
+      background-color: #10b981;
+    }
+
+    .download-btn {
+      background-color: #3b82f6;
+    }
+
+    .price {
+      margin-top: 10px;
+      font-size: 1.1em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .price img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .card-meta {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.85em;
+      color: #6b7280;
+    }
+
+    .meta-item {
+      background: #e5e7eb;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .toggle-sidebar {
+      background-color: #111827;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    @media (min-width: 768px) {
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <button class="toggle-sidebar">
+        <span class="material-icons">menu</span>
+      </button>
+      <button onclick="showSection('home')" class="active">
+        <span class="material-icons">home</span>
+        <span class="button-text">Home</span>
+      </button>
+      <button onclick="showSection('addons')">
+        <span class="material-icons">extension</span>
+        <span class="button-text">Addons</span>
+      </button>
+      <button onclick="showSection('worlds')">
+        <span class="material-icons">public</span>
+        <span class="button-text">Worlds</span>
+      </button>
+      <button onclick="showSection('textures')">
+        <span class="material-icons">texture</span>
+        <span class="button-text">Texture Packs</span>
+      </button>
+    </div>
+
+    <div class="content">
+      <div id="home" class="section active">
+        <h1>FREE. Marketplace</h1>
+        <p>Not many stuff will add more later!</p>
+      </div>
+      <div id="addons" class="section cards-grid"></div>
+      <div id="worlds" class="section cards-grid"></div>
+      <div id="textures" class="section cards-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const CURRENCY_IMAGE = "https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/icons/minecoin.svg";
+
+    const cardData = {
+      addons: [
+        {
+          title: "World builder",
+          description: "Unleash your creativity with World Builder, the ultimate building tool! With intuitive selection, effortless copy-pasting, quick undo/redo actions, & custom brushes, you can easily edit entire landscapes & structures. Crafting your dream world has never been simpler, or faster!",
+          image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/9059015c-a8ed-4ae6-858d-458c52c95a9c/worldbuilder_Thumbnail_0.jpg",
+          price: "990",
+          buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/world-builder-1.6-add--on/c71645fb-e3ed-4777-a475-1545adb15b54",
+          downloadUrl: "https://www.mediafire.com/file/oqsmftot8pwrzb2/World_Builder.mcaddon/file",
+          category: "Utility",
+          version: "1.6"
+        },
+        {
+          title: "Nothing",
+          description: "I dont know what to add.",
+          image: "https://via.placeholder.com/300x200",
+          price: "#",
+          buyUrl: "#",
+          downloadUrl: "#",
+          category: ".",
+          version: "."
+        }
+      ],
+      worlds: [
+        {
+          title: "Nothing",
+          description: "I dont know what to add.",
+          image: "https://via.placeholder.com/300x200",
+          price: "#",
+          buyUrl: "#",
+          downloadUrl: "#",
+          size: ".",
+          gameMode: "."
+        }
+      ],
+      textures: [
+        {
+          title: "Actions & Stuff 1.4",
+          description: "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more",
+          image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/4ca016b3-d741-47d7-97b0-08668e38be61/actionsandstuff_Thumbnail_0.jpg",
+          price: "1690",
+          buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/actions--stuff-1.4/61c7a786-d7ad-49e0-a710-817121cd9795",
+          downloadUrl: "https://www.mediafire.com/file/96sxwubn3vwx1mh/Actions_%2526_Stuff_1.4.mcpack/file",
+          resolution: "16 - 32 - 64",
+          format: "Bedrock"
+        }
+      ]
+    };
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.sidebar button').forEach(button => {
+        button.classList.remove('active');
+      });
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+      });
+
+      document.querySelector(`.sidebar button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+      document.getElementById(sectionId).classList.add('active');
+      localStorage.setItem('lastActiveSection', sectionId);
+    }
+
+    function createCard(item) {
+      return `
+        <div class="card">
+          <img src="${item.image}" alt="${item.title}">
+          <div class="card-details">
+            <h3>${item.title}</h3>
+            <p>${item.description}</p>
+            <div class="card-meta">
+              ${item.category ? `<span class="meta-item">${item.category}</span>` : ''}
+              ${item.version ? `<span class="meta-item">v${item.version}</span>` : ''}
+              ${item.size ? `<span class="meta-item">Size: ${item.size}</span>` : ''}
+              ${item.gameMode ? `<span class="meta-item">Mode: ${item.gameMode}</span>` : ''}
+              ${item.resolution ? `<span class="meta-item">Res: ${item.resolution}</span>` : ''}
+              ${item.format ? `<span class="meta-item">Format: ${item.format}</span>` : ''}
+            </div>
+            <div class="price">
+              ${item.price !== "#" ? `<img src="${CURRENCY_IMAGE}" alt="currency"><span>${item.price}</span>` : '<span>Free</span>'}
+            </div>
+            <div class="card-buttons">
+              <a class="buy-btn" href="${item.buyUrl}" target="_blank">Buy</a>
+              <a class="download-btn" href="${item.downloadUrl}" target="_blank">Download</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCards() {
+      Object.keys(cardData).forEach(section => {
+        const container = document.getElementById(section);
+        container.innerHTML = cardData[section].map(createCard).join('');
+      });
+    }
+
+    // Load saved section from localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCards();
+      const saved = localStorage.getItem('lastActiveSection');
+      if (saved && document.getElementById(saved)) {
+        showSection(saved);
+      }
+    });
+
+    // Sidebar toggle
+    document.querySelector('.toggle-sidebar').addEventListener('click', () => {
+      document.querySelector('.sidebar').classList.toggle('collapsed');
+      document.querySelector('.content').classList.toggle('expanded');
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FREE. Marketplace</title>
