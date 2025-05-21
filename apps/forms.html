@@ -181,12 +181,24 @@
       color: #00ff90;
     }
 
+    .status.approved .material-icons {
+      color: #00ff90;
+    }
+
     .status.declined {
       color: #ff6060;
     }
 
+    .status.declined .material-icons {
+      color: #ff6060;
+    }
+
     .status.pending {
-      color: #aaa;
+      color: #ffd700;
+    }
+
+    .status.pending .material-icons {
+      color: #ffd700;
     }
 
     #statusPopup {
@@ -328,7 +340,7 @@
             type,
             content,
             date: new Date().toLocaleString(),
-            status: "pending",
+            status: "pending", // Explicitly set initial status
             reply: ""
           };
 
@@ -428,9 +440,14 @@
 
     function getStatusIcon(status) {
       switch(status) {
-        case 'approved': return 'check_circle';
-        case 'declined': return 'cancel';
-        default: return 'pending';
+        case 'approved':
+          return 'check_circle';
+        case 'declined':
+          return 'cancel';
+        case 'pending':
+          return 'pending';
+        default:
+          return 'pending';
       }
     }
 
@@ -450,6 +467,14 @@
           userEntry.status = newStatus;
           localStorage.setItem(userInboxKey, JSON.stringify(userInbox));
         }
+
+        // Update status visually
+        const statusElement = document.querySelector(`[onclick="updateStatus(${id}, '${newStatus}')"]`).closest('.formCard').querySelector('.status');
+        statusElement.className = `status ${newStatus}`;
+        statusElement.innerHTML = `
+          <span class="material-icons">${getStatusIcon(newStatus)}</span>
+          Status: ${newStatus}
+        `;
 
         renderForms();
       }
@@ -483,6 +508,14 @@
       element.style.animation = 'slideIn 0.3s ease-out reverse';
       setTimeout(() => {
         let entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
+        const entry = entries.find(e => e.id === id);
+        if (entry) {
+          // Remove from user's inbox as well
+          const userInboxKey = `userInbox_${entry.user}`;
+          let userInbox = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
+          userInbox = userInbox.filter(e => e.id !== id);
+          localStorage.setItem(userInboxKey, JSON.stringify(userInbox));
+        }
         entries = entries.filter(e => e.id !== id);
         localStorage.setItem("formEntries", JSON.stringify(entries));
         renderForms();
