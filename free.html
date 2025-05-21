@@ -1,348 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>FREE. Marketplace</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f3f4f6;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FREE. Marketplace</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-    .container {
-      display: flex;
-      width: 100%;
-    }
+        html, body {
+            overflow-x: hidden;
+            position: relative;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
 
-    .sidebar {
-      width: 240px;
-      background-color: #1f2937;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      padding: 10px;
-      transition: width 0.3s;
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    .sidebar.collapsed {
-      width: 64px;
-    }
+        .container {
+            display: flex;
+        }
 
-    .sidebar button {
-      background: none;
-      border: none;
-      color: white;
-      padding: 10px;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+        .sidebar {
+            width: 250px;
+            height: 100dvh;
+            background-color: #2a2a2a;
+            padding: 30px 20px;
+            position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
 
-    .sidebar button.active,
-    .sidebar button:hover {
-      background-color: #374151;
-    }
+        .sidebar.collapsed {
+            width: 70px;
+            padding: 30px 10px;
+        }
 
-    .sidebar .material-icons {
-      margin-right: 10px;
-    }
+        .sidebar.collapsed .button-text {
+            display: none;
+        }
 
-    .sidebar.collapsed .material-icons {
-      margin-right: 0;
-    }
+        .sidebar.collapsed button {
+            padding: 15px 10px;
+        }
 
-    .sidebar.collapsed .button-text {
-      display: none;
-    }
+        .toggle-sidebar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.3s ease;
+            min-height: 44px;
+        }
 
-    .content {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      transition: margin-left 0.3s;
-    }
+        .sidebar.collapsed .toggle-sidebar {
+            transform: rotate(180deg);
+        }
 
-    .content.expanded {
-      margin-left: -176px;
-    }
+        .sidebar button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 16px;
+            border-radius: 8px;
+            position: relative;
+            min-height: 44px;
+        }
 
-    .section {
-      display: none;
-    }
+        .sidebar button:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            transform: translateX(5px);
+        }
 
-    .section.active {
-      display: block;
-    }
+        .sidebar button.active {
+            background-color: rgba(0, 123, 255, 0.2);
+        }
 
-    .card {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      margin: 20px 0;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s;
-    }
+        .sidebar button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 3px;
+            animation: slideIn 0.3s ease;
+        }
 
-    .card:hover {
-      transform: translateY(-5px);
-    }
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+            transition: all 0.3s ease;
+        }
 
-    .card img {
-      width: 100%;
-      height: auto;
-    }
+        .content.expanded {
+            margin-left: 70px;
+            width: calc(100% - 70px);
+        }
 
-    .card-details {
-      padding: 15px;
-    }
+        .section {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-    .card-details h3 {
-      margin: 0 0 10px;
-    }
+        .section.active {
+            display: grid;
+            animation: fadeInUp 0.5s ease forwards;
+        }
 
-    .card-details p {
-      color: #4b5563;
-    }
+        .card {
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            transition: all 0.3s ease;
+            will-change: transform;
+            contain: content;
+        }
 
-    .card-buttons {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+        }
 
-    .buy-btn,
-    .download-btn {
-      flex: 1;
-      text-align: center;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      text-decoration: none;
-      color: white;
-    }
+        .card-details {
+            padding: 15px 0;
+        }
 
-    .buy-btn {
-      background-color: #10b981;
-    }
+        .card-meta {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
 
-    .download-btn {
-      background-color: #3b82f6;
-    }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0, 123, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            flex: 0 1 auto;
+            white-space: nowrap;
+        }
 
-    .price {
-      margin-top: 10px;
-      font-size: 1.1em;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        .card img {
+            width: 100%;
+            height: auto;
+            min-height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            max-width: 100%;
+        }
 
-    .price img {
-      width: 20px;
-      height: 20px;
-    }
+        .card:hover img {
+            transform: scale(1.05);
+        }
 
-    .card-meta {
-      margin-top: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      font-size: 0.85em;
-      color: #6b7280;
-    }
+        .price {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
+        }
 
-    .meta-item {
-      background: #e5e7eb;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
+        .price img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            margin: 0;
+            min-height: auto;
+        }
 
-    .toggle-sidebar {
-      background-color: #111827;
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
+        .card h3 {
+            margin: 10px 0;
+            color: #fff;
+            font-size: 1.5em;
+        }
 
-    h1 {
-      font-size: 2em;
-      margin-bottom: 10px;
-    }
+        .card p {
+            color: #aaa;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
 
-    @media (min-width: 768px) {
-      .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-      }
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
 
-      .card {
-        margin: 0;
-      }
-    }
-  </style>
+        .buy-btn, .download-btn {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+            transition: all 0.3s;
+            min-height: 44px;
+        }
+
+        .buy-btn {
+            background-color: #ffd700;
+            color: black;
+        }
+
+        .download-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .buy-btn:hover, .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* Media Queries */
+        @media (max-width: 1200px) {
+            .section {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+
+            .section {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 60px;
+                padding: 30px 10px;
+            }
+
+            .sidebar .button-text {
+                display: none;
+            }
+
+            .sidebar button {
+                padding: 15px 10px;
+            }
+
+            .content {
+                margin-left: 60px;
+                width: calc(100% - 60px);
+                padding: 15px;
+            }
+
+            .section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card h3 {
+                font-size: 1.2em;
+            }
+
+            .price {
+                font-size: 1.2em;
+            }
+
+            .card-buttons {
+                flex-direction: column;
+            }
+
+            .buy-btn, .download-btn {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .sidebar {
+                width: 50px;
+            }
+
+            .content {
+                margin-left: 50px;
+                width: calc(100% - 50px);
+                padding: 10px;
+            }
+
+            .card {
+                padding: 10px;
+            }
+
+            .meta-item {
+                padding: 3px 6px;
+                font-size: 0.8em;
+            }
+        }
+
+        @media (hover: none) {
+            .card:active {
+                transform: scale(0.98);
+            }
+
+            .buy-btn:active,
+            .download-btn:active {
+                transform: scale(0.95);
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar">
-      <button class="toggle-sidebar">
-        <span class="material-icons">menu</span>
-      </button>
-      <button onclick="showSection('home')" class="active">
-        <span class="material-icons">home</span>
-        <span class="button-text">Home</span>
-      </button>
-      <button onclick="showSection('addons')">
-        <span class="material-icons">extension</span>
-        <span class="button-text">Addons</span>
-      </button>
-      <button onclick="showSection('worlds')">
-        <span class="material-icons">public</span>
-        <span class="button-text">Worlds</span>
-      </button>
-      <button onclick="showSection('textures')">
-        <span class="material-icons">texture</span>
-        <span class="button-text">Texture Packs</span>
-      </button>
-    </div>
-
-    <div class="content">
-      <div id="home" class="section active">
-        <h1>FREE. Marketplace</h1>
-        <p>Not many stuff will add more later!</p>
-      </div>
-      <div id="addons" class="section cards-grid"></div>
-      <div id="worlds" class="section cards-grid"></div>
-      <div id="textures" class="section cards-grid"></div>
-    </div>
-  </div>
-
-  <script>
-    const CURRENCY_IMAGE = "https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/icons/minecoin.svg";
-
-    const cardData = {
-      addons: [
-        {
-          title: "World builder",
-          description: "Unleash your creativity with World Builder, the ultimate building tool! With intuitive selection, effortless copy-pasting, quick undo/redo actions, & custom brushes, you can easily edit entire landscapes & structures. Crafting your dream world has never been simpler, or faster!",
-          image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/9059015c-a8ed-4ae6-858d-458c52c95a9c/worldbuilder_Thumbnail_0.jpg",
-          price: "990",
-          buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/world-builder-1.6-add--on/c71645fb-e3ed-4777-a475-1545adb15b54",
-          downloadUrl: "https://www.mediafire.com/file/oqsmftot8pwrzb2/World_Builder.mcaddon/file",
-          category: "Utility",
-          version: "1.6"
-        },
-        {
-          title: "Nothing",
-          description: "I dont know what to add.",
-          image: "https://via.placeholder.com/300x200",
-          price: "#",
-          buyUrl: "#",
-          downloadUrl: "#",
-          category: ".",
-          version: "."
-        }
-      ],
-      worlds: [
-        {
-          title: "Nothing",
-          description: "I dont know what to add.",
-          image: "https://via.placeholder.com/300x200",
-          price: "#",
-          buyUrl: "#",
-          downloadUrl: "#",
-          size: ".",
-          gameMode: "."
-        }
-      ],
-      textures: [
-        {
-          title: "Actions & Stuff 1.4",
-          description: "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more",
-          image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/4ca016b3-d741-47d7-97b0-08668e38be61/actionsandstuff_Thumbnail_0.jpg",
-          price: "1690",
-          buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/actions--stuff-1.4/61c7a786-d7ad-49e0-a710-817121cd9795",
-          downloadUrl: "https://www.mediafire.com/file/96sxwubn3vwx1mh/Actions_%2526_Stuff_1.4.mcpack/file",
-          resolution: "16 - 32 - 64",
-          format: "Bedrock"
-        }
-      ]
-    };
-
-    function showSection(sectionId) {
-      document.querySelectorAll('.sidebar button').forEach(button => {
-        button.classList.remove('active');
-      });
-      document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-      });
-
-      document.querySelector(`.sidebar button[onclick="showSection('${sectionId}')"]`).classList.add('active');
-      document.getElementById(sectionId).classList.add('active');
-      localStorage.setItem('lastActiveSection', sectionId);
-    }
-
-    function createCard(item) {
-      return `
-        <div class="card">
-          <img src="${item.image}" alt="${item.title}">
-          <div class="card-details">
-            <h3>${item.title}</h3>
-            <p>${item.description}</p>
-            <div class="card-meta">
-              ${item.category ? `<span class="meta-item">${item.category}</span>` : ''}
-              ${item.version ? `<span class="meta-item">v${item.version}</span>` : ''}
-              ${item.size ? `<span class="meta-item">Size: ${item.size}</span>` : ''}
-              ${item.gameMode ? `<span class="meta-item">Mode: ${item.gameMode}</span>` : ''}
-              ${item.resolution ? `<span class="meta-item">Res: ${item.resolution}</span>` : ''}
-              ${item.format ? `<span class="meta-item">Format: ${item.format}</span>` : ''}
-            </div>
-            <div class="price">
-              ${item.price !== "#" ? `<img src="${CURRENCY_IMAGE}" alt="currency"><span>${item.price}</span>` : '<span>Free</span>'}
-            </div>
-            <div class="card-buttons">
-              <a class="buy-btn" href="${item.buyUrl}" target="_blank">Buy</a>
-              <a class="download-btn" href="${item.downloadUrl}" target="_blank">Download</a>
-            </div>
-          </div>
+    <div class="container">
+        <div class="sidebar">
+            <button class="toggle-sidebar">
+                <span class="material-icons">menu</span>
+            </button>
+            <button onclick="showSection('home')" class="active">
+                <span class="material-icons">home</span>
+                <span class="button-text">Home</span>
+            </button>
+            <button onclick="showSection('addons')">
+                <span class="material-icons">extension</span>
+                <span class="button-text">Addons</span>
+            </button>
+            <button onclick="showSection('worlds')">
+                <span class="material-icons">public</span>
+                <span class="button-text">Worlds</span>
+            </button>
+            <button onclick="showSection('textures')">
+                <span class="material-icons">texture</span>
+                <span class="button-text">Texture Packs</span>
+            </button>
         </div>
-      `;
-    }
 
-    function renderCards() {
-      Object.keys(cardData).forEach(section => {
-        const container = document.getElementById(section);
-        container.innerHTML = cardData[section].map(createCard).join('');
+        <div class="content">
+            <div id="home" class="section active">
+                <h1>FREE. Marketplace</h1>
+                <p>Not many stuff will add more later!</p>
+            </div>
+            <div id="addons" class="section"></div>
+            <div id="worlds" class="section"></div>
+            <div id="textures" class="section"></div>
+        </div>
+    </div>
+
+    <script>
+        const CURRENCY_IMAGE = "https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/icons/minecoin.svg";
+
+        const cardData = {
+            addons: [
+                {
+                    title: "World builder",
+                    description: "Unleash your creativity with World Builder, the ultimate building tool! With intuitive selection, effortless copy-pasting, quick undo/redo actions, & custom brushes, you can easily edit entire landscapes & structures. Crafting your dream world has never been simpler, or faster!",
+                    image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/9059015c-a8ed-4ae6-858d-458c52c95a9c/worldbuilder_Thumbnail_0.jpg",
+                    price: "990",
+                    buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/world-builder-1.6-add--on/c71645fb-e3ed-4777-a475-1545adb15b54",
+                    downloadUrl: "https://www.mediafire.com/file/oqsmftot8pwrzb2/World_Builder.mcaddon/file",
+                    category: "Utility",
+                    version: "1.6"
+                },
+                {
+                    title: "Nothing",
+                    description: "I dont know what to add.",
+                    image: "https://via.placeholder.com/300x200",
+                    price: "#",
+                    buyUrl: "#",
+                    downloadUrl: "#",
+                    category: ".",
+                    version: "."
+                }
+            ],
+            worlds: [
+                {
+                    title: "Nothing",
+                    description: "I dont know what to add.",
+                    image: "https://via.placeholder.com/300x200",
+                    price: "#",
+                    buyUrl: "#",
+                    downloadUrl: "#",
+                    size: ".",
+                    gameMode: "."
+                }
+            ],
+            textures: [
+                {
+                    title: "Actions & Stuff 1.4",
+                    description: "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more",
+                    image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/4ca016b3-d741-47d7-97b0-08668e38be61/actionsandstuff_Thumbnail_0.jpg",
+                    price: "1690",
+                    buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/actions--stuff-1.4/61c7a786-d7ad-49e0-a710-817121cd9795",
+                    downloadUrl: "https://www.mediafire.com/file/96sxwubn3vwx1mh/Actions_%2526_Stuff_1.4.mcpack/file",
+                    resolution: "16 - 32 - 64",
+                    format: "Bedrock"
+                }
+            ]
+        };
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.sidebar button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelector(.sidebar button[onclick="showSection('${sectionId}')"]).classList.add('active');
+            document.getElementById(sectionId).classList.add('active');
+
+            localStorage.setItem('lastActiveSection', sectionId);
+        }
+
+        function createCard(item, section) {
+            let cardHTML = 
+                <div class="card">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    <div class="card-details">
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
+                        <div class="card-meta">
+            ;
+
+            switch(section) {
+                case 'addons':
+                    cardHTML += 
+                        <span class="meta-item"><i class="material-icons">category</i>${item.category}</span>
+                        <span class="meta-item"><i class="material-icons">numbers</i>${item.version}</span>
+                    ;
+                    break;
+                case 'worlds':
+                    cardHTML += 
+                        <span class="meta-item"><i class="material-icons">storage</i>${item.size}</span>
+                        <span class="meta-item"><i class="material-icons">sports_esports</i>${item.gameMode}</span>
+                    ;
+                    break;
+                case 'textures':
+                    cardHTML += 
+                        <span class="meta-item"><i class="material-icons">high_quality</i>${item.resolution}</span>
+                        <span class="meta-item"><i class="material-icons">devices</i>${item.format}</span>
+                    ;
+                    break;
+            }
+
+            cardHTML += 
+                        </div>
+                        <div class="price">
+                            <img src="${CURRENCY_IMAGE}" alt="currency">
+                            ${item.price}
+                        </div>
+                        <div class="card-buttons">
+                            <a href="${item.buyUrl}" target="_blank" class="buy-btn">
+                                <span class="material-icons">shopping_cart</span>
+                                BUY
+                            </a>
+                            <a href="${item.downloadUrl}" target="_blank" class="download-btn">
+                                <span class="material-icons">download</span>
+                                Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            ;
+
+            return cardHTML;
+        }
+
+        function generateSections() {
+            Object.keys(cardData).forEach(section => {
+                const container = document.getElementById(section);
+                container.innerHTML = '';
+                
+                cardData[section].forEach(item => {
+                    container.innerHTML += createCard(item, section);
+                });
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSections();
+
+            const lastActiveSection = localStorage.getItem('lastActiveSection') || 'home';
+            showSection(lastActiveSection);
+
+            // Handle sidebar toggle
+            document.querySelector('.toggle-sidebar').addEventListener('click', () => {
+                const sidebar = document.querySelector('.sidebar');
+                const content = document.querySelector('.content');
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+                
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+
+            // Restore sidebar state
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+
+            // Auto-collapse sidebar on mobile
+            if (window.innerWidth <= 576) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 576) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+        });
+
+        // ---- visitor tracker ----
+(function() {
+  // Page key: customize for each page if you want per-page stats, or use just "siteVisitors" for whole-site unique count.
+  var counterKey = 'siteVisitors';
+  var idKey = counterKey + '_visitor_id';
+  // Get or set visitor ID
+  var visitorId = localStorage.getItem(idKey);
+  if (!visitorId) {
+    // Generate a simple unique ID
+    visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+    localStorage.setItem(idKey, visitorId);
+  }
+  // Get current visitor list
+  var visitors = JSON.parse(localStorage.getItem(counterKey) || '[]');
+  if (!visitors.includes(visitorId)) {
+    visitors.push(visitorId);
+    localStorage.setItem(counterKey, JSON.stringify(visitors));
+  }
+})();
+        
+  const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O"; 
+  const BIN_ID = "68286de18561e97a5015b636"; 
+
+  const pages = {
+    "home": "/",
+    "free": "/free",
+    "weather": "/apps/weather",
+    "bypass": "/bypass"
+  };
+
+  async function fetchVisitorData() {
+    const response = await fetch(https://api.jsonbin.io/v3/b/${BIN_ID}, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    const data = await response.json();
+    return data.record;
+  }
+
+  async function updateVisitorCount(pageKey) {
+    const storageKey = visited_${pageKey};
+    const record = await fetchVisitorData();
+
+    if (!localStorage.getItem(storageKey)) {
+      // Increment the page's visitor count
+      record[pageKey]++;
+      
+      // Update the record in JSONBin
+      await fetch(https://api.jsonbin.io/v3/b/${BIN_ID}, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify(record)
       });
+
+      // Mark the page as visited in localStorage
+      localStorage.setItem(storageKey, "true");
     }
+  }
 
-    // Load saved section from localStorage
-    window.addEventListener('DOMContentLoaded', () => {
-      renderCards();
-      const saved = localStorage.getItem('lastActiveSection');
-      if (saved && document.getElementById(saved)) {
-        showSection(saved);
-      }
-    });
-
-    // Sidebar toggle
-    document.querySelector('.toggle-sidebar').addEventListener('click', () => {
-      document.querySelector('.sidebar').classList.toggle('collapsed');
-      document.querySelector('.content').classList.toggle('expanded');
-    });
-  </script>
+  // Run the update when the page loads
+  const path = window.location.pathname;
+  let pageKey = Object.keys(pages).find(key => pages[key] === path);
+  
+  if (pageKey) {
+    updateVisitorCount(pageKey);
+  }
+    </script>
 </body>
 </html>
