@@ -28,16 +28,7 @@
             display: flex;
         }
 
-        .sidebar {
-            width: 250px;
-            height: 100dvh;
-            background-color: #2a2a2a;
-            padding: 30px 20px;
-            position: fixed;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
+        /* Search and Filter Styles */
         .search-filter-container {
             position: fixed;
             top: 0;
@@ -49,12 +40,43 @@
             display: flex;
             gap: 20px;
             align-items: center;
-            transition: left 0.3s ease;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease, left 0.3s ease;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .sidebar.collapsed + .search-filter-container {
-            left: 70px;
+        .search-filter-container.visible {
+            transform: translateY(0);
+        }
+
+        .search-toggle {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            z-index: 1000;
+            background: #3a3a3a;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .search-toggle:hover {
+            background: #4a4a4a;
+            transform: translateY(-2px);
+        }
+
+        .search-toggle .material-icons {
+            transition: transform 0.3s ease;
+        }
+
+        .search-toggle.active .material-icons {
+            transform: rotate(180deg);
         }
 
         .search-box {
@@ -64,12 +86,19 @@
 
         .search-box input {
             width: 100%;
-            padding: 10px 40px 10px 15px;
+            padding: 12px 40px 12px 15px;
             border: none;
             border-radius: 6px;
             background: #3a3a3a;
             color: white;
             font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            background: #4a4a4a;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
         }
 
         .search-box .search-icon {
@@ -78,16 +107,74 @@
             top: 50%;
             transform: translateY(-50%);
             color: #777;
+            transition: color 0.3s ease;
+        }
+
+        .search-box input:focus + .search-icon {
+            color: #007bff;
+        }
+
+        .filter-container {
+            position: relative;
         }
 
         .filter-container select {
-            padding: 10px 15px;
+            padding: 12px 35px 12px 15px;
             border: none;
             border-radius: 6px;
             background: #3a3a3a;
             color: white;
             font-size: 16px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .filter-container::after {
+            content: '';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #fff;
+            pointer-events: none;
+            transition: transform 0.3s ease;
+        }
+
+        .filter-container select:focus {
+            background: #4a4a4a;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+        }
+
+        .filter-container select:focus + .filter-container::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .filter-container option {
+            background: #3a3a3a;
+            color: white;
+            padding: 10px;
+        }
+
+        .filter-container option:hover {
+            background: #4a4a4a;
+        }
+        /* Sidebar and Content Styles */
+        .sidebar {
+            width: 250px;
+            height: 100dvh;
+            background-color: #2a2a2a;
+            padding: 30px 20px;
+            position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
 
         .sidebar.collapsed {
@@ -131,7 +218,7 @@
             border: none;
             color: white;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-align: left;
             font-size: 16px;
             border-radius: 8px;
@@ -165,6 +252,10 @@
             padding: 30px;
             width: calc(100% - 250px);
             transition: all 0.3s ease;
+            margin-top: 0;
+        }
+
+        .content.search-visible {
             margin-top: 70px;
         }
 
@@ -173,6 +264,7 @@
             width: calc(100% - 70px);
         }
 
+        /* Card Styles */
         .section {
             display: none;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -184,18 +276,6 @@
         .section.active {
             display: grid;
             animation: fadeInUp 0.5s ease forwards;
-        }
-
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 50px;
-            color: #777;
-        }
-
-        .no-results .material-icons {
-            font-size: 48px;
-            margin-bottom: 10px;
         }
 
         .card {
@@ -241,13 +321,14 @@
             font-size: 0.9em;
             display: block;
             margin-top: 5px;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
             width: 100%;
             text-align: left;
         }
 
         .read-more-btn:hover {
             color: #0056b3;
+            transform: translateX(5px);
         }
 
         .fade-overlay {
@@ -266,6 +347,7 @@
             opacity: 1;
         }
 
+        /* Card Components */
         .card-details {
             padding: 15px 0;
         }
@@ -287,6 +369,12 @@
             font-size: 0.9em;
             flex: 0 1 auto;
             white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .meta-item:hover {
+            background: rgba(0, 123, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .card img {
@@ -311,6 +399,11 @@
             font-weight: bold;
             color: #ffd700;
             margin: 10px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .price {
+            transform: scale(1.05);
         }
 
         .price img {
@@ -325,6 +418,11 @@
             margin: 10px 0;
             color: #fff;
             font-size: 1.5em;
+            transition: color 0.3s ease;
+        }
+
+        .card:hover h3 {
+            color: #007bff;
         }
 
         .card-buttons {
@@ -345,7 +443,7 @@
             cursor: pointer;
             font-weight: bold;
             flex: 1;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             min-height: 44px;
         }
 
@@ -364,6 +462,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -380,6 +479,24 @@
             to { width: 100%; }
         }
 
+        /* No Results Message */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .no-results .material-icons {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         /* Media Queries */
         @media (max-width: 1200px) {
             .section {
@@ -404,12 +521,21 @@
                 gap: 10px;
             }
 
+            .content.search-visible {
+                margin-top: 120px;
+            }
+
             .section {
                 grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             }
 
             .card {
                 padding: 15px;
+            }
+
+            .search-toggle {
+                top: 15px;
+                right: 15px;
             }
         }
 
@@ -435,6 +561,14 @@
 
             .search-filter-container {
                 left: 60px;
+            }
+
+            .search-toggle {
+                right: 10px;
+            }
+
+            .search-toggle .button-text {
+                display: none;
             }
 
             .section {
@@ -520,6 +654,11 @@
             </button>
         </div>
 
+        <button class="search-toggle">
+            <span class="material-icons">search</span>
+            <span class="button-text">Search</span>
+        </button>
+
         <div class="search-filter-container">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search...">
@@ -604,6 +743,18 @@
                 }
             ]
         };
+
+        function toggleSearch() {
+            const searchContainer = document.querySelector('.search-filter-container');
+            const searchToggle = document.querySelector('.search-toggle');
+            const content = document.querySelector('.content');
+            
+            searchContainer.classList.toggle('visible');
+            searchToggle.classList.toggle('active');
+            content.classList.toggle('search-visible');
+            
+            localStorage.setItem('searchVisible', searchContainer.classList.contains('visible'));
+        }
 
         function showSection(sectionId) {
             document.querySelectorAll('.sidebar button').forEach(button => {
@@ -736,12 +887,27 @@
             });
         }
 
+        function generateSections() {
+            Object.keys(cardData).forEach(section => {
+                const container = document.getElementById(section);
+                container.innerHTML = '';
+                
+                cardData[section].forEach(item => {
+                    container.innerHTML += createCard(item, section);
+                });
+            });
+        }
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             generateSections();
 
             const lastActiveSection = localStorage.getItem('lastActiveSection') || 'home';
             showSection(lastActiveSection);
+
+            // Add search toggle functionality
+            const searchToggle = document.querySelector('.search-toggle');
+            searchToggle.addEventListener('click', toggleSearch);
 
             // Add search and filter listeners
             document.getElementById('searchInput').addEventListener('input', filterAndSearchCards);
@@ -757,7 +923,17 @@
                 localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
             });
 
-            // Restore sidebar state
+            // Restore states
+            const searchVisible = localStorage.getItem('searchVisible') === 'true';
+            if (searchVisible) {
+                const searchContainer = document.querySelector('.search-filter-container');
+                const searchToggle = document.querySelector('.search-toggle');
+                const content = document.querySelector('.content');
+                searchContainer.classList.add('visible');
+                searchToggle.classList.add('active');
+                content.classList.add('search-visible');
+            }
+
             const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (sidebarCollapsed) {
                 document.querySelector('.sidebar').classList.add('collapsed');
@@ -771,17 +947,6 @@
             }
         });
 
-        function generateSections() {
-            Object.keys(cardData).forEach(section => {
-                const container = document.getElementById(section);
-                container.innerHTML = '';
-                
-                cardData[section].forEach(item => {
-                    container.innerHTML += createCard(item, section);
-                });
-            });
-        }
-
         // Handle window resize
         window.addEventListener('resize', () => {
             if (window.innerWidth <= 576) {
@@ -792,4 +957,3 @@
     </script>
 </body>
 </html>
-
