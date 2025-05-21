@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Form System</title>
-  <!-- Add Google Icons -->
+  <!-- Adds Google Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     :root {
@@ -435,22 +435,45 @@
     }
 
     function updateStatus(id, newStatus) {
+      // Update main entries
       const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
       const entry = entries.find(e => e.id === id);
       if (entry) {
         entry.status = newStatus;
         localStorage.setItem("formEntries", JSON.stringify(entries));
+
+        // Update user inbox
+        const userInboxKey = `userInbox_${entry.user}`;
+        const userInbox = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
+        const userEntry = userInbox.find(e => e.id === id);
+        if (userEntry) {
+          userEntry.status = newStatus;
+          localStorage.setItem(userInboxKey, JSON.stringify(userInbox));
+        }
+
         renderForms();
       }
     }
 
     function saveReply(id) {
+      // Update main entries
       const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
       const entry = entries.find(e => e.id === id);
       const textarea = document.getElementById("reply-" + id);
+      
       if (entry && textarea) {
         entry.reply = textarea.value;
         localStorage.setItem("formEntries", JSON.stringify(entries));
+
+        // Update user inbox
+        const userInboxKey = `userInbox_${entry.user}`;
+        const userInbox = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
+        const userEntry = userInbox.find(e => e.id === id);
+        if (userEntry) {
+          userEntry.reply = textarea.value;
+          localStorage.setItem(userInboxKey, JSON.stringify(userInbox));
+        }
+
         renderForms();
       }
     }
