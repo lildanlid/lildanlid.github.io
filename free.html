@@ -38,6 +38,58 @@
             z-index: 1000;
         }
 
+        .search-filter-container {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            background: #2a2a2a;
+            padding: 15px 30px;
+            z-index: 999;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            transition: left 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed + .search-filter-container {
+            left: 70px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: none;
+            border-radius: 6px;
+            background: #3a3a3a;
+            color: white;
+            font-size: 16px;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        .filter-container select {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            background: #3a3a3a;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
         .sidebar.collapsed {
             width: 70px;
             padding: 30px 10px;
@@ -113,6 +165,7 @@
             padding: 30px;
             width: calc(100% - 250px);
             transition: all 0.3s ease;
+            margin-top: 70px;
         }
 
         .content.expanded {
@@ -131,6 +184,18 @@
         .section.active {
             display: grid;
             animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: #777;
+        }
+
+        .no-results .material-icons {
+            font-size: 48px;
+            margin-bottom: 10px;
         }
 
         .card {
@@ -332,6 +397,13 @@
                 width: calc(100% - 200px);
             }
 
+            .search-filter-container {
+                left: 200px;
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
             .section {
                 grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             }
@@ -359,6 +431,10 @@
                 margin-left: 60px;
                 width: calc(100% - 60px);
                 padding: 15px;
+            }
+
+            .search-filter-container {
+                left: 60px;
             }
 
             .section {
@@ -392,6 +468,10 @@
                 margin-left: 50px;
                 width: calc(100% - 50px);
                 padding: 10px;
+            }
+
+            .search-filter-container {
+                left: 50px;
             }
 
             .card {
@@ -440,6 +520,28 @@
             </button>
         </div>
 
+        <div class="search-filter-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <span class="material-icons search-icon">search</span>
+            </div>
+            <div class="filter-container">
+                <select id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="Utility">Utility</option>
+                    <option value="Weapons & Tools">Weapons & Tools</option>
+                    <option value="Enchants">Enchants</option>
+                    <option value="Quality of life">Quality of Life</option>
+                    <option value="World Generation & Exploring">World Generation & Exploring</option>
+                    <option value="Mobs & Bosses">Mobs & Bosses</option>
+                    <option value="Building">Building</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Realism">Realism</option>
+                    <option value="Animations">Animations</option>
+                </select>
+            </div>
+        </div>
+
         <div class="content">
             <div id="home" class="section active">
                 <h1>FREE. Marketplace</h1>
@@ -467,14 +569,14 @@
                     version: "1.6"
                 },
                 {
-                    title: "Nothing",
-                    description: "I dont know what to add.",
-                    image: "https://via.placeholder.com/300x200",
-                    price: "#",
-                    buyUrl: "#",
-                    downloadUrl: "#",
-                    category: ".",
-                    version: "."
+                    title: "Advanced Movement",
+                    description: "Elevate your gameplay with Advanced Movement! Double Jump higher, Dash at lightning speed, Wall Run, Climb obstacles, and Roll to reduce fall damage. Sprint across water with Water Running or ride rockets freely with Free Ride! Use Gadgets like Rockets, Springs, and Cannons for epic travel—all with stunning custom animations!",
+                    image: "https://xforgeassets002.xboxlive.com/pf-namespace-b63a0803d3653643/907d5c20-b7ff-4b89-9354-263f04379459/AdvancedMovement_Thumbnail_0.jpg",
+                    price: "660",
+                    buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/ninja-squirrel-gaming/advanced-movement/43fabfe1-747e-482b-9a48-9cddd27ee2c0",
+                    downloadUrl: "https://www.mediafire.com/file/3btazq67bfvmour/Advanced_Movement.mcaddon/file",
+                    category: "Animations",
+                    version: "?"
                 }
             ],
             worlds: [
@@ -515,6 +617,7 @@
             document.getElementById(sectionId).classList.add('active');
 
             localStorage.setItem('lastActiveSection', sectionId);
+            filterAndSearchCards();
         }
 
         function createCard(item, section) {
@@ -602,14 +705,34 @@
             }
         }
 
-        function generateSections() {
+        function filterAndSearchCards() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedCategory = document.getElementById('categoryFilter').value;
+
             Object.keys(cardData).forEach(section => {
                 const container = document.getElementById(section);
-                container.innerHTML = '';
-                
-                cardData[section].forEach(item => {
-                    container.innerHTML += createCard(item, section);
-                });
+                if (container.classList.contains('active')) {
+                    container.innerHTML = '';
+                    
+                    const filteredCards = cardData[section].filter(item => {
+                        const matchesSearch = item.title.toLowerCase().includes(searchTerm);
+                        const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+                        return matchesSearch && matchesCategory;
+                    });
+
+                    filteredCards.forEach(item => {
+                        container.innerHTML += createCard(item, section);
+                    });
+
+                    if (filteredCards.length === 0) {
+                        container.innerHTML = `
+                            <div class="no-results">
+                                <span class="material-icons">search_off</span>
+                                <p>No items found</p>
+                            </div>
+                        `;
+                    }
+                }
             });
         }
 
@@ -619,6 +742,10 @@
 
             const lastActiveSection = localStorage.getItem('lastActiveSection') || 'home';
             showSection(lastActiveSection);
+
+            // Add search and filter listeners
+            document.getElementById('searchInput').addEventListener('input', filterAndSearchCards);
+            document.getElementById('categoryFilter').addEventListener('change', filterAndSearchCards);
 
             // Handle sidebar toggle
             document.querySelector('.toggle-sidebar').addEventListener('click', () => {
@@ -644,6 +771,17 @@
             }
         });
 
+        function generateSections() {
+            Object.keys(cardData).forEach(section => {
+                const container = document.getElementById(section);
+                container.innerHTML = '';
+                
+                cardData[section].forEach(item => {
+                    container.innerHTML += createCard(item, section);
+                });
+            });
+        }
+
         // Handle window resize
         window.addEventListener('resize', () => {
             if (window.innerWidth <= 576) {
@@ -654,3 +792,4 @@
     </script>
 </body>
 </html>
+
