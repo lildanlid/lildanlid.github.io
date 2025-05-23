@@ -31,7 +31,7 @@
         .sidemenu {
             width: 300px;
             height: 100vh;
-            background-color: transparent; /* Changed to transparent */
+            background-color: transparent;
             position: fixed;
             left: -300px;
             top: 0;
@@ -68,7 +68,7 @@
 
         .menu-item {
             margin: 15px 0;
-            background: transparent; /* Added transparent background */
+            background: transparent;
         }
 
         .dropdown-btn {
@@ -122,6 +122,24 @@
             margin-left: 320px;
         }
 
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .copy-btn {
+            width: auto;
+            padding: 8px 16px;
+            background: var(--primary-color);
+            margin: 0;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+        }
+
         input, select {
             width: 100%;
             padding: 12px;
@@ -169,6 +187,7 @@
             margin-top: 20px;
             animation: fadeIn 0.3s ease-in-out;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
         }
 
         .material-icons-round {
@@ -180,6 +199,9 @@
         .btn-content {
             display: flex;
             align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .arrow {
@@ -237,6 +259,9 @@
             padding: 8px;
             cursor: pointer;
             transition: all var(--transition-speed);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .module-label:hover {
@@ -334,6 +359,10 @@
                 <div class="input-group">
                     <span class="material-icons-round">edit</span>
                     <input type="text" id="packName" placeholder="Pack Name">
+                </div>
+                <div class="input-group">
+                    <span class="material-icons-round">person</span>
+                    <input type="text" id="packAuthor" placeholder="Author Name">
                 </div>
                 <div class="input-group">
                     <span class="material-icons-round">notes</span>
@@ -452,7 +481,13 @@
     </div>
 
     <div class="main-content" id="mainContent">
-        <h2><span class="material-icons-round">code</span> Generated Output:</h2>
+        <div class="output-header">
+            <h2><span class="material-icons-round">code</span> Generated Output:</h2>
+            <button onclick="copyOutput()" class="copy-btn">
+                <span class="material-icons-round">content_copy</span>
+                Copy
+            </button>
+        </div>
         <pre id="output"></pre>
     </div>
 
@@ -499,6 +534,13 @@
             }, 5000);
         }
 
+        function copyOutput() {
+            const output = document.getElementById('output');
+            navigator.clipboard.writeText(output.textContent)
+                .then(() => showToast('Copied to clipboard!'))
+                .catch(err => showToast('Failed to copy'));
+        }
+
         function generateUUID() {
             const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                 const r = Math.random() * 16 | 0;
@@ -523,68 +565,75 @@
 
         function generateManifest() {
             const name = document.getElementById('packName').value;
+            const author = document.getElementById('packAuthor').value;
             const description = document.getElementById('packDescription').value;
-            const version = document.getElementById('packVersion').value;
+            const version = document.getElementById('packVersion').value || "1.0.0";
             const type = document.getElementById('packType').value;
 
-            const modules = [{
-                type: type === 'resources' ? 'resources' : 'data',
-                uuid: generateUUIDv4(),
-                version: version.split('.').map(Number)
-            }];
+            const manifest = {
+                format_version: 2,
+                metadata: {
+                    authors: [author]
+                },
+                header: {
+                    name: name,
+                    description: description,
+                    min_engine_version: [1, 20, 60],
+                    uuid: generateUUIDv4(),
+                    version: version.split('.').map(Number) || [1, 0, 0]
+                },
+                modules: [
+                    {
+                        type: type === 'resources' ? 'resources' : 'data',
+                        uuid: generateUUIDv4(),
+                        version: version.split('.').map(Number) || [1, 0, 0]
+                    }
+                ],
+                dependencies: []
+            };
 
             if (type === 'behavior') {
+                manifest.modules.push({
+                    type: "script",
+                    language: "javascript",
+                    uuid: generateUUIDv4(),
+                    entry: "scripts/index.js",
+                    version: version.split('.').map(Number) || [1, 0, 0]
+                });
+
                 if (document.getElementById('useServer').checked) {
-                    modules.push({
+                    manifest.dependencies.push({
                         module_name: "@minecraft/server",
                         version: "2.0.0-beta"
                     });
                 }
                 if (document.getElementById('useServerUI').checked) {
-                    modules.push({
+                    manifest.dependencies.push({
                         module_name: "@minecraft/server-ui",
                         version: "2.0.0-beta"
                     });
                 }
                 if (document.getElementById('useGametest').checked) {
-                    modules.push({
+                    manifest.dependencies.push({
                         module_name: "@minecraft/server-gametest",
                         version: "2.0.0-beta"
                     });
                 }
                 if (document.getElementById('useServerNet').checked) {
-                    modules.push({
+                    manifest.dependencies.push({
                         module_name: "@minecraft/server-net",
                         version: "2.0.0-beta"
                     });
                 }
                 if (document.getElementById('useServerAdmin').checked) {
-                    modules.push({
+                    manifest.dependencies.push({
                         module_name: "@minecraft/server-admin",
                         version: "2.0.0-beta"
                     });
                 }
             }
 
-            const manifest = {
-                format_version: 2,
-                header: {
-                    name: name,
-                    description: description,
-                    uuid: generateUUIDv4(),
-                    version: version.split('.').map(Number),
-                    min_engine_version: [1, 16, 0]
-                },
-                modules: modules,
-                dependencies: modules.length > 1 ? [
-                    {
-                        module_name: "minecraft",
-                        version: [1, 19, 0]
-                    }
-                ] : []
-            };
-
-            document.getElementById('output').textContent = JSON.stringify(manifest, null, 2);
+            document.getElementById('output').textContent = JSON.stringify(manifest, null, '\t');
             showToast('Manifest Generated!');
         }
 
@@ -617,7 +666,7 @@
                 }
             };
 
-            document.getElementById('output').textContent = JSON.stringify(behavior, null, 2);
+            document.getElementById('output').textContent = JSON.stringify(behavior, null, '\t');
             showToast('Behavior Pack Generated!');
         }
 
@@ -634,11 +683,10 @@
                 }
             };
 
-            document.getElementById('output').textContent = JSON.stringify(resource, null, 2);
+            document.getElementById('output').textContent = JSON.stringify(resource, null, '\t');
             showToast('Resource Pack Generated!');
         }
 
-        // Add event listener for pack type changes
         document.addEventListener('DOMContentLoaded', function() {
             const packTypeSelect = document.getElementById('packType');
             packTypeSelect.addEventListener('change', handlePackTypeChange);
