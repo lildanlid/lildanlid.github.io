@@ -1162,6 +1162,55 @@
   if (pageKey) {
     updateVisitorCount(pageKey);
   }
+
+  const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O"; 
+  const BIN_ID = "68286de18561e97a5015b636";
+
+  const pages = {
+    "home": "/",
+    "free": "/free",
+    "weather": "/apps/weather",
+    "bypass": "/bypass"
+    "free": "/free"
+  };
+
+  async function fetchVisitorData() {
+    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    const data = await response.json();
+    return data.record;
+  }
+
+  async function updateVisitorCount(pageKey) {
+    const storageKey = `visited_${pageKey}`;
+    const record = await fetchVisitorData();
+
+    if (!localStorage.getItem(storageKey)) {
+      // Increment the page's visitor count
+      record[pageKey]++;
+      
+      // Update the record in JSONBin
+      await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify(record)
+      });
+
+      // Mark the page as visited in localStorage
+      localStorage.setItem(storageKey, "true");
+    }
+  }
+
+  // Run the update when the page loads
+  const path = window.location.pathname;
+  let pageKey = Object.keys(pages).find(key => pages[key] === path);
+  if (pageKey) {
+    updateVisitorCount(pageKey);
+  }
     </script>
 </body>
 </html>
