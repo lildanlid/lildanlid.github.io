@@ -39,9 +39,15 @@
         a:hover {
             background-color: #0056b3;
         }
-
+    </style>
+</head>
+<body>
+    <h1>Nice Try</h1>
+    <p>No Bypassing</p>
+    <a href="https://lildanlid.github.io/">Go Back</a>
+<script>
   const API_KEY = "$2a$10$rsyRypkQe530rC1JlyRw.u9kuNRS2p4EVCBTgJWICfKVj2J26N64O"; 
-  const BIN_ID = "68286de18561e97a5015b636"; 
+  const BIN_ID = "68286de18561e97a5015b636";
 
   const pages = {
     "home": "/",
@@ -84,15 +90,9 @@
   // Run the update when the page loads
   const path = window.location.pathname;
   let pageKey = Object.keys(pages).find(key => pages[key] === path);
-  
   if (pageKey) {
     updateVisitorCount(pageKey);
   }
-    </style>
-</head>
-<body>
-    <h1>Nice Try</h1>
-    <p>No Bypassing</p>
-    <a href="https://lildanlid.github.io/">Go Back</a>
+</script>
 </body>
 </html>
