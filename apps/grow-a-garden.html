@@ -55,21 +55,16 @@
         }
 
         #resetCounter {
-            background-color: #00ff9d;
-            color: #1a1a1a;
-            border: none;
+            background-color: #2d2d2d;
+            color: #00ff9d;
             padding: 12px 24px;
             border-radius: 4px;
-            cursor: pointer;
             margin-top: 15px;
             font-size: 16px;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,255,157,0.3);
-            width: 100%;
-        }
-
-        #resetCounter:hover {
-            background-color: #00cc7d;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            border: 1px solid #3d3d3d;
         }
     </style>
 </head>
@@ -85,21 +80,34 @@
         <div id="seedStock" class="item-list"></div>
     </div>
 
-    <button id="resetCounter">Reset Counter: 0</button>
+    <div id="resetCounter">Reset Counter: 0</div>
 
     <script>
-        let resetCount = 0;
-        let timeLeft = 300; // 5 minutes in seconds
+        let resetCount = parseInt(localStorage.getItem('resetCount')) || 0;
+        let timeLeft = 300; // 5 minutes in seconds [citation:8](#)
 
         async function fetchStock() {
             try {
-                // Using a CORS proxy (you'll need to set this up)
-                const response = await fetch('https://your-proxy-server.com/fetch-stock');
-                const data = await response.json();
-                updateDisplay(data);
+                const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://vulcanvalues.com/grow-a-garden/stock'));
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Extract gear and seed sections
+                const gearSection = extractSection(doc, 'GEAR STOCK');
+                const seedSection = extractSection(doc, 'SEEDS STOCK');
+                
+                updateDisplay(gearSection, seedSection);
             } catch (error) {
                 console.error('Failed to fetch stock:', error);
             }
+        }
+
+        function extractSection(doc, sectionTitle) {
+            // Find the section and extract items
+            const items = [];
+            // Implementation depends on actual HTML structure
+            return items;
         }
 
         function updateTimer() {
@@ -111,34 +119,39 @@
             timeLeft--;
             if (timeLeft < 0) {
                 timeLeft = 300;
+                updateResetCounter();
                 fetchStock();
             }
         }
 
-        function updateDisplay(data) {
+        function updateDisplay(gearItems, seedItems) {
             // Update gear stock
             const gearStock = document.getElementById('gearStock');
-            gearStock.innerHTML = data.gear.map(item => `
+            gearStock.innerHTML = gearItems.map(item => `
                 <div class="item">
-                    <span>${item.name}</span>
-                    <span>${item.quantity}</span>
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-quantity">${item.quantity}</span>
                 </div>
             `).join('');
 
             // Update seed stock
             const seedStock = document.getElementById('seedStock');
-            seedStock.innerHTML = data.seeds.map(item => `
+            seedStock.innerHTML = seedItems.map(item => `
                 <div class="item">
-                    <span>${item.name}</span>
-                    <span>${item.quantity}</span>
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-quantity">${item.quantity}</span>
                 </div>
             `).join('');
         }
 
-        document.getElementById('resetCounter').addEventListener('click', () => {
+        function updateResetCounter() {
             resetCount++;
+            localStorage.setItem('resetCount', resetCount);
             document.getElementById('resetCounter').textContent = `Reset Counter: ${resetCount}`;
-        });
+        }
+
+        // Initialize reset counter display
+        document.getElementById('resetCounter').textContent = `Reset Counter: ${resetCount}`;
 
         // Start timer
         setInterval(updateTimer, 1000);
