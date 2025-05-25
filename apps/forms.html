@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Form System</title>
-  <!-- Adds Google Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style>
     :root {
@@ -320,7 +319,6 @@
     </div>
   </div>
   <script>
-    // Always log out on page reload
     localStorage.removeItem("adminLoggedIn");
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -340,7 +338,7 @@
             type,
             content,
             date: new Date().toLocaleString(),
-            status: "pending", // Explicitly set initial status
+            status: "pending",
             reply: ""
           };
 
@@ -371,7 +369,7 @@
 
     function login() {
       const input = document.getElementById("adminPassword").value;
-      if (input === "admin123") {
+      if (input === "localStorage.setItem") {
         localStorage.setItem("adminLoggedIn", "true");
         document.getElementById("adminAuth").style.display = "none";
         document.getElementById("logoutButton").style.display = "block";
@@ -452,14 +450,13 @@
     }
 
     function updateStatus(id, newStatus) {
-      // Update main entries
       const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
       const entry = entries.find(e => e.id === id);
       if (entry) {
         entry.status = newStatus;
         localStorage.setItem("formEntries", JSON.stringify(entries));
 
-        // Update user inbox
+
         const userInboxKey = `userInbox_${entry.user}`;
         const userInbox = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
         const userEntry = userInbox.find(e => e.id === id);
@@ -468,7 +465,7 @@
           localStorage.setItem(userInboxKey, JSON.stringify(userInbox));
         }
 
-        // Update status visually
+
         const statusElement = document.querySelector(`[onclick="updateStatus(${id}, '${newStatus}')"]`).closest('.formCard').querySelector('.status');
         statusElement.className = `status ${newStatus}`;
         statusElement.innerHTML = `
@@ -481,7 +478,7 @@
     }
 
     function saveReply(id) {
-      // Update main entries
+
       const entries = JSON.parse(localStorage.getItem("formEntries") || "[]");
       const entry = entries.find(e => e.id === id);
       const textarea = document.getElementById("reply-" + id);
@@ -490,7 +487,7 @@
         entry.reply = textarea.value;
         localStorage.setItem("formEntries", JSON.stringify(entries));
 
-        // Update user inbox
+ 
         const userInboxKey = `userInbox_${entry.user}`;
         const userInbox = JSON.parse(localStorage.getItem(userInboxKey) || "[]");
         const userEntry = userInbox.find(e => e.id === id);
