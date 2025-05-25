@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel File Viewer</title>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .upload-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+
+        #tableContainer {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .sheet-tabs {
+            margin-top: 20px;
+        }
+
+        .sheet-tab {
+            padding: 8px 16px;
+            margin-right: 4px;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .sheet-tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Excel File Viewer</h1>
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept=".xlsx, .xls" />
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                Choose Excel File
+            </button>
+        </div>
+        <div id="sheetTabs" class="sheet-tabs"></div>
+        <div id="tableContainer"></div>
+    </div>
+
+    <script>
+        let workbook = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                workbook = XLSX.read(data, { type: 'array' });
+                createSheetTabs();
+                displaySheet(workbook.SheetNames[0]);
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+
+        function createSheetTabs() {
+            const sheetTabs = document.getElementById('sheetTabs');
+            sheetTabs.innerHTML = '';
+
+            workbook.SheetNames.forEach((sheetName, index) => {
+                const tab = document.createElement('button');
+                tab.className = 'sheet-tab' + (index === 0 ? ' active' : '');
+                tab.textContent = sheetName;
+                tab.onclick = () => {
+                    document.querySelectorAll('.sheet-tab').forEach(tab => tab.classList.remove('active'));
+                    tab.classList.add('active');
+                    displaySheet(sheetName);
+                };
+                sheetTabs.appendChild(tab);
+            });
+        }
+
+        function displaySheet(sheetName) {
+            const worksheet = workbook.Sheets[sheetName];
+            const html = XLSX.utils.sheet_to_html(worksheet, { editable: false });
+            document.getElementById('tableContainer').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
