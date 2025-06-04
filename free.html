@@ -5,6 +5,541 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Marketplace Addons</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        html, body {
+            overflow-x: hidden;
+            position: relative;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .container {
+            display: flex;
+        }
+        .search-filter-container {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            background: #2a2a2a;
+            padding: 15px 30px;
+            z-index: 999;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease, left 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .search-filter-container.visible {
+            transform: translateY(0);
+        }
+        .search-toggle {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            z-index: 1000;
+            background: #3a3a3a;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        .search-toggle:hover {
+            background: #4a4a4a;
+            transform: translateY(-2px);
+        }
+        .search-toggle .material-icons {
+            transition: transform 0.3s ease;
+        }
+        .search-toggle.active .material-icons {
+            transform: rotate(180deg);
+        }
+        .search-box {
+            position: relative;
+            flex: 1;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: none;
+            border-radius: 6px;
+            background: #3a3a3a;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .search-box input:focus {
+            background: #4a4a4a;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+        }
+        .search-box .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+            transition: color 0.3s ease;
+        }
+        .search-box input:focus + .search-icon {
+            color: #007bff;
+        }
+        .filter-container {
+            position: relative;
+        }
+        .filter-container select {
+            padding: 12px 35px 12px 15px;
+            border: none;
+            border-radius: 6px;
+            background: #3a3a3a;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        .filter-container::after {
+            content: '';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #fff;
+            pointer-events: none;
+            transition: transform 0.3s ease;
+        }
+        .filter-container select:focus {
+            background: #4a4a4a;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+        }
+        .filter-container select:focus + .filter-container::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+        .filter-container option {
+            background: #3a3a3a;
+            color: white;
+            padding: 10px;
+        }
+        .filter-container option:hover {
+            background: #4a4a4a;
+        }
+        .sidebar {
+            width: 250px;
+            height: 100dvh;
+            background-color: #2a2a2a;
+            padding: 30px 20px;
+            position: fixed;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+            padding: 30px 10px;
+        }
+        .sidebar.collapsed .button-text {
+            display: none;
+        }
+        .sidebar.collapsed button {
+            padding: 15px 10px;
+        }
+        .toggle-sidebar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.3s ease;
+            min-height: 44px;
+        }
+        .sidebar.collapsed .toggle-sidebar {
+            transform: rotate(180deg);
+        }
+        .sidebar button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 16px;
+            border-radius: 8px;
+            position: relative;
+            min-height: 44px;
+        }
+        .sidebar button:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            transform: translateX(5px);
+        }
+        .sidebar button.active {
+            background-color: rgba(0, 123, 255, 0.2);
+        }
+        .sidebar button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #007bff;
+            border-radius: 3px;
+            animation: slideIn 0.3s ease;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+            transition: all 0.3s ease;
+            margin-top: 0;
+        }
+        .content.search-visible {
+            margin-top: 70px;
+        }
+        .content.expanded {
+            margin-left: 70px;
+            width: calc(100% - 70px);
+        }
+        .section {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .section.active {
+            display: grid;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        .card {
+            border: 1px solid #3a3a3a;
+            border-radius: 12px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            transition: all 0.3s ease;
+            will-change: transform;
+            contain: content;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+        }
+        .description-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .card p {
+            overflow: hidden;
+            position: relative;
+            margin: 0;
+            transition: max-height 0.3s ease-out;
+            max-height: 1000px;
+            color: #aaa;
+            line-height: 1.5;
+        }
+        .card p.truncated {
+            max-height: 4.5em;
+        }
+        .read-more-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            padding: 5px 0;
+            font-size: 0.9em;
+            display: block;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+        }
+        .read-more-btn:hover {
+            color: #0056b3;
+            transform: translateX(5px);
+        }
+        .fade-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25px;
+            background: linear-gradient(transparent, #2a2a2a);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .truncated + .fade-overlay {
+            opacity: 1;
+        }
+        .card-details {
+            padding: 15px 0;
+        }
+        .card-meta {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0, 123, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            flex: 0 1 auto;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        .meta-item:hover {
+            background: rgba(0, 123, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+            min-height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            max-width: 100%;
+        }
+        .card:hover img {
+            transform: scale(1.05);
+        }
+        .price {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
+            transition: transform 0.3s ease;
+        }
+        .card:hover .price {
+            transform: scale(1.05);
+        }
+        .price img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            margin: 0;
+            min-height: auto;
+        }
+        .card h3 {
+            margin: 10px 0;
+            color: #fff;
+            font-size: 1.5em;
+            transition: color 0.3s ease;
+        }
+        .card:hover h3 {
+            color: #007bff;
+        }
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: stretch;
+        }
+        .buy-btn, .download-btn {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1 1 0;
+            min-height: 44px;
+            height: 44px;
+            box-sizing: border-box;
+        }
+        .buy-btn {
+            background-color: #ffd700;
+            color: black;
+        }
+        .download-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .buy-btn:hover, .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .buy-btn .material-icons,
+        .download-btn .material-icons {
+            font-size: 20px;
+            vertical-align: middle;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes slideIn {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            animation: fadeIn 0.3s ease;
+        }
+        .no-results .material-icons {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @media (max-width: 1200px) {
+            .section {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .content {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+            .search-filter-container {
+                left: 200px;
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .content.search-visible {
+                margin-top: 120px;
+            }
+            .section {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+            .card {
+                padding: 15px;
+            }
+            .search-toggle {
+                top: 15px;
+                right: 15px;
+            }
+        }
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 60px;
+                padding: 30px 10px;
+            }
+            .sidebar .button-text {
+                display: none;
+            }
+            .sidebar button {
+                padding: 15px 10px;
+            }
+            .content {
+                margin-left: 60px;
+                width: calc(100% - 60px);
+                padding: 15px;
+            }
+            .search-filter-container {
+                left: 60px;
+            }
+            .search-toggle {
+                right: 10px;
+            }
+            .search-toggle .button-text {
+                display: none;
+            }
+            .section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .card h3 {
+                font-size: 1.2em;
+            }
+            .price {
+                font-size: 1.2em;
+            }
+            .card-buttons {
+                flex-direction: column;
+            }
+            .buy-btn, .download-btn {
+                padding: 12px;
+                width: 100%;
+                height: 44px;
+            }
+        }
+        @media (max-width: 350px) {
+            .sidebar {
+                width: 50px;
+            }
+            .content {
+                margin-left: 50px;
+                width: calc(100% - 50px);
+                padding: 10px;
+            }
+            .search-filter-container {
+                left: 50px;
+            }
+            .card {
+                padding: 10px;
+            }
+            .meta-item {
+                padding: 3px 6px;
+                font-size: 0.8em;
+            }
+        }
+        @media (hover: none) {
+            .card:active {
+                transform: scale(0.98);
+            }
+            .buy-btn:active,
+            .download-btn:active {
+                transform: scale(0.95);
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -31,7 +566,7 @@
         </div>
         <button class="search-toggle">
             <span class="material-icons">search</span>
-            <span class="button-text">Search</span>
+            <span class="button-text"></span>
         </button>
         <div class="search-filter-container">
             <div class="search-box">
@@ -64,255 +599,12 @@
             <div id="textures" class="section"></div>
         </div>
     </div>
-</body>
-</html>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
-
-    html, body {
-        overflow-x: hidden;
-        position: relative;
-        background-color: #1a1a1a;
-        color: #fff;
-    }
-
-    html {
-        scroll-behavior: smooth;
-    }
-
-    .container {
-        display: flex;
-    }
-
-    /* Updated search-filter-container styles */
-    .search-filter-container {
-        position: fixed;
-        top: 0;
-        right: 0;
-        left: 250px; /* Matches sidebar width */
-        padding: 15px 30px;
-        z-index: 999;
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        transform: translateY(-100%);
-        transition: transform 0.3s ease, left 0.3s ease;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .search-filter-container.visible {
-        transform: translateY(0);
-    }
-
-    /* Updated search toggle button */
-    .search-toggle {
-        position: fixed;
-        top: 10px;
-        right: 20px;
-        z-index: 1000;
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: white;
-        padding: 8px 15px;
-        border-radius: 6px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        transition: all 0.3s ease;
-    }
-
-    .search-toggle:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .search-toggle .material-icons {
-        transition: transform 0.3s ease;
-    }
-
-    .search-toggle.active .material-icons {
-        transform: rotate(180deg);
-    }
-
-    /* Updated search box styles */
-    .search-box {
-        position: relative;
-        flex: 1;
-    }
-
-    .search-box input {
-        width: 100%;
-        padding: 12px 40px 12px 15px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        background: transparent;
-        color: white;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .search-box input:focus {
-        border-color: rgba(255, 255, 255, 0.3);
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
-    }
-
-    .search-box .search-icon {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: rgba(255, 255, 255, 0.5);
-        transition: color 0.3s ease;
-    }
-
-    .search-box input:focus + .search-icon {
-        color: rgba(255, 255, 255, 0.8);
-    }
-
-    /* Updated filter container styles */
-    .filter-container {
-        position: relative;
-        min-width: 200px;
-    }
-
-    .filter-container select {
-        width: 100%;
-        padding: 12px 35px 12px 15px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        background: transparent;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-    }
-
-    .filter-container::after {
-        content: '';
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 0;
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
-        border-top: 5px solid rgba(255, 255, 255, 0.5);
-        pointer-events: none;
-    }
-
-    .filter-container select:focus {
-        border-color: rgba(255, 255, 255, 0.3);
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
-    }
-
-    /* Sidebar styles */
-    .sidebar {
-        width: 250px;
-        height: 100dvh;
-        background-color: #2a2a2a;
-        padding: 30px 20px;
-        position: fixed;
-        transition: all 0.3s ease;
-        z-index: 1000;
-    }
-
-    .sidebar.collapsed {
-        width: 70px;
-        padding: 30px 10px;
-    }
-
-    .sidebar.collapsed + .search-filter-container {
-        left: 70px;
-    }
-
-    .sidebar.collapsed .button-text {
-        display: none;
-    }
-
-    .sidebar.collapsed button {
-        padding: 15px 10px;
-    }
-
-    /* Content area styles */
-    .content {
-        margin-left: 250px;
-        padding: 30px;
-        width: calc(100% - 250px);
-        transition: all 0.3s ease;
-        margin-top: 0;
-    }
-
-    .content.search-visible {
-        margin-top: 70px;
-    }
-
-    .content.expanded {
-        margin-left: 70px;
-        width: calc(100% - 70px);
-    }
-
-    /* Rest of your existing CSS styles... */
-    /* (Include all the card styles, animations, and media queries from your original CSS) */
-
-    @media (max-width: 768px) {
-        .sidebar {
-            width: 200px;
-        }
-
-        .content {
-            margin-left: 200px;
-            width: calc(100% - 200px);
-        }
-
-        .search-filter-container {
-            left: 200px;
-            padding: 10px 15px;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .sidebar.collapsed + .search-filter-container {
-            left: 70px;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .sidebar {
-            width: 70px;
-            padding: 30px 10px;
-        }
-
-        .content {
-            margin-left: 70px;
-            width: calc(100% - 70px);
-        }
-
-        .search-filter-container {
-            left: 70px;
-        }
-
-        .search-toggle .button-text {
-            display: none;
-        }
-    }
-</style>
-<script>
-    const CURRENCY_IMAGE = "https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/icons/minecoin.svg";
-    const cardData = {
-        addons: [
-                                title: "World builder",
+    <script>
+        const CURRENCY_IMAGE = "https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/icons/minecoin.svg";
+        const cardData = {
+            addons: [
+                {
+                    title: "World builder",
                     description: "Unleash your creativity with World Builder, the ultimate building tool! With intuitive selection, effortless copy-pasting, quick undo/redo actions, & custom brushes, you can easily edit entire landscapes & structures. Crafting your dream world has never been simpler, or faster! (If you already own the pack you will have to delete it for this pack to work!)",
                     image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/9059015c-a8ed-4ae6-858d-458c52c95a9c/worldbuilder_Thumbnail_0.jpg",
                     price: "990",
@@ -571,9 +863,10 @@
                     category: "Other",
                     version: "1.2"
                 }
-        ],
-        worlds: [
-            title: " Car Dealership Tycoon",
+            ],
+            worlds: [
+                {
+                    title: " Car Dealership Tycoon",
                     description: "Transform a humble plot into a thriving Car Dealership! Expand your showroom, attract customers and earn money by selling a wide range of cars. Outsmart rival dealers, negotiate buyouts and dominate the market! Create the ultimate auto empire!",
                     image: "https://xforgeassets002.xboxlive.com/pf-namespace-b63a0803d3653643/ab302136-295b-45c5-8db4-58fa59cfb0e8/CDT_thumbnail_0.jpg",
                     price: "990",
@@ -592,9 +885,10 @@
                     category: "World Generation & Exploring",
                     version: "1.1"
                 }
-        ],
-        textures: [
- title: "Actions & Stuff 1.4",
+            ],
+            textures: [
+                {
+                    title: "Actions & Stuff 1.4",
                     description: "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more",
                     image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/4ca016b3-d741-47d7-97b0-08668e38be61/actionsandstuff_Thumbnail_0.jpg",
                     price: "1690",
@@ -603,231 +897,182 @@
                     resolution: "16 - 32 - 64",
                     format: "Bedrock"
                 }
-        ]
-    };
-
-    function toggleSearch() {
-        const searchContainer = document.querySelector('.search-filter-container');
-        const searchToggle = document.querySelector('.search-toggle');
-        const content = document.querySelector('.content');
-        searchContainer.classList.toggle('visible');
-        searchToggle.classList.toggle('active');
-        content.classList.toggle('search-visible');
-        localStorage.setItem('searchVisible', searchContainer.classList.contains('visible'));
-    }
-
-    function showSection(sectionId) {
-        document.querySelectorAll('.sidebar button').forEach(button => {
-            button.classList.remove('active');
-        });
-        document.querySelectorAll('.section').forEach(section => {
-            section.classList.remove('active');
-        });
-        document.querySelector(`.sidebar button[onclick="showSection('${sectionId}')"]`).classList.add('active');
-        document.getElementById(sectionId).classList.add('active');
-        localStorage.setItem('lastActiveSection', sectionId);
-        filterAndSearchCards();
-    }
-
-    function createCard(item, section) {
-        const needsReadMore = item.description.length > 149;
-        const truncatedDescription = needsReadMore ? 
-            item.description.substring(0, 149) + '...' : 
-            item.description;
-
-        let cardHTML = `
-            <div class="card">
-                <img src="${item.image}" alt="${item.title}" loading="lazy">
-                <div class="card-details">
-                    <h3>${item.title}</h3>
-                    <div class="description-container">
-                        <p class="${needsReadMore ? 'truncated' : ''}" data-full-text="${item.description}">
-                            ${truncatedDescription}
-                        </p>
-                        <div class="fade-overlay"></div>
-                        ${needsReadMore ? `
-                            <button class="read-more-btn" onclick="toggleDescription(this)">
-                                Read More
-                            </button>
-                        ` : ''}
-                    </div>
-                    <div class="card-meta">
-        `;
-
-        switch(section) {
-            case 'addons':
-                cardHTML += `
-                    <span class="meta-item"><i class="material-icons">category</i>${item.category}</span>
-                    <span class="meta-item"><i class="material-icons">numbers</i>${item.version}</span>
-                `;
-                break;
-            case 'worlds':
-                cardHTML += `
-                    <span class="meta-item"><i class="material-icons">storage</i>${item.size}</span>
-                    <span class="meta-item"><i class="material-icons">sports_esports</i>${item.gameMode}</span>
-                `;
-                break;
-            case 'textures':
-                cardHTML += `
-                    <span class="meta-item"><i class="material-icons">high_quality</i>${item.resolution}</span>
-                    <span class="meta-item"><i class="material-icons">devices</i>${item.format}</span>
-                `;
-                break;
-        }
-
-        cardHTML += `
-                    </div>
-                    <div class="price">
-                        <img src="${CURRENCY_IMAGE}" alt="currency">
-                        ${item.price}
-                    </div>
-                    <div class="card-buttons">
-                        <a href="${item.buyUrl}" target="_blank" class="buy-btn">
-                            <span class="material-icons">shopping_cart</span>
-                            BUY
-                        </a>
-                        <a href="${item.downloadUrl}" target="_blank" class="download-btn">
-                            <span class="material-icons">download</span>
-                            Download
-                        </a>
-                    </div>
-                </div>
-            </div>
-        `;
-        return cardHTML;
-    }
-
-    function toggleDescription(button) {
-        const descriptionContainer = button.parentElement;
-        const description = descriptionContainer.querySelector('p');
-        const isExpanded = !description.classList.contains('truncated');
-        
-        if (isExpanded) {
-            description.classList.add('truncated');
-            description.textContent = description.dataset.fullText.substring(0, 149) + '...';
-            button.textContent = 'Read More';
-        } else {
-            description.classList.remove('truncated');
-            description.textContent = description.dataset.fullText;
-            button.textContent = 'Read Less';
-        }
-    }
-
-    // Debounced search function for better performance
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
+            ]
         };
-    }
-
-    const filterAndSearchCards = debounce(() => {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const selectedCategory = document.getElementById('categoryFilter').value;
-
-        Object.keys(cardData).forEach(section => {
-            const container = document.getElementById(section);
-            if (container.classList.contains('active')) {
-                container.innerHTML = '';
-                const filteredCards = cardData[section].filter(item => {
-                    const matchesSearch = item.title.toLowerCase().includes(searchTerm) || 
-                                       item.description.toLowerCase().includes(searchTerm);
-                    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-                    return matchesSearch && matchesCategory;
-                });
-
-                if (filteredCards.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-results">
-                            <span class="material-icons">search_off</span>
-                            <p>No items found</p>
-                        </div>
-                    `;
-                } else {
-                    filteredCards.forEach(item => {
-                        container.innerHTML += createCard(item, section);
-                    });
-                }
-            }
-        });
-    }, 300);
-
-    function generateSections() {
-        Object.keys(cardData).forEach(section => {
-            const container = document.getElementById(section);
-            container.innerHTML = '';
-            cardData[section].forEach(item => {
-                container.innerHTML += createCard(item, section);
-            });
-        });
-    }
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', () => {
-        generateSections();
-        
-        // Restore last active section
-        const lastActiveSection = localStorage.getItem('lastActiveSection') || 'home';
-        showSection(lastActiveSection);
-
-        // Setup event listeners
-        const searchToggle = document.querySelector('.search-toggle');
-        searchToggle.addEventListener('click', toggleSearch);
-
-        document.getElementById('searchInput').addEventListener('input', filterAndSearchCards);
-        document.getElementById('categoryFilter').addEventListener('change', filterAndSearchCards);
-
-        // Sidebar toggle functionality
-        document.querySelector('.toggle-sidebar').addEventListener('click', () => {
-            const sidebar = document.querySelector('.sidebar');
-            const content = document.querySelector('.content');
-            const searchContainer = document.querySelector('.search-filter-container');
-            
-            sidebar.classList.toggle('collapsed');
-            content.classList.toggle('expanded');
-            
-            // Update search container position
-            if (searchContainer.classList.contains('visible')) {
-                searchContainer.style.left = sidebar.classList.contains('collapsed') ? '70px' : '250px';
-            }
-            
-            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-        });
-
-        // Restore saved states
-        const searchVisible = localStorage.getItem('searchVisible') === 'true';
-        if (searchVisible) {
+        function toggleSearch() {
             const searchContainer = document.querySelector('.search-filter-container');
             const searchToggle = document.querySelector('.search-toggle');
             const content = document.querySelector('.content');
-            searchContainer.classList.add('visible');
-            searchToggle.classList.add('active');
-            content.classList.add('search-visible');
+            searchContainer.classList.toggle('visible');
+            searchToggle.classList.toggle('active');
+            content.classList.toggle('search-visible');
+            localStorage.setItem('searchVisible', searchContainer.classList.contains('visible'));
         }
-
-        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-        if (sidebarCollapsed) {
-            document.querySelector('.sidebar').classList.add('collapsed');
-            document.querySelector('.content').classList.add('expanded');
+        function showSection(sectionId) {
+            document.querySelectorAll('.sidebar button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelector(`.sidebar button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+            document.getElementById(sectionId).classList.add('active');
+            localStorage.setItem('lastActiveSection', sectionId);
+            filterAndSearchCards();
         }
-
-        // Handle mobile view
-        if (window.innerWidth <= 576) {
-            document.querySelector('.sidebar').classList.add('collapsed');
-            document.querySelector('.content').classList.add('expanded');
+        function createCard(item, section) {
+            const needsReadMore = item.description.length > 149;
+            const truncatedDescription = needsReadMore ? 
+                item.description.substring(0, 149) + '...' : 
+                item.description;
+            let cardHTML = `
+                <div class="card">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    <div class="card-details">
+                        <h3>${item.title}</h3>
+                        <div class="description-container">
+                            <p class="${needsReadMore ? 'truncated' : ''}" data-full-text="${item.description}">
+                                ${truncatedDescription}
+                            </p>
+                            <div class="fade-overlay"></div>
+                            ${needsReadMore ? `
+                                <button class="read-more-btn" onclick="toggleDescription(this)">
+                                    Read More
+                                </button>
+                            ` : ''}
+                        </div>
+                        <div class="card-meta">
+            `;
+            switch(section) {
+                case 'addons':
+                    cardHTML += `
+                        <span class="meta-item"><i class="material-icons">category</i>${item.category}</span>
+                        <span class="meta-item"><i class="material-icons">numbers</i>${item.version}</span>
+                    `;
+                    break;
+                case 'worlds':
+                    cardHTML += `
+                        <span class="meta-item"><i class="material-icons">storage</i>${item.size}</span>
+                        <span class="meta-item"><i class="material-icons">sports_esports</i>${item.gameMode}</span>
+                    `;
+                    break;
+                case 'textures':
+                    cardHTML += `
+                        <span class="meta-item"><i class="material-icons">high_quality</i>${item.resolution}</span>
+                        <span class="meta-item"><i class="material-icons">devices</i>${item.format}</span>
+                    `;
+                    break;
+            }
+            cardHTML += `
+                        </div>
+                        <div class="price">
+                            <img src="${CURRENCY_IMAGE}" alt="currency">
+                            ${item.price}
+                        </div>
+                        <div class="card-buttons">
+                            <a href="${item.buyUrl}" target="_blank" class="buy-btn">
+                                <span class="material-icons">shopping_cart</span>
+                                BUY
+                            </a>
+                            <a href="${item.downloadUrl}" target="_blank" class="download-btn">
+                                <span class="material-icons">download</span>
+                                Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return cardHTML;
         }
-    });
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        if (window.innerWidth <= 576) {
-            document.querySelector('.sidebar').classList.add('collapsed');
-            document.querySelector('.content').classList.add('expanded');
+        function toggleDescription(button) {
+            const descriptionContainer = button.parentElement;
+            const description = descriptionContainer.querySelector('p');
+            const isExpanded = !description.classList.contains('truncated');
+            if (isExpanded) {
+                description.classList.add('truncated');
+                description.textContent = description.dataset.fullText.substring(0, 149) + '...';
+                button.textContent = 'Read More';
+            } else {
+                description.classList.remove('truncated');
+                description.textContent = description.dataset.fullText;
+                button.textContent = 'Read Less';
+            }
         }
-    });
-</script>
+        function filterAndSearchCards() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            Object.keys(cardData).forEach(section => {
+                const container = document.getElementById(section);
+                if (container.classList.contains('active')) {
+                    container.innerHTML = '';
+                    const filteredCards = cardData[section].filter(item => {
+                        const matchesSearch = item.title.toLowerCase().includes(searchTerm);
+                        const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+                        return matchesSearch && matchesCategory;
+                    });
+                    filteredCards.forEach(item => {
+                        container.innerHTML += createCard(item, section);
+                    });
+                    if (filteredCards.length === 0) {
+                        container.innerHTML = `
+                            <div class="no-results">
+                                <span class="material-icons">search_off</span>
+                                <p>No items found</p>
+                            </div>
+                        `;
+                    }
+                }
+            });
+        }
+        function generateSections() {
+            Object.keys(cardData).forEach(section => {
+                const container = document.getElementById(section);
+                container.innerHTML = '';
+                cardData[section].forEach(item => {
+                    container.innerHTML += createCard(item, section);
+                });
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSections();
+            const lastActiveSection = localStorage.getItem('lastActiveSection') || 'home';
+            showSection(lastActiveSection);
+            const searchToggle = document.querySelector('.search-toggle');
+            searchToggle.addEventListener('click', toggleSearch);
+            document.getElementById('searchInput').addEventListener('input', filterAndSearchCards);
+            document.getElementById('categoryFilter').addEventListener('change', filterAndSearchCards);
+            document.querySelector('.toggle-sidebar').addEventListener('click', () => {
+                const sidebar = document.querySelector('.sidebar');
+                const content = document.querySelector('.content');
+                sidebar.classList.toggle('collapsed');
+                content.classList.toggle('expanded');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+            const searchVisible = localStorage.getItem('searchVisible') === 'true';
+            if (searchVisible) {
+                const searchContainer = document.querySelector('.search-filter-container');
+                const searchToggle = document.querySelector('.search-toggle');
+                const content = document.querySelector('.content');
+                searchContainer.classList.add('visible');
+                searchToggle.classList.add('active');
+                content.classList.add('search-visible');
+            }
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+            if (window.innerWidth <= 576) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+        });
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 576) {
+                document.querySelector('.sidebar').classList.add('collapsed');
+                document.querySelector('.content').classList.add('expanded');
+            }
+        });
+    </script>
+</body>
+</html>
