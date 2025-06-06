@@ -206,7 +206,7 @@
         .card {
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             background: rgba(42, 42, 42, 0.8);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
@@ -223,20 +223,21 @@
             position: relative;
             overflow: hidden;
             border-radius: 8px;
-            margin: -20px -20px 15px -20px;
-            height: 200px;
+            margin: -15px -15px 15px -15px;
+            height: 150px;
         }
 
         .card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scale(1.1);
+            transform: scale(1.0);
             transition: transform 0.3s ease;
+            object-position: center;
         }
 
         .card:hover img {
-            transform: scale(1.2);
+            transform: scale(1.0);
         }
 
         .card h3 {
