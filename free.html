@@ -27,22 +27,51 @@
         .container {
             display: flex;
             flex-direction: column;
+            padding-top: 15px;
         }
 
-.search-toggle-mobile {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    z-index: 1000;
-    background: transparent;
-    border: none;
-    color: white;
-    padding: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: block;
-}
+       
+        .card-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            margin: -20px -20px 20px -20px;
+            height: 200;
+            flex-shrink: 0;
+        }
 
+    
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(0.85);
+            transition: transform 0.3s ease;
+            object-position: center center;
+            border-radius: 12px;
+            -webkit-backface-visibility: hidden;
+            -moz-backface-visibility: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            -moz-transform: translate3d(0, 0, 0);
+        }
+
+        .card:hover img {
+            transform: scale(0.9);
+        }
+
+
+        .search-toggle-mobile {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
         .search-toggle-mobile .material-icons {
             font-size: 24px;
@@ -57,7 +86,7 @@
             background: rgba(42, 42, 42, 0.8);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            margin: 15px;
+            margin: 15px 15px 0 15px;
             padding: 15px;
             display: flex;
             gap: 20px;
@@ -139,10 +168,12 @@
             border-top: 5px solid #fff;
             pointer-events: none;
         }
+
         .sidebar {
             background: rgba(42, 42, 42, 0.8);
             backdrop-filter: blur(10px);
             margin: 15px;
+            margin-top: 15px;
             border-radius: 12px;
             padding: 15px;
             display: flex;
@@ -155,7 +186,7 @@
         }
 
         .sidebar.search-visible {
-            margin-top: 140px;
+            margin-top: 90px;
         }
 
         .sidebar button {
@@ -184,7 +215,6 @@
             background: rgba(0, 123, 255, 0.2);
             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
         }
-
         .content {
             padding: 15px;
             margin: 0 15px 15px;
@@ -192,10 +222,12 @@
 
         .section {
             display: none;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 35px;
             opacity: 0;
             transform: translateY(20px);
+            max-width: 1500px;
+            margin: 0 auto;
         }
 
         .section.active {
@@ -206,11 +238,15 @@
         .card {
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             background: rgba(42, 42, 42, 0.8);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+            overflow: hidden; /* Ensure rounded corners are visible */
         }
 
         .card:hover {
@@ -219,36 +255,24 @@
             transform: translateY(-5px);
         }
 
-        .card-image-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-            margin: -15px -15px 15px -15px;
-            height: 180px;
-        }
-
-        .card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scale(1.0);
-            transition: transform 0.3s ease;
-            object-position: center;
-        }
-
-        .card:hover img {
-            transform: scale(1.0);
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
         }
 
         .card h3 {
             font-size: 20px;
             margin-bottom: 10px;
-            color: #fff;
+            flex-shrink: 0;
         }
 
         .description-container {
-            position: relative;
             margin-bottom: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .card p {
@@ -272,6 +296,8 @@
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s ease;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
         }
 
         .truncated + .fade-overlay {
@@ -299,6 +325,7 @@
             gap: 8px;
             margin: 15px 0;
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
 
         .meta-item {
@@ -316,6 +343,7 @@
             background: rgba(0, 123, 255, 0.2);
             transform: translateY(-2px);
         }
+
         .price {
             display: flex;
             align-items: center;
@@ -324,6 +352,7 @@
             font-weight: bold;
             color: #ffd700;
             margin: 10px 0;
+            flex-shrink: 0;
         }
 
         .price img {
@@ -332,12 +361,13 @@
             object-fit: contain;
             margin: 0;
             transform: none;
+            border-radius: 0; /* Remove border radius for currency icon */
         }
-
         .card-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: auto;
+            flex-shrink: 0;
         }
 
         .buy-btn, .download-btn {
@@ -346,14 +376,15 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            padding: 10px;
+            padding: 12px 20px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             text-decoration: none;
             transition: all 0.3s ease;
-            min-height: 44px;
+            height: 44px;
+            white-space: nowrap;
         }
 
         .buy-btn {
@@ -371,6 +402,18 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px;
+            color: #777;
+        }
+
+        .no-results .material-icons {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -382,25 +425,59 @@
             }
         }
 
+        @media (max-width: 1200px) {
+            .section {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+            }
+        }
+
         @media (max-width: 768px) {
-   
-    .search-filter-container {
-        margin: 0;
-        border-radius: 0 0 12px 12px;
-        flex-direction: column;
-    }
+            .search-filter-container {
+                margin: 0;
+                border-radius: 0 0 12px 12px;
+                flex-direction: column;
+            }
 
-    .filter-container {
-        width: 100%;
-    }
+            .filter-container {
+                width: 100%;
+            }
 
-    .sidebar {
-        margin-top: 15px;
-        flex-wrap: wrap;
-        transition: margin-top 0.3s ease;
-    }
-}
+            .sidebar {
+                margin-top: 15px;
+                flex-wrap: wrap;
+            }
 
+            .sidebar.search-visible {
+                margin-top: 120px;
+            }
+
+            .sidebar button {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .card {
+                max-width: 400px;
+                margin: 0 auto;
+                min-height: 480px;
+            }
+
+            .card-image-container {
+                border-radius: 10px;
+                margin: -15px -15px 15px -15px;
+                height: 160px;
+            }
+
+            .card img {
+                border-radius: 10px;
+            }
+        }
 
         @media (max-width: 480px) {
             .search-filter-container {
@@ -423,17 +500,18 @@
                 padding: 0;
             }
 
-            .section {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
             .card {
+                max-width: 100%;
+                min-height: 460px;
                 padding: 15px;
             }
 
             .card-buttons {
                 flex-direction: column;
+            }
+
+            .card-image-container {
+                height: 140px;
             }
         }
     </style>
@@ -485,6 +563,7 @@
             <section id="textures" class="section"></section>
         </main>
     </div>
+
     <script>
         const CURRENCY_IMAGE = "https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/icons/minecoin.svg";
         
@@ -811,8 +890,9 @@
                     version: "?"
                 }
             ],
+
             worlds: [
-{
+                {
                     title: "Car Dealership Tycoon",
                     description: "Transform a humble plot into a thriving Car Dealership! Expand your showroom, attract customers and earn money by selling a wide range of cars. Outsmart rival dealers, negotiate buyouts and dominate the market! Create the ultimate auto empire!",
                     image: "https://xforgeassets002.xboxlive.com/pf-namespace-b63a0803d3653643/ab302136-295b-45c5-8db4-58fa59cfb0e8/CDT_thumbnail_0.jpg",
@@ -834,20 +914,19 @@
                 }
             ],
             textures: [
- {
+                {
                     title: "Actions & Stuff 1.4",
-                    description: "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more",
+                    description: "The Animation Pack You Didn't Know You Needed: Bring your world to life with new animations, particles, textures, and more!",
                     image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/4ca016b3-d741-47d7-97b0-08668e38be61/actionsandstuff_Thumbnail_0.jpg",
                     price: "1690",
                     buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/oreville-studios/actions--stuff-1.4/61c7a786-d7ad-49e0-a710-817121cd9795",
                     downloadUrl: "https://www.mediafire.com/file/96sxwubn3vwx1mh/Actions_%2526_Stuff_1.4.mcpack/file",
-                    resolution: "16 - 32 - 64",
-                    format: "Bedrock"
+                    resolution: "16x16",
+                    hiddenC: "PREMIUM"
                 }
             ]
         };
-
-        function createCard(item, section) {
+         function createCard(item, section) {
             const needsReadMore = item.description.length > 149;
             const truncatedDescription = needsReadMore ? 
                 item.description.substring(0, 149) + '...' : 
@@ -985,7 +1064,9 @@
             });
         }
 
+        // Initialize content and event listeners
         document.addEventListener('DOMContentLoaded', () => {
+            // Generate initial content
             Object.keys(cardData).forEach(section => {
                 const container = document.getElementById(section);
                 cardData[section].forEach(item => {
@@ -993,6 +1074,7 @@
                 });
             });
 
+            // Navigation
             document.querySelectorAll('.sidebar button').forEach(button => {
                 button.addEventListener('click', () => {
                     document.querySelectorAll('.sidebar button').forEach(btn => 
@@ -1005,9 +1087,11 @@
                 });
             });
 
+            // Search and filter
             document.getElementById('searchInput').addEventListener('input', filterAndSearchCards);
             document.getElementById('categoryFilter').addEventListener('change', filterAndSearchCards);
 
+            // Close search on click outside
             document.addEventListener('click', (e) => {
                 const searchContainer = document.querySelector('.search-filter-container');
                 const searchToggle = document.querySelector('.search-toggle-mobile');
@@ -1023,22 +1107,14 @@
                 }
             });
 
-            let lastScroll = 0;
-            window.addEventListener('scroll', () => {
-                if (window.innerWidth <= 768) {
-                    const currentScroll = window.pageYOffset;
-                    if (currentScroll > lastScroll && currentScroll > 50) {
-                        const searchContainer = document.querySelector('.search-filter-container');
-                        const searchToggle = document.querySelector('.search-toggle-mobile');
-                        const sidebar = document.querySelector('.sidebar');
-                        
-                        searchContainer.classList.remove('visible');
-                        searchToggle.classList.remove('active');
-                        sidebar.classList.remove('search-visible');
-                        searchToggle.querySelector('.material-icons').textContent = 'search';
-                    }
-                    lastScroll = currentScroll;
-                }
+            // Prevent search container clicks from closing itself
+            document.querySelector('.search-filter-container').addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Prevent search toggle clicks from triggering document click
+            document.querySelector('.search-toggle-mobile').addEventListener('click', (e) => {
+                e.stopPropagation();
             });
         });
     </script>
