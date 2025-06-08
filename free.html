@@ -772,7 +772,7 @@
                 {
                     title: "SMILERS",
                     description: "Fight the SMILER from the Backrooms and other terrifying Backrooms mobs.",
-                    image: "https://xforgeassets001.xboxlive.com/pf-namespace-b63a0803d3653643/8e0e0da9-7d64-467f-a6d8-d185f855b87a/Backrooms_Thumbnail.jpg",
+                    image: "https://xforgeassets002.xboxlive.com/pf-namespace-b63a0803d3653643/9c8fb9e4-0071-4307-854b-913fc007372e/Backrooms_Thumbnail.jpg",
                     price: "990",
                     buyUrl: "https://www.minecraft.net/en-us/marketplace/pdp/5-frame-studios/smilers-1.0-add--on/6a232740-5984-400b-8016-755d6763a9e0",
                     downloadUrl: "https://www.mediafire.com/file/42lknyxqgq2hzer/SMILERS_1.0_Add-On.mcaddon/file",
@@ -1084,9 +1084,7 @@
             });
         }
 
-        // Initialize content and event listeners
         document.addEventListener('DOMContentLoaded', () => {
-            // Generate initial content
             Object.keys(cardData).forEach(section => {
                 const container = document.getElementById(section);
                 cardData[section].forEach(item => {
@@ -1094,7 +1092,6 @@
                 });
             });
 
-            // Navigation
             document.querySelectorAll('.sidebar button').forEach(button => {
                 button.addEventListener('click', () => {
                     document.querySelectorAll('.sidebar button').forEach(btn => 
@@ -1107,11 +1104,9 @@
                 });
             });
 
-            // Search and filter
             document.getElementById('searchInput').addEventListener('input', filterAndSearchCards);
             document.getElementById('categoryFilter').addEventListener('change', filterAndSearchCards);
 
-            // Close search on click outside
             document.addEventListener('click', (e) => {
                 const searchContainer = document.querySelector('.search-filter-container');
                 const searchToggle = document.querySelector('.search-toggle-mobile');
@@ -1127,12 +1122,10 @@
                 }
             });
 
-            // Prevent search container clicks from closing itself
             document.querySelector('.search-filter-container').addEventListener('click', (e) => {
                 e.stopPropagation();
             });
 
-            // Prevent search toggle clicks from triggering document click
             document.querySelector('.search-toggle-mobile').addEventListener('click', (e) => {
                 e.stopPropagation();
             });
