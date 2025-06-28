@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Time</title>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #1e1e2f, #12121b);
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background-color: #222;
+      border-radius: 1rem;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+      padding: 2rem;
+      text-align: center;
+      width: 90%;
+      max-width: 420px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.01);
+    }
+
+    .time-display {
+      font-size: 3rem;
+      background-color: #333;
+      padding: 1.2rem;
+      border-radius: 1rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      margin: 1rem 0;
+    }
+
+    .settings-toggle {
+      display: flex;
+      justify-content: flex-end;
+      cursor: pointer;
+    }
+
+    .fa-gear {
+      font-size: 1.5rem;
+      color: #bbb;
+      transition: transform 0.3s ease;
+    }
+
+    .fa-gear.open {
+      transform: rotate(90deg);
+    }
+
+    .settings-panel {
+      display: none;
+      margin-top: 1rem;
+      text-align: left;
+      font-size: 0.95rem;
+      border-top: 1px solid #444;
+      padding-top: 1rem;
+    }
+
+    .settings-panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    select, input {
+      width: 100%;
+      margin: 0.3rem 0;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      background-color: #2d2d3d;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    select:hover, select:focus,
+    input:hover, input:focus {
+      background-color: #444;
+      outline: none;
+      transform: scale(1.02);
+    }
+
+    button {
+      margin: 0.5rem 0.2rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: #444;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background: #555;
+      transform: translateY(-2px);
+    }
+
+    .custom-alerts ul {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 0.5rem;
+    }
+
+    .custom-alerts li {
+      background: #333;
+      margin: 0.3rem 0;
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .custom-alerts li i {
+      cursor: pointer;
+      color: #bbb;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Time Notifier</h1>
+    <div class="time-display" id="time">--:--:--</div>
+
+    <div class="settings-toggle" id="toggleSettings">
+      <i class="fas fa-gear" id="settingsIcon"></i>
+    </div>
+
+    <div class="settings-panel" id="settingsPanel">
+      <label>Timezone:</label>
+      <select id="timezoneSelect">
+        <option value="local">Your Local Time</option>
+        <option value="America/New_York">New York (EST)</option>
+        <option value="Europe/London">London (GMT)</option>
+        <option value="Asia/Tokyo">Tokyo (JST)</option>
+        <option value="UTC">UTC</option>
+      </select>
+
+      <button id="notifyBtn">Request Notifications</button>
+      <button id="toggleClockBtn">Clock: 24 Hour</button>
+
+      <div class="custom-alerts">
+        <label for="customTime">Add Alert (HH:MM):</label>
+        <input type="time" id="customTime" />
+        <button id="addAlertBtn">Add Alert</button>
+        <ul id="alertList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DateTime = luxon.DateTime;
+    const timeDisplay = document.getElementById('time');
+    const timezoneSelect = document.getElementById('timezoneSelect');
+    const notifyBtn = document.getElementById('notifyBtn');
+    const toggleClockBtn = document.getElementById('toggleClockBtn');
+    const customTimeInput = document.getElementById('customTime');
+    const addAlertBtn = document.getElementById('addAlertBtn');
+    const alertList = document.getElementById('alertList');
+    const settingsIcon = document.getElementById('settingsIcon');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const toggleSettings = document.getElementById('toggleSettings');
+
+    let currentZone = 'local';
+    let notifiedTimes = new Set();
+    let use24Hour = true;
+    let customAlerts = [];
+
+    function updateTime() {
+      const zone = currentZone === 'local' ? undefined : currentZone;
+      const now = DateTime.now().setZone(zone);
+      const format = use24Hour ? "HH:mm:ss" : "hh:mm:ss a";
+      const currentFormatted = now.toFormat("HH:mm");
+
+      timeDisplay.textContent = now.toFormat(format);
+
+      if (customAlerts.includes(currentFormatted) && !notifiedTimes.has(currentFormatted)) {
+        if (Notification.permission === 'granted') {
+          new Notification("Custom Time Alert", {
+            body: `It's now ${currentFormatted}`,
+          });
+        }
+        notifiedTimes.add(currentFormatted);
+      }
+
+      if (!customAlerts.includes(currentFormatted)) {
+        notifiedTimes.clear();
+      }
+    }
+
+    timezoneSelect.addEventListener('change', () => {
+      currentZone = timezoneSelect.value;
+    });
+
+    notifyBtn.addEventListener('click', () => {
+      if (Notification && Notification.permission !== 'granted') {
+        Notification.requestPermission().then(result => {
+          alert("Notification permission: " + result);
+        });
+      } else {
+        alert("Notifications are already enabled or unsupported.");
+      }
+    });
+
+    toggleClockBtn.addEventListener('click', () => {
+      use24Hour = !use24Hour;
+      toggleClockBtn.textContent = `Clock: ${use24Hour ? "24 Hour" : "12 Hour"}`;
+    });
+
+    addAlertBtn.addEventListener('click', () => {
+      const timeValue = customTimeInput.value;
+      if (timeValue && !customAlerts.includes(timeValue)) {
+        customAlerts.push(timeValue);
+        renderAlertList();
+      }
+    });
+
+    function removeAlert(time) {
+      customAlerts = customAlerts.filter(t => t !== time);
+      renderAlertList();
+    }
+
+    function renderAlertList() {
+      alertList.innerHTML = '';
+      customAlerts.forEach(time => {
+        const li = document.createElement('li');
+        li.innerHTML = `${time} <i class="fas fa-trash" onclick="removeAlert('${time}')"></i>`;
+        alertList.appendChild(li);
+      });
+    }
+
+    window.removeAlert = removeAlert;
+
+    toggleSettings.addEventListener('click', () => {
+      settingsPanel.classList.toggle('active');
+      settingsIcon.classList.toggle('open');
+    });
+
+    setInterval(updateTime, 1000);
+    updateTime();
+  </script>
+</body>
+</html>
