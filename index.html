@@ -1,887 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>lildanlid</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #141b2d;
-      --text: #ffffff;
-      --card-bg: #1e1e1e;
-      --accent: #1e88e5; 
-      --radius: 12px;
-      --skeleton-bg: #252525;
-      --skeleton-light: #2c2c2c;
-      --sidebar-margin: 8px;
-      --sidebar-width: 250px;
-      --sidebar-width-collapsed: 56px;
-      --sidebar-btn-size: 36px;
-      --settings-modal-bg: rgba(20, 27, 45, 0.75);
-    }
-
-    [data-theme="light"] {
-      --bg: #f4f4f4;
-      --text: #121212;
-      --card-bg: #ffffff;
-      --skeleton-bg: #e0e0e0;
-      --skeleton-light: #ededed;
-      --settings-modal-bg: rgba(244,244,244,0.85);
-    }
-
-    body, .card, .sidebar, .main, .settings-content, section, .card-skeleton {
-      transition: 
-        background-color 0.4s cubic-bezier(.44,0,.56,1),
-        color 0.4s cubic-bezier(.44,0,.56,1),
-        box-shadow 0.3s, border-color 0.3s;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      border-radius: var(--radius) !important;
-    }
-    html, body {
-      height: 100%;
-      min-height: 100%;
-      width: 100vw;
-      overflow-x: hidden;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      width: 100vw;
-      overflow-x: hidden;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-    ::selection {
-      background-color: var(--accent);
-      color: white;
-    }
-    .sidebar {
-      height: calc(100% - (2 * var(--sidebar-margin)));
-      width: var(--sidebar-width);
-      position: fixed;
-      top: var(--sidebar-margin);
-      left: max(env(safe-area-inset-left, 0px) + var(--sidebar-margin) + 2px, 4px);
-      background-color: rgba(30, 30, 30, 0.6);
-      backdrop-filter: blur(14px);
-      overflow-x: hidden;
-      transition: width 0.3s, left 0.3s;
-      padding-top: 60px;
-      z-index: 1000;
-      border-radius: var(--radius);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.24);
-      margin-left: 0;
-      margin-right: 0;
-      border: none;
-      right: unset;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      min-width: var(--sidebar-width-collapsed);
-      max-width: 96vw;
-    }
-    .sidebar.closed {
-      width: var(--sidebar-width-collapsed);
-      min-width: var(--sidebar-width-collapsed);
-    }
-    .sidebar .sidebar-links {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .sidebar a, .sidebar .sidebar-settings-btn {
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      font-weight: bold;
-      position: relative;
-      transition: color 0.3s, background 0.3s, padding 0.3s;
-      border-radius: var(--radius);
-      background: none;
-      border: none;
-      font-size: 1.05em;
-      cursor: pointer;
-      outline: none;
-      min-width: 0;
-      white-space: nowrap;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .sidebar.closed a, .sidebar.closed .sidebar-settings-btn {
-      justify-content: center;
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-    .sidebar a[data-section], .sidebar a[onclick] {
-      cursor: pointer;
-    }
-    .sidebar a::after, .sidebar .sidebar-settings-btn::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 6px;
-      height: 2.5px;
-      width: 0;
-      background-color: var(--accent);
-      transition: width 0.3s cubic-bezier(.48,.04,.36,1.32);
-      border-radius: var(--radius);
-      opacity: 0.9;
-    }
-    .sidebar a.active::after {
-      width: calc(100% - 32px);
-    }
-    .sidebar a.active, .sidebar .sidebar-settings-btn.active {
-      color: var(--accent);
-    }
-    .sidebar a:hover:not(.active)::after, .sidebar .sidebar-settings-btn:hover:not(.active)::after {
-      width: 0;
-    }
-    .sidebar a:hover, .sidebar .sidebar-settings-btn:hover {
-      color: var(--accent);
-      background: rgba(30,30,30,0.08);
-    }
-    .sidebar a .material-icons, .sidebar .sidebar-settings-btn .material-icons {
-      transition: color 0.3s, margin 0.3s;
-      min-width: 24px;
-      min-height: 24px;
-      font-size: 24px;
-    }
-    .sidebar a.active .material-icons,
-    .sidebar a:hover .material-icons,
-    .sidebar .sidebar-settings-btn:hover .material-icons,
-    .sidebar .sidebar-settings-btn.active .material-icons {
-      color: var(--accent);
-    }
-    .sidebar.closed a span:not(.material-icons),
-    .sidebar.closed .sidebar-settings-btn span:not(.material-icons) {
-      display: none;
-    }
-    .sidebar.closed a .material-icons,
-    .sidebar.closed .sidebar-settings-btn .material-icons {
-      margin: 0 auto;
-      display: block;
-    }
-    .sidebar .sidebar-settings-btn {
-      width: 100%;
-      margin-top: auto;
-      margin-bottom: 10px;
-      justify-content: flex-start;
-    }
-    .sidebar .toggle-sidebar-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 24px;
-      cursor: pointer;
-      border-radius: var(--radius);
-      z-index: 1002;
-      width: var(--sidebar-btn-size);
-      height: var(--sidebar-btn-size);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: right 0.3s;
-    }
-    .sidebar.closed .toggle-sidebar-btn {
-      right: 8px;
-    }
-    .sidebar .toggle-sidebar-btn:hover {
-      background: rgba(30,30,30,0.11);
-      color: var(--accent);
-    }
-    .main {
-      margin-left: 0;
-      padding: 20px;
-      min-height: 100vh;
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100vw;
-      overflow-x: hidden;
-    }
-    .main.shift {
-      margin-left: calc(var(--sidebar-width) + var(--sidebar-margin) + 2px);
-    }
-    .main.shift-collapsed {
-      margin-left: calc(var(--sidebar-width-collapsed) + var(--sidebar-margin) + 2px);
-    }
-    .theme-toggle {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: none;
-      color: var(--text);
-      font-size: 24px;
-      border: none;
-      cursor: pointer;
-      z-index: 1001;
-      border-radius: var(--radius);
-      display: none;
-    }
-    .settings-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--settings-modal-bg);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-      animation: none;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s cubic-bezier(.33,1,.68,1);
-    }
-    .settings-modal.active {
-      display: flex;
-      animation: settingsFadeIn 0.25s cubic-bezier(.33,1,.68,1) both;
-      opacity: 1;
-      pointer-events: all;
-    }
-    @keyframes settingsFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    .settings-content {
-      background: var(--card-bg);
-      color: var(--text);
-      padding: 36px 32px 24px 32px;
-      min-width: 320px;
-      max-width: 96vw;
-      border-radius: calc(var(--radius) * 1.25);
-      box-shadow: 0 8px 48px 6px rgba(15,20,40,0.22);
-      position: relative;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(40px) scale(0.98);
-      animation: none;
-      transition: box-shadow 0.3s;
-    }
-    .settings-modal.active .settings-content {
-      animation: settingsPanelIn 0.35s cubic-bezier(.33,1,.68,1) 0.08s both;
-    }
-    @keyframes settingsPanelIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.96);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    .settings-content h3 {
-      margin-bottom: 16px;
-      color: var(--accent);
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      font-size: 1.3em;
-      text-align: left;
-    }
-    .settings-list {
-      margin: 16px 0 0 0;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 100%;
-      align-items: stretch;
-    }
-    .settings-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(70,80,110,0.10);
-      padding: 14px 18px;
-      border-radius: calc(var(--radius) * 0.9);
-      font-size: 1.08em;
-      transition: background 0.2s;
-      min-height: 44px;
-    }
-    .settings-row:active {
-      background: rgba(30,80,180,0.13);
-    }
-    .settings-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 500;
-      font-size: 1.04em;
-    }
-    .settings-row button.theme-toggle-modal {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      outline: none;
-      font-size: 1em;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7.5px 21px;
-      border-radius: calc(var(--radius) * 0.7);
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      font-weight: 600;
-      box-shadow: 0 2px 7px 0 rgba(30, 136, 229, 0.07);
-    }
-    .settings-row button.theme-toggle-modal:hover {
-      background: #1565c0;
-    }
-    .close-settings {
-      position: absolute;
-      top: 18px; right: 18px;
-      background: none;
-      border: none;
-      color: var(--text);
-      font-size: 26px;
-      cursor: pointer;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.22s, color 0.22s;
-    }
-    .close-settings:hover {
-      background: rgba(60,70,90,0.12);
-      color: var(--accent);
-    }
-    .settings-coming-soon {
-      margin-top: 32px;
-      font-size: 0.99em;
-      color: #888;
-      opacity: 0.8;
-      text-align: left;
-      border-top: 1px solid rgba(120,120,120,0.14);
-      padding-top: 16px;
-      font-style: italic;
-      display: block;
-    }
-    .card-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      width: 100%;
-      justify-content: flex-start;
-      align-items: stretch;
-      box-sizing: border-box;
-      max-width: 100vw;
-      overflow-x: auto;
-      transition: gap 0.3s cubic-bezier(.48,.04,.36,1.32);
-    }
-    .card-container.projects-size-normal .card {
-      width: calc(33.333% - 20px);
-      transition: width 0.3s cubic-bezier(.48,.04,.36,1.32);
-    }
-    .card-container.projects-size-small .card {
-      width: calc(20% - 20px);
-      transition: width 0.3s cubic-bezier(.48,.04,.36,1.32);
-    }
-    @media (max-width: 1100px) {
-      .card-container.projects-size-normal .card,
-      .card-container.projects-size-small .card {
-        width: calc(50% - 20px);
-      }
-    }
-    @media (max-width: 900px) {
-      .card-container.projects-size-normal .card,
-      .card-container.projects-size-small .card {
-        width: 100%;
-      }
-    }
-    .card {
-      background-color: var(--card-bg);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      min-width: 250px;
-      max-width: 100%;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      border-radius: var(--radius);
-      opacity: 0;
-      transform: translateY(20px) scale(0.97);
-      animation: cardFadeIn 0.7s cubic-bezier(.48,.04,.36,1.32) forwards;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-    .card:nth-child(1) { animation-delay: 0.12s; }
-    .card:nth-child(2) { animation-delay: 0.24s; }
-    .card:nth-child(3) { animation-delay: 0.36s; }
-    .card:nth-child(4) { animation-delay: 0.48s; }
-    .card:nth-child(5) { animation-delay: 0.60s; }
-    @keyframes cardFadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    .card img {
-      width: 100%;
-      margin-bottom: 15px;
-      border-radius: var(--radius);
-      opacity: 0;
-      animation: imgFadeIn 0.5s cubic-bezier(.48,.04,.36,1.32) forwards;
-      animation-delay: 0.5s;
-      object-fit: cover;
-      max-height: 180px;
-      min-height: 80px;
-    }
-    @keyframes imgFadeIn {
-      to { opacity: 1; }
-    }
-    .card h3 {
-      margin-bottom: 10px;
-      font-size: 1.15em;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-    .card p {
-      flex-grow: 1;
-      margin-bottom: 15px;
-      font-size: 1em;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
-    .card a.button {
-      align-self: flex-start;
-      padding: 10px 15px;
-      background-color: var(--accent);
-      color: #fff;
-      transition: background 0.3s;
-      border-radius: var(--radius);
-      opacity: 0;
-      animation: btnFadeIn 0.6s cubic-bezier(.48,.04,.36,1.32) forwards;
-      animation-delay: 0.7s;
-      font-size: 1em;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-      white-space: normal;
-    }
-    @keyframes btnFadeIn {
-      to { opacity: 1; }
-    }
-    .card a.button:hover {
-      background-color: #1565c0;
-    }
-
-    #home-content h2, #home-content p {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: homeRowFadeIn 0.7s cubic-bezier(.44,0,.56,1) forwards;
-    }
-    #home-content h2 { animation-delay: 0.12s; }
-    #home-content p { animation-delay: 0.28s; }
-    @keyframes homeRowFadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lildanlid</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
-    .links .button-box a {
-      opacity: 0;
-      transform: translateY(16px) scale(0.98);
-      animation: linkBtnFadeIn 0.5s cubic-bezier(.44,0,.56,1) forwards;
-    }
-    .links .button-box a:nth-child(1) { animation-delay: 0.12s; }
-    .links .button-box a:nth-child(2) { animation-delay: 0.23s; }
-    .links .button-box a:nth-child(3) { animation-delay: 0.34s; }
-    .links .button-box a:nth-child(4) { animation-delay: 0.45s; }
-    .links .button-box a:nth-child(5) { animation-delay: 0.56s; }
-    @keyframes linkBtnFadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    .links {
-      width: 100%;
-      max-width: 100vw;
-      box-sizing: border-box;
-      overflow-x: auto;
-    }
-    .button-box {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-    .links a {
-      padding: 10px 20px;
-      background-color: var(--accent);
-      color: #fff;
-      border-radius: var(--radius);
-      word-break: break-word;
-      overflow-wrap: anywhere;
-      min-width: 70px;
-      text-align: center;
-      transition: background 0.3s;
-      opacity: 1;
-    }
-    .links a:hover {
-      background-color: #1565c0;
-    }
-    @media (max-width: 1100px) {
-      .card, .card-skeleton {
-        width: calc(50% - 20px);
-      }
-    }
-    @media (max-width: 900px) {
-      .card, .card-skeleton {
-        width: 100%;
-        min-width: 220px;
-      }
-    }
-    @media (max-width: 700px) {
-      .sidebar {
-        width: 85vw;
-        min-width: 0;
-        left: 4px;
-      }
-      .sidebar.closed {
-        width: var(--sidebar-width-collapsed);
-        left: 4px;
-      }
-      .main.shift {
-        margin-left: 0 !important;
-      }
-      .main.shift-collapsed {
-        margin-left: calc(var(--sidebar-width-collapsed) + 8px);
-      }
-      .card, .card-skeleton {
-        width: 100%;
-        min-width: 0;
-      }
-      .settings-content {
-        min-width: 90vw;
-      }
-      section { padding-left: 0 !important; padding-right: 0 !important; }
-    }
-    @media (max-width: 500px) {
-      .settings-content {
-        padding: 22px 8px 16px 8px;
-        min-width: 0;
-      }
-      .sidebar {
-        padding-top: 44px;
-      }
-      .main { padding: 8px; }
-    }
-    section {
-      max-width: 100vw;
-      box-sizing: border-box;
-      padding-left: 0;
-      padding-right: 0;
-      overflow-x: auto;
-      display: none;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      border-radius: var(--radius);
-    }
-    section.active {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg-color: #242424;
+            --text-color: #e0e0e0;
+            --text-muted-color: #a0a0a0;
+            --accent-color: #00aaff;
+            --border-color: #3a3a3a;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .profile-card {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-bg-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            margin: 20px 0; 
+        }
+
+        .profile-header {
+            text-align: center;
+            padding: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--accent-color);
+            object-fit: cover;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .profile-title {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--text-muted-color);
+        }
+
+        /* --- Tabs Navigation --- */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .tab-button {
+            flex-grow: 1;
+            padding: 15px 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted-color);
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+        }
+
+        .tab-button.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .content-container {
+            padding: 30px;
+            min-height: 350px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .tab-content .about-text {
+            line-height: 1.7;
+            font-size: 1.05rem;
+            color: var(--text-muted-color);
+            text-align: center;
+        }
+        
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background-color: var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background-color: #333; 
+        }
+
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted-color);
+            line-height: 1.6;
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+
+        .card-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: auto; 
+            background-color: var(--accent-color);
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .card-btn:hover {
+            background-color: #0088cc; 
+        }
+        
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .social-link i {
+            font-size: 1.2rem; width: 20px; text-align: center;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        
+        .social-link.github { background-color: #333; }
+        .social-link.x-twitter { background-color: #000000; }
+        .social-link.twitch { background-color: #9146FF; }
+        .social-link.youtube { background-color: #FF0000; }
+        .social-link.xbox { background-color: #107C10; }
+        .social-link.website { background-color: #4285F4; }
+        .social-link.mcpedl { background-color: #55a64f; }
+        .social-link.curseforge { background-color: #F16436; }
+
+        @media (max-width: 600px) {
+            body { padding: 0; }
+            .profile-card { border-radius: 0; min-height: 100vh; width: 100vw; max-width: 100%; border: none; margin: 0;}
+            .tab-button { font-size: 0.8rem; }
+            .social-links, .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
-  <div id="mySidebar" class="sidebar">
-    <button class="toggle-sidebar-btn" type="button" title="Toggle Menu">
-      <span class="material-icons">chevron_left</span>
-    </button>
-    <div class="sidebar-links">
-      <a href="#" data-section="home"><span class="material-icons">home</span><span>Home</span></a>
-      <a href="#" data-section="projects"><span class="material-icons">folder</span><span>Projects</span></a>
-      <a href="#" data-section="apps"><span class="material-icons">apps</span><span>Apps</span></a>
-      <a href="#" data-section="links"><span class="material-icons">link</span><span>Links</span></a>
-      </a>
+
+    <div class="profile-card">
+        <header class="profile-header">
+            <img src="https://avatars.githubusercontent.com/u/89667448?v=4" alt="Profile Picture" class="profile-img">
+            <h1 class="profile-name">Lildanlid</h1>
+            <p class="profile-title">New Zealand.</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="about">About Me</button>
+            <button class="tab-button" data-tab="projects">Projects</button>
+            <button class="tab-button" data-tab="apps">Apps</button>
+            <button class="tab-button" data-tab="links">Links</button>
+        </nav>
+
+        <main class="content-container">
+            <div class="tab-content active" id="about">
+                <h2>Hey, I’m Dan 👋</h2>
+                <p class="about-text">
+                    I make cool stuff on the internet — websites, designs, and random projects that somehow work.
+                    <br><br>
+                    I like keeping things simple, fast, and a little bit different.
+                </p>
+            </div>
+
+            <div class="tab-content" id="projects">
+                <h2>My Projects</h2>
+                <div class="card-grid">
+                    <div class="item-card">
+                        <img src="https://api.mcpedl.com/storage/submissions/119028/104/minecrafttitle_1-520x245.png" alt="Personal sidebar project" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Personal sidebar</h3>
+                            <p class="card-desc">A customizable personal sidebar for Minecraft.</p>
+                            <a href="https://lootdest.org/s?M8Y6a0mL" target="_blank" class="card-btn">Download</a>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://api.mcpedl.com/storage/submissions/129160/100/minecrafttitle-5_1-520x245.png" alt="Rank Management project" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Rank Management</h3>
+                            <p class="card-desc">Easily manage player ranks.</p>
+                            <a href="https://lootdest.org/s?D5nydiaR" target="_blank" class="card-btn">Download</a>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://api.mcpedl.com/storage/submissions/129126/103/minecrafttitle-4_1-520x245.png" alt="CPS Counter project" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">CPS Counter</h3>
+                            <p class="card-desc">A simple CPS Counter for Minecraft.</p>
+                            <a href="https://www.mediafire.com/file/joa9g5ejfy4unhq/CPS.mcaddon/file" target="_blank" class="card-btn">Download</a>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://via.placeholder.com/520x245/2c2c2c/e0e0e0?text=Hive+NPCs" alt="Hive NPCs project" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Hive NPCs</h3>
+                            <p class="card-desc">Custom NPCs themed around the hive.</p>
+                            <a href="https://lootdest.org/s?VEXsAQ4z" target="_blank" class="card-btn">Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="apps">
+                <h2>My Apps</h2>
+                <div class="card-grid">
+                     <div class="item-card">
+                        <img src="https://via.placeholder.com/520x245/2c2c2c/e0e0e0?text=Weather+App" alt="Weather app" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Weather app</h3>
+                            <p class="card-desc">A simple weather app for your location.</p>
+                            <a href="https://lildanlid.github.io/apps/weather" target="_blank" class="card-btn">View App</a>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <img src="https://via.placeholder.com/520x245/2c2c2c/e0e0e0?text=Stock+APIs" alt="Stock APIs App" class="card-img">
+                        <div class="card-body">
+                            <h3 class="card-title">Stock APIs</h3>
+                            <p class="card-desc">A free and simple API for real-time stock data.</p>
+                            <a href="https://stock-apis.vercel.app/" target="_blank" class="card-btn">View App</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="links">
+                <h2>Connect With Me</h2>
+                <div class="social-links">
+                    <a href="https://github.com/Lildanlid" target="_blank" class="social-link github"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="https://x.com/lildanlid" target="_blank" class="social-link x-twitter"><i class="fab fa-x-twitter"></i> X</a>
+                    <a href="https://twitch.tv/lildanlid" target="_blank" class="social-link twitch"><i class="fab fa-twitch"></i> Twitch</a>
+                    <a href="https://youtube.com/@lildanlid" target="_blank" class="social-link youtube"><i class="fab fa-youtube"></i> YouTube</a>
+                    <a href="https://www.xbox.com/play/user/lildanlid" target="_blank" class="social-link xbox"><i class="fab fa-xbox"></i> Xbox</a>
+                    <a href="https://lildanlid.github.io" target="_blank" class="social-link website"><i class="fas fa-globe"></i> Website</a>
+                    <a href="https://mcpedl.com/user/llildanlid" target="_blank" class="social-link mcpedl"><i class="fas fa-cube"></i> MCPEDL</a>
+                    <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank" class="social-link curseforge"><i class="fas fa-puzzle-piece"></i> CurseForge</a>
+                </div>
+            </div>
+        </main>
     </div>
-    <button class="sidebar-settings-btn" type="button">
-      <span class="material-icons">settings</span><span>Settings</span>
-    </button>
-  </div>
 
-  <div id="settingsModal" class="settings-modal">
-    <div class="settings-content">
-      <button class="close-settings" type="button">
-        <span class="material-icons">close</span>
-      </button>
-      <h3>Settings</h3>
-      <ul class="settings-list">
-        <li class="settings-row">
-          <span class="settings-label">
-            <span class="material-icons" style="font-size:22px;opacity:.84;color:var(--accent);">brightness_6</span>
-            Theme
-          </span>
-          <button id="themeSwitch" type="button" class="theme-toggle-modal">
-            <span id="themeSwitchIcon" class="material-icons"></span>
-            <span id="themeSwitchText"></span>
-          </button>
-        </li>
-      </ul>
-      <div class="settings-coming-soon">More soon</div>
-    </div>
-  </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
 
-  <div id="main" class="main">
-    <section id="home" class="active">
-      <div id="home-content">
-        <h2>Welcome to the Home Page</h2>
-        <p>Use the menu to navigate to other pages.</p>
-      </div>
-    </section>
-    <section id="projects">
-      <h2>Projects</h2>
-      <div class="card-container projects-size-normal" id="projects-cards"></div>
-    </section>
-    <section id="apps">
-      <h2>Apps</h2>
-      <div class="card-container" id="apps-cards"></div>
-    </section>
-    <section id="links">
-      <h2>Links</h2>
-      <div class="links" id="links-list">
-        <div class="button-box">
-          <a href="https://mcpedl.com/user/llildanlid/" target="_blank">MCPEDL</a>
-          <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank">CURSEFORGE</a>
-          <a href="https://lildanlid.github.io/" target="_blank">WEBSITE</a>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <script>
-(function() {
-      try {
-        localStorage.setItem('lildanlid_unique_visitor', 'true');
-      } catch (e) {}
-    })();
-
-    const projectsCards = [
-      {
-        img: "https://api.mcpedl.com/storage/submissions/119028/104/minecrafttitle_1-520x245.png",
-        title: "Personal sidebar",
-        desc: "A customizable personal sidebar for Minecraft.",
-        btn: "Download",
-        link: "https://lootdest.org/s?M8Y6a0mL"
-      },
-      {
-        img: "https://api.mcpedl.com/storage/submissions/129160/100/minecrafttitle-5_1-520x245.png",
-        title: "Rank Managment",
-        desc: "Easily manage player ranks.",
-        btn: "Download",
-        link: "https://lootdest.org/s?D5nydiaR"
-      },
-      {
-        img: "https://api.mcpedl.com/storage/submissions/129126/103/minecrafttitle-4_1-520x245.png",
-        title: "CPS Counter",
-        desc: "A simple CPS Counter for Minecraft.",
-        btn: "Download",
-        link: "https://www.mediafire.com/file/joa9g5ejfy4unhq/CPS.mcaddon/file"
-      },
-      {
-        img: "image",
-        title: "Hive NPCs",
-        desc: "Custom NPCs themed around the hive",
-        btn: "Download",
-        link: "https://lootdest.org/s?VEXsAQ4z"
-      }
-    ];
-    const appsCards = [
-      {
-        img: "",
-        title: "Weather app",
-        desc: "A simple weather app for your location.",
-        btn: "View",
-        link: "https://lildanlid.github.io/apps/weather"
-      }
-    ];
-    const linksData = [
-      { href: "https://mcpedl.com/user/llildanlid/", text: "MCPEDL" },
-      { href: "https://www.curseforge.com/members/lildanlid/projects", text: "CURSEFORGE" },
-      { href: "https://lildanlid.github.io/", text: "WEBSITE" }
-    ];
-
-    function renderCards(containerId, cards) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = cards.map((c, i) => `
-        <div class="card">
-          ${c.img ? `<img src="${c.img}" alt="${c.title}">` : ""}
-          <h3>${c.title}</h3>
-          <p>${c.desc}</p>
-          <a href="${c.link}" class="button" target="_blank" rel="noopener">${c.btn}</a>
-        </div>
-      `).join('');
-    }
-    function loadCards(section) {
-      const containerId = section + "-cards";
-      let cards = section === "projects" ? projectsCards : appsCards;
-      renderCards(containerId, cards);
-    }
-
-    const body = document.body;
-    const sidebar = document.getElementById("mySidebar");
-    const main = document.getElementById("main");
-    const settingsModal = document.getElementById("settingsModal");
-    const themeSwitch = document.getElementById("themeSwitch");
-    const themeSwitchIcon = document.getElementById("themeSwitchIcon");
-    const themeSwitchText = document.getElementById("themeSwitchText");
-    const sidebarSettingsBtn = document.querySelector('.sidebar-settings-btn');
-    const closeSettingsBtn = document.querySelector('.close-settings');
-    const toggleSidebarBtn = document.querySelector('.toggle-sidebar-btn');
-    const sidebarLinks = document.querySelectorAll('.sidebar-links a[data-section]');
-
-    function setProjectsCardSize(small) {
-      const cont = document.getElementById('projects-cards');
-      if (cont) {
-        cont.classList.remove('projects-size-normal', 'projects-size-small');
-        cont.classList.add(small ? 'projects-size-small' : 'projects-size-normal');
-      }
-    }
-
-    function setSidebarState(closed) {
-      if (closed) {
-        sidebar.classList.add("closed");
-        main.classList.add("shift-collapsed");
-        main.classList.remove("shift");
-        toggleSidebarBtn.querySelector('.material-icons').innerText = "chevron_right";
-        if (document.getElementById("projects").classList.contains("active")) {
-          setProjectsCardSize(false);
-        }
-      } else {
-        sidebar.classList.remove("closed");
-        main.classList.add("shift");
-        main.classList.remove("shift-collapsed");
-        toggleSidebarBtn.querySelector('.material-icons').innerText = "chevron_left";
-        if (document.getElementById("projects").classList.contains("active")) {
-          setProjectsCardSize(true);
-        }
-      }
-      localStorage.setItem("sidebarClosed", closed ? "true" : "false");
-    }
-    function toggleSidebar() {
-      setSidebarState(!sidebar.classList.contains("closed"));
-    }
-    toggleSidebarBtn.addEventListener('click', toggleSidebar);
-
-    function showSection(id) {
-      localStorage.setItem("activeSection", id);
-      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      sidebarLinks.forEach(link => {
-        if (link.dataset.section === id) {
-          link.classList.add("active");
-        } else {
-          link.classList.remove("active");
-        }
-      });
-      if (id === "projects") {
-        loadCards("projects");
-        setTimeout(() => {
-          setProjectsCardSize(!sidebar.classList.contains("closed"));
-        }, 0);
-      }
-      if (id === "apps") loadCards("apps");
-      if (id === "links") renderLinks();
-    }
-    sidebarLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        showSection(this.dataset.section);
-      });
-    });
-
-    function setThemeButtonUI() {
-      const theme = body.getAttribute("data-theme");
-      if (theme === "dark") {
-        themeSwitchIcon.innerText = "dark_mode";
-        themeSwitchText.innerText = "Dark";
-      } else {
-        themeSwitchIcon.innerText = "light_mode";
-        themeSwitchText.innerText = "Light";
-      }
-    }
-    function toggleTheme() {
-      const newTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      body.setAttribute("data-theme", newTheme);
-      localStorage.setItem("theme", newTheme);
-      setThemeButtonUI();
-    }
-    function toggleThemeModal() {
-      toggleTheme();
-    }
-    themeSwitch.addEventListener('click', toggleThemeModal);
-
-    sidebarSettingsBtn.addEventListener('click', function() {
-      openSettings();
-    });
-    function openSettings() {
-      settingsModal.classList.add("active");
-      setTimeout(() => {
-        closeSettingsBtn.focus();
-      }, 350);
-      setThemeButtonUI();
-    }
-    function closeSettings() {
-      settingsModal.classList.remove("active");
-    }
-    closeSettingsBtn.addEventListener('click', closeSettings);
-    settingsModal.addEventListener("click", function(e) {
-      if (e.target === settingsModal) {
-        closeSettings();
-      }
-    });
-
-    function renderLinks() {
-      const linksList = document.getElementById("links-list");
-      linksList.innerHTML = `<div class="button-box">${
-        linksData.map(link =>
-          `<a href="${link.href}" target="_blank">${link.text}</a>`
-        ).join('')
-      }</div>`;
-      setTimeout(() => {
-        linksList.querySelectorAll('a').forEach(a => {
-          a.style.animation = '';
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.dataset.tab;
+                    const targetContent = document.getElementById(targetId);
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    targetContent.classList.add('active');
+                });
+            });
         });
-      }, 900);
-    }
-
-    window.onload = () => {
-      let savedTheme = localStorage.getItem("theme");
-      if (!savedTheme) savedTheme = "dark";
-      body.setAttribute("data-theme", savedTheme);
-      setThemeButtonUI();
-
-      const savedSection = localStorage.getItem("activeSection") || "home";
-      showSection(savedSection);
-
-      const sidebarClosed = localStorage.getItem("sidebarClosed") === "true";
-      setSidebarState(sidebarClosed);
-
-      if (savedSection === "projects") loadCards("projects");
-      if (savedSection === "apps") loadCards("apps");
-
-      if (savedSection === "links") renderLinks();
-    };
-
-  </script>
+    </script>
 </body>
 </html>
