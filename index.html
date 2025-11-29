@@ -3,389 +3,474 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lildanlid</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Dev.Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --card-bg-color: #242424;
-            --text-color: #e0e0e0;
-            --text-muted-color: #a0a0a0;
-            --accent-color: #00aaff;
-            --border-color: #3a3a3a;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --font-family: 'Poppins', sans-serif;
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #d4d4d4;
+            --accent-blue: #4fc1ff;
+            --accent-green: #9cdcfe;
+            --accent-orange: #ce9178;
+            --accent-purple: #c586c0;
+            --accent-yellow: #dcdcaa;
+            --shadow-color: rgba(0, 0, 0, 0.6);
+            --pop-glow: rgba(79, 193, 255, 0.15);
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; 
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .profile-card {
-            width: 100%;
-            max-width: 800px;
-            background-color: var(--card-bg-color);
-            border-radius: 16px;
-            box-shadow: 0 8px 30px var(--shadow-color);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            font-family: 'Fira Code', 'Consolas', monospace;
+            color: var(--text-main);
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            margin: 20px 0; 
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; 
+            background-image:
+                radial-gradient(circle at 50% 50%, #252526 0%, #121212 100%);
         }
 
-        .profile-header {
-            text-align: center;
-            padding: 30px;
-            border-bottom: 1px solid var(--border-color);
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.6;
         }
 
-        .profile-img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid var(--accent-color);
-            object-fit: cover;
-            margin-bottom: 15px;
-            transition: transform 0.3s ease;
-        }
-
-        .profile-img:hover {
-            transform: scale(1.05);
-        }
-
-        .profile-name {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .profile-title {
-            font-size: 1rem;
-            font-weight: 300;
-            color: var(--text-muted-color);
-        }
-
-        /* --- Tabs Navigation --- */
-        .tabs {
+        .container {
+            width: 90%;
+            max-width: 900px;
             display: flex;
-            justify-content: space-around;
-            background-color: rgba(0,0,0,0.1);
+            flex-direction: column;
+            gap: 25px; 
+            z-index: 20;
         }
 
-        .tab-button {
-            flex-grow: 1;
-            padding: 15px 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-muted-color);
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
+        .code-window {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            border: 1px solid #333;
+            box-shadow:
+                0 20px 50px var(--shadow-color),
+                0 0 0 1px rgba(255,255,255,0.05);
+            overflow: hidden;
+            height: 400px; 
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 6s ease-in-out infinite;
+            flex-shrink: 0; 
         }
 
-        .tab-button:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-color);
+        .code-window:hover {
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px var(--pop-glow);
         }
 
-        .tab-button.active {
-            color: var(--accent-color);
-            border-bottom-color: var(--accent-color);
+        .window-header {
+            background: #252526;
+            padding: 10px 15px;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #333;
         }
 
-        .content-container {
-            padding: 30px;
-            min-height: 350px;
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+        .filename { margin-left: 15px; font-size: 12px; color: #888; }
+
+        .editor-body {
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+            overflow-y: auto;
+            height: calc(100% - 40px);
         }
 
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
+        .kwd { color: #569cd6; }
+        .str { color: #ce9178; }
+        .func { color: #dcdcaa; } 
+        .var { color: #9cdcfe; }
+        .com { color: #6a9955; }
+        .brac { color: #ffd700; } 
+        .prop { color: var(--accent-green); } 
 
-        .tab-content.active {
-            display: block;
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background: var(--accent-blue);
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
         }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .tab-content h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--accent-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-
-        .tab-content .about-text {
-            line-height: 1.7;
-            font-size: 1.05rem;
-            color: var(--text-muted-color);
-            text-align: center;
-        }
-        
-
-        .card-grid {
+        .nav-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(4, 1fr); 
             gap: 20px;
         }
 
-        .item-card {
-            background-color: var(--border-color);
+        .nav-card {
+            background-color: var(--card-bg);
             border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .item-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        .card-img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            background-color: #333; 
-        }
-
-        .card-body {
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .card-desc {
-            font-size: 0.95rem;
-            color: var(--text-muted-color);
-            line-height: 1.6;
-            flex-grow: 1;
-            margin-bottom: 15px;
-        }
-
-        .card-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            margin-top: auto; 
-            background-color: var(--accent-color);
-            color: #fff;
-            text-align: center;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             text-decoration: none;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
+            text-align: center;
         }
 
-        .card-btn:hover {
-            background-color: #0088cc; 
+        .nav-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background-color: #2a2d2e;
+            border-color: var(--accent-blue);
+            box-shadow:
+                0 20px 40px rgba(0,0,0,0.5),
+                0 0 15px var(--pop-glow);
+        }
+
+        .nav-card h3 {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-code {
+            font-size: 14px;
+            font-weight: bold;
         }
         
-        .social-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        .btn-0 .nav-code { color: var(--accent-green); }
+        .btn-1 .nav-code { color: var(--accent-purple); }
+        .btn-2 .nav-code { color: var(--accent-yellow); } 
+        .btn-4 .nav-code { color: var(--accent-blue); }  
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
 
-        .social-link {
-            display: flex;
+        .editor-body a.inline-link {
+            color: var(--accent-orange);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .editor-body a.inline-link:hover {
+            color: var(--accent-yellow);
+        }
+       
+        .editor-body span.inline-link {
+            color: var(--accent-green);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .editor-body span.inline-link:hover {
+            color: var(--accent-yellow);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: none;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #fff;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            padding: 15px;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 1px solid #333;
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 50px var(--shadow-color);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .modal-header h3 {
+            color: var(--accent-green);
+            font-size: 1.2rem;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .modal-close:hover {
+            color: white;
+        }
+        .modal-body {
+            font-family: 'Arial', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
-        .social-link i {
-            font-size: 1.2rem; width: 20px; text-align: center;
-        }
-
-        .social-link:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-        
-        .social-link.github { background-color: #333; }
-        .social-link.x-twitter { background-color: #000000; }
-        .social-link.twitch { background-color: #9146FF; }
-        .social-link.youtube { background-color: #FF0000; }
-        .social-link.xbox { background-color: #107C10; }
-        .social-link.website { background-color: #4285F4; }
-        .social-link.mcpedl { background-color: #55a64f; }
-        .social-link.curseforge { background-color: #F16436; }
 
         @media (max-width: 600px) {
-            body { padding: 0; }
-            .profile-card { border-radius: 0; min-height: 100vh; width: 100vw; max-width: 100%; border: none; margin: 0;}
-            .tab-button { font-size: 0.8rem; }
-            .social-links, .card-grid { grid-template-columns: 1fr; }
+            .nav-grid { grid-template-columns: 1fr 1fr; }
+            .code-window { height: 350px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="profile-card">
-        <header class="profile-header">
-            <img src="https://avatars.githubusercontent.com/u/89667448?v=4" alt="Profile Picture" class="profile-img">
-            <h1 class="profile-name">Lildanlid</h1>
-            <p class="profile-title">New Zealand.</p>
-        </header>
+    <div class="scanlines"></div>
 
-        <nav class="tabs">
-            <button class="tab-button active" data-tab="about">About Me</button>
-            <button class="tab-button" data-tab="projects">Projects</button>
-            <button class="tab-button" data-tab="apps">Apps</button>
-            <button class="tab-button" data-tab="links">Links</button>
-        </nav>
-
-        <main class="content-container">
-            <div class="tab-content active" id="about">
-                <h2>Hey, I’m Dan 👋</h2>
-                <p class="about-text">
-                    I make cool stuff on the internet — websites, designs, and random projects that somehow work.
-                    <br><br>
-                    I like keeping things simple, fast, and a little bit different.
-                </p>
+    <div class="container">
+        
+        <div class="code-window">
+            <div class="window-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+                <div class="filename" id="filename">welcome_user.js</div>
             </div>
+            <div class="editor-body">
+                <span id="code-display"></span><span class="cursor"></span>
+            </div>
+        </div>
 
-            <div class="tab-content" id="projects">
-                <h2>My Projects</h2>
-                <div class="card-grid">
-                    <div class="item-card">
-                        <img src="https://api.mcpedl.com/storage/submissions/119028/104/minecrafttitle_1-520x245.png" alt="Personal sidebar project" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Personal sidebar</h3>
-                            <p class="card-desc">A customizable personal sidebar for Minecraft.</p>
-                            <a href="https://lootdest.org/s?M8Y6a0mL" target="_blank" class="card-btn">Download</a>
-                        </div>
-                    </div>
-                    <div class="item-card">
-                        <img src="https://api.mcpedl.com/storage/submissions/129160/100/minecrafttitle-5_1-520x245.png" alt="Rank Management project" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Rank Management</h3>
-                            <p class="card-desc">Easily manage player ranks.</p>
-                            <a href="https://lootdest.org/s?D5nydiaR" target="_blank" class="card-btn">Download</a>
-                        </div>
-                    </div>
-                    <div class="item-card">
-                        <img src="https://api.mcpedl.com/storage/submissions/129126/103/minecrafttitle-4_1-520x245.png" alt="CPS Counter project" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">CPS Counter</h3>
-                            <p class="card-desc">A simple CPS Counter for Minecraft.</p>
-                            <a href="https://www.mediafire.com/file/joa9g5ejfy4unhq/CPS.mcaddon/file" target="_blank" class="card-btn">Download</a>
-                        </div>
-                    </div>
-                    <div class="item-card">
-                        <img src="https://via.placeholder.com/520x245/2c2c2c/e0e0e0?text=Hive+NPCs" alt="Hive NPCs project" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Hive NPCs</h3>
-                            <p class="card-desc">Custom NPCs themed around the hive.</p>
-                            <a href="https://lootdest.org/s?VEXsAQ4z" target="_blank" class="card-btn">Download</a>
-                            </div>
-                    </div>
-                    <div class="item-card">
-                        <img src="https://media.forgecdn.net/attachments/1389/625/minecraft_title__1_-removebg-preview-png.png" alt="Simple PvP Textures" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Simple PvP Textures</h3>
-                            <p class="card-desc">Simple PvP Textures that dosent modify much.</p>
-                            <a href="https://lootdest.org/s?1kkeDIG3" target="_blank" class="card-btn">Download</a>
-                        </div>
-                    </div>
+        <div class="nav-grid">
+            <a class="nav-card btn-0" onclick="runCommand('home')">
+                <h3>00. Home</h3>
+                <div class="nav-code">
+                    <span class="func">system</span>.<span class="var">init</span>();
                 </div>
-            </div>
+            </a>
             
-            <div class="tab-content" id="apps">
-                <h2>My Apps</h2>
-                <div class="card-grid">
-                     <div class="item-card">
-                        <img src="https://via.placeholder.com/520x245/2c2c2c/e0e0e0?text=Weather+App" alt="Weather app" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Weather app</h3>
-                            <p class="card-desc">A simple weather app for your location.</p>
-                            <a href="https://lildanlid.github.io/apps/weather" target="_blank" class="card-btn">View App</a>
-                        </div>
-                    </div>
-                    <div class="item-card">
-                        <img src="https://via.placeholder.com/520x245/2c2c2c/e0e0e0?text=Stock+APIs" alt="Stock APIs App" class="card-img">
-                        <div class="card-body">
-                            <h3 class="card-title">Stock APIs</h3>
-                            <p class="card-desc">A free and simple API for real-time stock data.</p>
-                            <a href="https://stock-apis.vercel.app/" target="_blank" class="card-btn">View App</a>
-                        </div>
-                    </div>
+            <a class="nav-card btn-1" onclick="runCommand('about')">
+                <h3>01. Profile</h3>
+                <div class="nav-code">
+                    <span class="kwd">import</span> <span class="var">AboutMe</span>;
                 </div>
-            </div>
+            </a>
 
-            <div class="tab-content" id="links">
-                <h2>Connect With Me</h2>
-                <div class="social-links">
-                    <a href="https://github.com/Lildanlid" target="_blank" class="social-link github"><i class="fab fa-github"></i> GitHub</a>
-                    <a href="https://x.com/lildanlid" target="_blank" class="social-link x-twitter"><i class="fab fa-x-twitter"></i> X</a>
-                    <a href="https://twitch.tv/lildanlid" target="_blank" class="social-link twitch"><i class="fab fa-twitch"></i> Twitch</a>
-                    <a href="https://youtube.com/@lildanlid" target="_blank" class="social-link youtube"><i class="fab fa-youtube"></i> YouTube</a>
-                    <a href="https://www.xbox.com/play/user/lildanlid" target="_blank" class="social-link xbox"><i class="fab fa-xbox"></i> Xbox</a>
-                    <a href="https://lildanlid.github.io" target="_blank" class="social-link website"><i class="fas fa-globe"></i> Website</a>
-                    <a href="https://mcpedl.com/user/llildanlid" target="_blank" class="social-link mcpedl"><i class="fas fa-cube"></i> MCPEDL</a>
-                    <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank" class="social-link curseforge"><i class="fas fa-puzzle-piece"></i> CurseForge</a>
+            <a class="nav-card btn-2" onclick="runCommand('projects')">
+                <h3>02. Projects</h3>
+                <div class="nav-code">
+                    <span class="func">render</span>(<span class="str">'Projects'</span>);
                 </div>
-            </div>
-        </main>
+            </a>
+
+            <a class="nav-card btn-4" onclick="runCommand('links')">
+                <h3>04. Connect</h3>
+                <div class="nav-code">
+                    <span class="func">open</span>(<span class="str">'Links'</span>);
+                </div>
+            </a>
+        </div>
+
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabs = document.querySelectorAll('.tab-button');
-            const contents = document.querySelectorAll('.tab-content');
+    <div id="license-modal" class="modal-overlay" onclick="hideLicense()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-contract"></i> License</h3>
+                <button class="modal-close" onclick="hideLicense()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-text">
+            </div>
+        </div>
+    </div>
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const targetId = tab.dataset.tab;
-                    const targetContent = document.getElementById(targetId);
-                    tabs.forEach(t => t.classList.remove('active'));
-                    contents.forEach(c => c.classList.remove('active'));
-                    tab.classList.add('active');
-                    targetContent.classList.add('active');
-                });
+
+    <script>
+
+        const welcomeLines = [
+            "_c// Initializing system...",
+            "_kconst_ _vUser_ = _s'Visitor';_",
+            "_kconst_ _vStatus_ = _s'Online';_",
+            "",
+            "_c// Welcome to my portfolio.",
+            "_c// Select a module below to begin.",
+            "_kasync function_ _fnavigate_() {",
+            "  _kawait_ _fuser_selection_();",
+            "}",
+            "",
+            "_fnavigate_();"
+        ];
+
+        const aboutLines = [
+            "_c// --- Profile ---",
+            "_kconst_ _vProfile_ = {",
+            "  _pname_: _s'lildanlid',",
+            "  _ppassions_: [_s'Minecraft Modding'_, _s'App Development'_],",
+            "  _psummary_: _s'Hey, I'm a developer who loves building cool stuff. This portfolio is where I share my work with the world.'_",
+            "};",
+            "",
+            "_c// ..."
+        ];
+        
+        const projectLines = [
+            "_c// --- Projects ---",
+            "",
+            "_kconst_ _vMinecraftProjects_ = [",
+            "  {",
+            "    _pname_: _s'Simple PvP Textures',",
+            "    _pdesc_: _s'Simple PvP Textures that dosent modify much.',",
+            "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1389/625/minecraft_title__1_-removebg-preview-png.png',",
+            "    _pstats_: {",
+            "      _pdownloads_: _s'13,686+'_, _c// Manually updated",
+            "      _pcreated_: _s'October 25, 2025'_,",
+            "      _pupdated_: _s'November 17, 2025'_",
+            "    },",
+            "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/texture-packs/simple-pvp-textures',",
+            "    _plicense_: _L© lildanlid 2025\nYou may distribute this pack, but please give credit to lildanlid.\nDo not claim this pack as your own or remove this notice.[View License]_L",
+            "  }",
+            "];",
+            "",
+            "_c// More projects coming soon...",
+        ];
+        
+        const linkLines = [
+            "_c// --- Connect ---",
+            "",
+            "_kconst_ _vLinks_ = {",
+            "  _pGitHub_: _s'https://github.com/Lildanlid',",
+            "  _pX_: _s'https://x.com/lildanlid',",
+            "  _pTwitch_: _s'https://twitch.tv/lildanlid',",
+            "  _pYouTube_: _s'https://youtube.com/@lildanlid',",
+            "  _pXbox_: _s'https://www.xbox.com/play/user/lildanlid',",
+            "  _pPlayStation_: _s'https://profile.playstation.com/lildanlid',",
+            "  _pWebsite_: _s'https://lildanlid.github.io',",
+            "  _pMCPEDL_: _s'https://mcpedl.com/user/llildanlid',",
+            "  _pCurseForge_: _s'https://www.curseforge.com/members/lildanlid/projects',",
+            "};"
+        ];
+        
+        const contentMap = {
+            'home': { lines: welcomeLines, file: 'welcome_user.js' },
+            'about': { lines: aboutLines, file: 'about.js' },
+            'projects': { lines: projectLines, file: 'projects.js' },
+            'links': { lines: linkLines, file: 'links.js' }
+        }
+        
+        const display = document.getElementById('code-display');
+        const filenameDisplay = document.getElementById('filename');
+        const editorBody = document.querySelector('.editor-body');
+
+        let currentLines = welcomeLines;
+        let lineIdx = 0;
+        let charIdx = 0;
+        let currentHTML = "";
+        let typewriterTimeout;
+        function formatLine(line) {
+            let formatted = line
+                .replace(/_k(.*?)_/g, '<span class="kwd">$1</span>')
+                .replace(/_v(.*?)_/g, '<span class="var">$1</span>')
+                .replace(/_s(.*?)_/g, '<span class="str">$1</span>')
+                .replace(/_f(.*?)_/g, '<span class="func">$1</span>')
+                .replace(/_p(.*?):/g, '<span class="prop">$1</span>:')
+                .replace(/_c(.*)/g, '<span class="com">$1</span>')
+                .replace(/_L(.*?)\s*\[(.*?)\]_L/g, '<span class="inline-link license-trigger" data-license="$1">$2</span>');
+            const urlRegex = /(?<!href=")(https?:\/\/[^\s<"']+)/g;
+            
+            return formatted.replace(urlRegex, (url) => {
+                if (formatted.includes(`"${url}"`) || formatted.includes(`'${url}'`)) {
+                    return `<a href="${url}" target="_blank" class="inline-link">${url}</a>`;
+                }
+                return url; 
             });
+        }
+
+
+        function getRaw(line) {
+            return line
+                .replace(/_[kvsfcLp]/g, '')
+                .replace(/_/g, '')
+                .replace(/\[(.*?)\]/g, '$1') 
+                .replace(/data-license=".*?"/g, ''); 
+        }
+
+        function typeWriter() {
+            clearTimeout(typewriterTimeout); 
+
+            if (lineIdx < currentLines.length) {
+                const raw = getRaw(currentLines[lineIdx]);
+                if (charIdx < raw.length) {
+                    display.innerHTML = currentHTML + raw.substring(0, charIdx + 1);
+                    charIdx++;
+                    typewriterTimeout = setTimeout(typeWriter, 30);
+                } else {
+                    currentHTML += formatLine(currentLines[lineIdx]) + "<br>";
+                    display.innerHTML = currentHTML;
+                    lineIdx++;
+                    charIdx = 0;
+                    typewriterTimeout = setTimeout(typeWriter, 100);
+                }
+                editorBody.scrollTop = editorBody.scrollHeight;
+            } else {
+                editorBody.scrollTop = editorBody.scrollHeight;
+            }
+        }
+        function runCommand(cmd) {
+            const content = contentMap[cmd];
+            if (!content) return;
+
+            currentLines = content.lines;
+            filenameDisplay.textContent = content.file;
+            clearTimeout(typewriterTimeout);
+            display.innerHTML = "";
+            lineIdx = 0;
+            charIdx = 0;
+            currentHTML = "";
+            typeWriter();
+        }
+
+        typewriterTimeout = setTimeout(typeWriter, 500);
+        const modal = document.getElementById('license-modal');
+        const modalText = document.getElementById('modal-text');
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('license-trigger')) {
+                const licenseData = e.target.getAttribute('data-license');
+                if (licenseData) {
+                    showLicense(licenseData);
+                }
+            }
         });
+
+        function showLicense(text) {
+            modalText.textContent = text;
+            modal.style.display = 'flex';
+        }
+
+        function hideLicense() {
+            modal.style.display = 'none';
+        }
     </script>
 </body>
 </html>
