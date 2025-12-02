@@ -16,6 +16,7 @@
             --accent-orange: #ce9178;
             --accent-purple: #c586c0;
             --accent-yellow: #dcdcaa;
+            --accent-red: #f44747;
             --shadow-color: rgba(0, 0, 0, 0.6);
             --pop-glow: rgba(79, 193, 255, 0.15);
         }
@@ -99,7 +100,7 @@
             overflow-y: auto;
             height: calc(100% - 40px);
         }
-
+        
         .kwd { color: #569cd6; }
         .str { color: #ce9178; }
         .func { color: #dcdcaa; } 
@@ -120,7 +121,7 @@
 
         .nav-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); 
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px;
         }
 
@@ -145,6 +146,26 @@
                 0 0 15px var(--pop-glow);
         }
 
+        /* Specific styling for the Skip button as a nav-card */
+        .nav-card.skip-btn {
+            background-color: var(--accent-red);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .nav-card.skip-btn.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .nav-card.skip-btn:hover {
+            background-color: #ff6666;
+            border-color: var(--accent-red);
+        }
+        .nav-card.skip-btn h3, .nav-card.skip-btn .nav-code {
+            color: var(--card-bg) !important;
+        }
+
+
         .nav-card h3 {
             font-size: 14px;
             color: #888;
@@ -161,7 +182,9 @@
         .btn-0 .nav-code { color: var(--accent-green); }
         .btn-1 .nav-code { color: var(--accent-purple); }
         .btn-2 .nav-code { color: var(--accent-yellow); } 
-        .btn-4 .nav-code { color: var(--accent-blue); }  
+        .btn-3 .nav-code { color: var(--accent-red); } /* New color for Apps */
+        .btn-4 .nav-code { color: var(--accent-blue); } 
+        .btn-5 .nav-code { color: var(--accent-orange); } 
 
         @keyframes float {
             0% { transform: translateY(0px); }
@@ -177,16 +200,7 @@
         .editor-body a.inline-link:hover {
             color: var(--accent-yellow);
         }
-       
-        .editor-body span.inline-link {
-            color: var(--accent-green);
-            text-decoration: underline;
-            cursor: pointer;
-        }
-        .editor-body span.inline-link:hover {
-            color: var(--accent-yellow);
-        }
-
+        
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -241,7 +255,10 @@
 
 
         @media (max-width: 600px) {
-            .nav-grid { grid-template-columns: 1fr 1fr; }
+            .nav-grid { 
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
             .code-window { height: 350px; }
         }
     </style>
@@ -285,11 +302,32 @@
                     <span class="func">render</span>(<span class="str">'Projects'</span>);
                 </div>
             </a>
+            
+            <a class="nav-card btn-3" onclick="runCommand('apps')">
+                <h3>03. Apps</h3>
+                <div class="nav-code">
+                    <span class="func">launch</span>(<span class="str">'API'</span>);
+                </div>
+            </a>
 
             <a class="nav-card btn-4" onclick="runCommand('links')">
                 <h3>04. Connect</h3>
                 <div class="nav-code">
                     <span class="func">open</span>(<span class="str">'Links'</span>);
+                </div>
+            </a>
+            
+            <a class="nav-card btn-5" onclick="runCommand('license')">
+                <h3>05. License</h3>
+                <div class="nav-code">
+                    <span class="func">view</span>(<span class="str">'MIT'</span>);
+                </div>
+            </a>
+            
+            <a id="skip-typing-btn" class="nav-card skip-btn" onclick="skipTyping()">
+                <h3>Skip Typing</h3>
+                <div class="nav-code">
+                    <span class="func">finish</span>();
                 </div>
             </a>
         </div>
@@ -310,13 +348,22 @@
 
     <script>
 
+        const commonLicenseText = "© lildanlid 2025\nYou may distribute this pack, but please give credit to lildanlid.\nDo not claim this pack as your own or remove this notice.";
+        
+        const licenseLines = [
+            "_kconst_ _vLicense_ = {",
+            "  _pname_: _s'Common Use License',",
+            "  _pversion_: _s'1.0',",
+            `  _ptext_: _s'${commonLicenseText.replace(/\n/g, '\\n')}'_`,
+            "};",
+            "",
+            `_c// Use command: showLicense()`,
+        ];
+
         const welcomeLines = [
-            "_c// Initializing system...",
             "_kconst_ _vUser_ = _s'Visitor';_",
             "_kconst_ _vStatus_ = _s'Online';_",
             "",
-            "_c// Welcome to my portfolio.",
-            "_c// Select a module below to begin.",
             "_kasync function_ _fnavigate_() {",
             "  _kawait_ _fuser_selection_();",
             "}",
@@ -325,67 +372,75 @@
         ];
 
         const aboutLines = [
-            "_c// --- Profile ---",
             "_kconst_ _vProfile_ = {",
             "  _pname_: _s'lildanlid',",
             "  _ppassions_: [_s'Minecraft Modding'_, _s'App Development'_],",
             "  _psummary_: _s'Hey, I'm a developer who loves building cool stuff. This portfolio is where I share my work with the world.'_",
             "};",
             "",
-            "_c// ..."
+            ""
         ];
         
         const projectLines = [
-    "_c// --- Projects ---",
-    "",
-    "_kconst_ _vMinecraftProjects_ = [",
-    "  {",
-    "    _pname_: _s'Simple PvP Textures',",
-    "    _pdesc_: _s'Simple PvP Textures that dosent modify much.',",
-    "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1389/625/minecraft_title__1_-removebg-preview-png.png',",
-    "    _pstats_: {",
-    "      _pdownloads_: _s'13,686+'_,", // Manually updated
-    "      _pcreated_: _s'October 25, 2025'_,",
-    "      _pupdated_: _s'November 17, 2025'_",
-    "    },",
-    "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/texture-packs/simple-pvp-textures',",
-    "    _plicense_: _L© lildanlid 2025\nYou may distribute this pack, but please give credit to lildanlid.\nDo not claim this pack as your own or remove this notice._L",
-    "  },",
+            "_kconst_ _vMinecraftProjects_ = [",
+            "  {",
+            "    _pname_: _s'Simple PvP Textures',",
+            "    _pdesc_: _s'Simple PvP Textures that dosent modify much.',",
+            "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1389/625/minecraft_title__1_-removebg-preview-png.png',",
+            "    _pstats_: {",
+            "      _pdownloads_: _s'14,243+'_,", 
+            "      _pcreated_: _s'October 25, 2025'_,",
+            "      _pupdated_: _s'November 17, 2025'_",
+            "    },",
+            "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/texture-packs/simple-pvp-textures',",
+            "    _plicense_: _s'(Standard License - View 05)'_",
+            "  },",
 
-    "  {",
-    "    _pname_: _s'White Ore UI',",
-    "    _pdesc_: _s'Adds a nice UI to your game.',",
-    "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1410/954/minecraft_title-png.png',",
-    "    _pstats_: {",
-    "      _pdownloads_: _s'0'_,", // Manually updated
-    "      _pcreated_: _s'December 2, 2025'_,",
-    "      _pupdated_: _s'December 2, 2025'_",
-    "    },",
-    "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/texture-packs/white-ore-ui',",
-    "    _plicense_: _L© lildanlid 2025\nYou may distribute this pack, but please give credit to lildanlid.\nDo not claim this pack as your own or remove this notice._L",
-    "  },",
+            "  {",
+            "    _pname_: _s'White Ore UI',",
+            "    _pdesc_: _s'Adds a nice UI to your game.',",
+            "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1410/954/minecraft_title-png.png',",
+            "    _pstats_: {",
+            "      _pdownloads_: _s'0'_,", 
+            "      _pcreated_: _s'December 2, 2025'_,",
+            "      _pupdated_: _s'December 2, 2025'_",
+            "    },",
+            "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/texture-packs/white-ore-ui',",
+            "    _plicense_: _s'(Standard License - View 05)'_",
+            "  },",
 
-    "  {",
-    "    _pname_: _s'lildanlids Floating Text',",
-    "    _pdesc_: _s'A useful addon for text & leaderboards.',",
-    "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1410/906/mcpedl-png.png',",
-    "    _pstats_: {",
-    "      _pdownloads_: _s'0'_,", // Manually updated
-    "      _pcreated_: _s'December 2, 2025'_,",
-    "      _pupdated_: _s'December 2, 2025'_",
-    "    },",
-    "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/addons/lildanlids-floating-text',",
-    "    _plicense_: _L© lildanlid 2025\nYou may distribute this pack, but please give credit to lildanlid.\nDo not claim this pack as your own or remove this notice._L",
-    "  }",
-    "];",
-    "",
-    "_c// More projects coming soon...",
-];
+            "  {",
+            "    _pname_: _s'lildanlids Floating Text',",
+            "    _pdesc_: _s'A useful addon for text & leaderboards.',",
+            "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1410/906/mcpedl-png.png',",
+            "    _pstats_: {",
+            "      _pdownloads_: _s'0'_,", 
+            "      _pcreated_: _s'December 2, 2025'_,",
+            "      _pupdated_: _s'December 2, 2025'_",
+            "    },",
+            "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/addons/lildanlids-floating-text',",
+            "    _plicense_: _s'(Standard License - View 05)'_",
+            "  }",
+            "];",
+            "",
+        ];
+        
+        // --- NEW APP LINES ---
+        const appsLines = [
+            "_kconst_ _vRobloxAPIs_ = {",
+            "  _pStockAPI_ : _s'https://stockapis.onrender.com/',",
+            "  _pGames_ : [",
+            "    _s'Grow a Garden (Stock Data)'_,",
+            "    _s'Plants vs Brainrots (Stock Data)'_",
+            "  ],",
+            "  _pSource_ : _s'External Service'_",
+            "};",
+            "",
+        ];
+        // --- END NEW APP LINES ---
 
         
         const linkLines = [
-            "_c// --- Connect ---",
-            "",
             "_kconst_ _vLinks_ = {",
             "  _pGitHub_: _s'https://github.com/Lildanlid',",
             "  _pX_: _s'https://x.com/lildanlid',",
@@ -403,18 +458,29 @@
             'home': { lines: welcomeLines, file: 'welcome_user.js' },
             'about': { lines: aboutLines, file: 'about.js' },
             'projects': { lines: projectLines, file: 'projects.js' },
-            'links': { lines: linkLines, file: 'links.js' }
+            'apps': { lines: appsLines, file: 'apps.js' }, // New command entry
+            'links': { lines: linkLines, file: 'links.js' },
+            'license': { lines: licenseLines, file: 'license.txt' }
         }
         
         const display = document.getElementById('code-display');
         const filenameDisplay = document.getElementById('filename');
         const editorBody = document.querySelector('.editor-body');
+        const skipButton = document.getElementById('skip-typing-btn'); 
 
         let currentLines = welcomeLines;
         let lineIdx = 0;
         let charIdx = 0;
         let currentHTML = "";
         let typewriterTimeout;
+        let skipButtonTimeout;
+        let typingInProgress = false;
+        let currentTotalRawLength = 0;
+
+        const MIN_CHAR_DELAY = 10; 
+        const MAX_CHAR_DELAY = 40; 
+        const CHARS_FOR_MIN_DELAY = 500; 
+
         function formatLine(line) {
             let formatted = line
                 .replace(/_k(.*?)_/g, '<span class="kwd">$1</span>')
@@ -422,15 +488,20 @@
                 .replace(/_s(.*?)_/g, '<span class="str">$1</span>')
                 .replace(/_f(.*?)_/g, '<span class="func">$1</span>')
                 .replace(/_p(.*?):/g, '<span class="prop">$1</span>:')
-                .replace(/_c(.*)/g, '<span class="com">$1</span>')
-                .replace(/_L(.*?)\s*\[(.*?)\]_L/g, '<span class="inline-link license-trigger" data-license="$1">$2</span>');
+                .replace(/_c(.*)/g, '<span class="com">$1</span>');
+
             const urlRegex = /(?<!href=")(https?:\/\/[^\s<"']+)/g;
             
             return formatted.replace(urlRegex, (url) => {
-                if (formatted.includes(`"${url}"`) || formatted.includes(`'${url}'`)) {
-                    return `<a href="${url}" target="_blank" class="inline-link">${url}</a>`;
+                if (formatted.includes(`_s'${url}'`)) {
+                    return url; 
                 }
-                return url; 
+                
+                if (formatted.includes(`href="${url}"`)) {
+                    return url;
+                }
+
+                return `<a href="${url}" target="_blank" class="inline-link">${url}</a>`; 
             });
         }
 
@@ -443,53 +514,107 @@
                 .replace(/data-license=".*?"/g, ''); 
         }
 
+        function calculateCharDelay(totalLength) {
+            const scaleFactor = Math.min(totalLength, CHARS_FOR_MIN_DELAY) / CHARS_FOR_MIN_DELAY;
+            const delayRange = MAX_CHAR_DELAY - MIN_CHAR_DELAY;
+            
+            return Math.round(MAX_CHAR_DELAY - (delayRange * scaleFactor));
+        }
+
         function typeWriter() {
             clearTimeout(typewriterTimeout); 
+
+            const charDelay = calculateCharDelay(currentTotalRawLength);
+            const lineDelay = 100;
 
             if (lineIdx < currentLines.length) {
                 const raw = getRaw(currentLines[lineIdx]);
                 if (charIdx < raw.length) {
                     display.innerHTML = currentHTML + raw.substring(0, charIdx + 1);
                     charIdx++;
-                    typewriterTimeout = setTimeout(typeWriter, 30);
+                    typewriterTimeout = setTimeout(typeWriter, charDelay);
                 } else {
                     currentHTML += formatLine(currentLines[lineIdx]) + "<br>";
                     display.innerHTML = currentHTML;
                     lineIdx++;
                     charIdx = 0;
-                    typewriterTimeout = setTimeout(typeWriter, 100);
+                    typewriterTimeout = setTimeout(typeWriter, lineDelay);
                 }
-                editorBody.scrollTop = editorBody.scrollHeight;
+                
             } else {
-                editorBody.scrollTop = editorBody.scrollHeight;
+                typingInProgress = false;
+                clearTimeout(skipButtonTimeout);
+                skipButton.classList.remove('visible');
+                
+                if (filenameDisplay.textContent === 'license.txt') {
+                    showLicense(commonLicenseText);
+                }
             }
         }
+
+        function skipTyping() {
+            if (!typingInProgress) return;
+            
+            clearTimeout(typewriterTimeout);
+            clearTimeout(skipButtonTimeout);
+            
+            let remainingHTML = "";
+            for (let i = lineIdx; i < currentLines.length; i++) {
+                remainingHTML += formatLine(currentLines[i]) + "<br>";
+            }
+            currentHTML += remainingHTML;
+            display.innerHTML = currentHTML;
+            lineIdx = currentLines.length; 
+
+            typingInProgress = false;
+            skipButton.classList.remove('visible');
+            
+            if (filenameDisplay.textContent === 'license.txt') {
+                showLicense(commonLicenseText);
+            }
+        }
+
+        function showSkipButton() {
+            if (typingInProgress) {
+                skipButton.classList.add('visible');
+            }
+        }
+
         function runCommand(cmd) {
             const content = contentMap[cmd];
             if (!content) return;
 
+            clearTimeout(typewriterTimeout);
+            clearTimeout(skipButtonTimeout);
+            skipButton.classList.remove('visible');
+            hideLicense();
+
             currentLines = content.lines;
             filenameDisplay.textContent = content.file;
-            clearTimeout(typewriterTimeout);
             display.innerHTML = "";
             lineIdx = 0;
             charIdx = 0;
             currentHTML = "";
+            typingInProgress = true;
+
+            currentTotalRawLength = content.lines.reduce((total, line) => total + getRaw(line).length, 0);
+
             typeWriter();
+            
+            skipButtonTimeout = setTimeout(showSkipButton, 3000);
         }
 
-        typewriterTimeout = setTimeout(typeWriter, 500);
-        const modal = document.getElementById('license-modal');
-        const modalText = document.getElementById('modal-text');
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('license-trigger')) {
-                const licenseData = e.target.getAttribute('data-license');
-                if (licenseData) {
-                    showLicense(licenseData);
-                }
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            currentTotalRawLength = welcomeLines.reduce((total, line) => total + getRaw(line).length, 0);
+            typewriterTimeout = setTimeout(typeWriter, 500);
+            typingInProgress = true;
+            skipButtonTimeout = setTimeout(showSkipButton, 3000);
         });
 
+
+        const modal = document.getElementById('license-modal');
+        const modalText = document.getElementById('modal-text');
+        
         function showLicense(text) {
             modalText.textContent = text;
             modal.style.display = 'flex';
