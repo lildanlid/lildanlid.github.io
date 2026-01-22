@@ -3,626 +3,394 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lildanlid.Portfolio</title>
+    <title>lildanlid | Protfolio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <style>
-        :root {
-            --bg-dark: #121212;
-            --card-bg: #1e1e1e;
-            --text-main: #d4d4d4;
-            --accent-blue: #4fc1ff;
-            --accent-green: #9cdcfe;
-            --accent-orange: #ce9178;
-            --accent-purple: #c586c0;
-            --accent-yellow: #dcdcaa;
-            --accent-red: #f44747;
-            --shadow-color: rgba(0, 0, 0, 0.6);
-            --pop-glow: rgba(79, 193, 255, 0.15);
-        }
-
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-dark);
-            font-family: 'Fira Code', 'Consolas', monospace;
-            color: var(--text-main);
+            background-color: #050505;
+            margin: 0;
             height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #grid-container {
+            position: fixed;
+            top: -60px;
+            left: -60px;
+            z-index: 0;
+        }
+
+        .row {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            margin-bottom: -30px;
+        }
+
+        .row:nth-child(even) {
+            margin-left: 52px;
+        }
+
+        .hex {
+            position: relative;
+            width: 100px;
+            height: 115px;
+            margin: 2px;
+            flex-shrink: 0;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background-color: #FF6600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: brightness(0.3) opacity(0.3);
+            transition: filter 0.3s ease;
+        }
+
+        .hex::after {
+            content: "";
+            position: absolute;
+            width: 94%;
+            height: 94%;
+            background-color: #050505;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            z-index: 2;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-social {
+            background: rgba(20, 20, 20, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 102, 0, 0.3);
+            border-radius: 20px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 102, 0, 0.2);
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; 
-            background-image:
-                radial-gradient(circle at 50% 50%, #252526 0%, #121212 100%);
-        }
-
-        .scanlines {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 10;
-            opacity: 0.6;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px; 
-            z-index: 20;
-        }
-
-        .code-window {
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            border: 1px solid #333;
-            box-shadow:
-                0 20px 50px var(--shadow-color),
-                0 0 0 1px rgba(255,255,255,0.05);
-            overflow: hidden;
-            height: 400px; 
-            position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: float 6s ease-in-out infinite;
-            flex-shrink: 0; 
-        }
-
-        .code-window:hover {
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px var(--pop-glow);
-        }
-
-        .window-header {
-            background: #252526;
-            padding: 10px 15px;
-            display: flex;
-            gap: 8px;
-            border-bottom: 1px solid #333;
-        }
-
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .red { background: #ff5f56; }
-        .yellow { background: #ffbd2e; }
-        .green { background: #27c93f; }
-        .filename { margin-left: 15px; font-size: 12px; color: #888; }
-
-        .editor-body {
-            padding: 20px;
-            font-size: 16px;
-            line-height: 1.6;
-            overflow-y: auto;
-            height: calc(100% - 40px);
-        }
-        
-        .kwd { color: #569cd6; }
-        .str { color: #ce9178; }
-        .func { color: #dcdcaa; } 
-        .var { color: #9cdcfe; }
-        .com { color: #6a9955; }
-        .brac { color: #ffd700; } 
-        .prop { color: var(--accent-green); } 
-
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 18px;
-            background: var(--accent-blue);
-            animation: blink 1s step-end infinite;
-            vertical-align: text-bottom;
-        }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-        }
-
-        .nav-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid #333;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
             text-decoration: none;
-            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
         }
 
-        .nav-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            background-color: #2a2d2e;
-            border-color: var(--accent-blue);
-            box-shadow:
-                0 20px 40px rgba(0,0,0,0.5),
-                0 0 15px var(--pop-glow);
+        .social-link:hover {
+            background: #FF6600;
+            color: white;
+            transform: translateY(-5px) scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 5px 20px rgba(255, 102, 0, 0.5);
         }
 
-        /* Specific styling for the Skip button as a nav-card */
-        .nav-card.skip-btn {
-            background-color: var(--accent-red);
+        .social-link.github:hover { background: #333; }
+        .social-link.twitter:hover { background: #000; }
+        .social-link.twitch:hover { background: #9146FF; }
+        .social-link.youtube:hover { background: #FF0000; }
+        .social-link.xbox:hover { background: #107C10; }
+        .social-link.playstation:hover { background: #003087; }
+        .social-link.website:hover { background: #FF6600; }
+        .social-link.mcpedl:hover { background: #4CAF50; }
+        .social-link.curseforge:hover { background: #F16436; }
+
+        .nav-github {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            min-height: 60px;
+            max-width: 60px;
+            max-height: 60px;
+            aspect-ratio: 1 / 1;
+            background: rgba(20, 20, 20, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 102, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 28px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .nav-github:hover {
+            background: #FF6600;
+            color: white;
+            transform: translateY(-5px) rotate(360deg);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 102, 0, 0.4);
+        }
+
+        .social-link::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            font-size: 12px;
+            border-radius: 8px;
+            white-space: nowrap;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .nav-card.skip-btn.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
-        .nav-card.skip-btn:hover {
-            background-color: #ff6666;
-            border-color: var(--accent-red);
-        }
-        .nav-card.skip-btn h3, .nav-card.skip-btn .nav-code {
-            color: var(--card-bg) !important;
-        }
-
-
-        .nav-card h3 {
-            font-size: 14px;
-            color: #888;
+            transition: all 0.3s ease;
             margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        .nav-code {
-            font-size: 14px;
-            font-weight: bold;
-        }
-        
-        .btn-0 .nav-code { color: var(--accent-green); }
-        .btn-1 .nav-code { color: var(--accent-purple); }
-        .btn-2 .nav-code { color: var(--accent-yellow); } 
-        .btn-3 .nav-code { color: var(--accent-red); } /* New color for Apps */
-        .btn-4 .nav-code { color: var(--accent-blue); } 
-        .btn-5 .nav-code { color: var(--accent-orange); } 
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        .social-link:hover::before {
+            opacity: 1;
         }
 
-        .editor-body a.inline-link {
-            color: var(--accent-orange);
-            text-decoration: underline;
-            cursor: pointer;
-        }
-        .editor-body a.inline-link:hover {
-            color: var(--accent-yellow);
-        }
-        
-        .modal-overlay {
+        .center-content {
             position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 100;
-            display: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 50;
+            background: rgba(20, 20, 20, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 102, 0, 0.3);
+            border-radius: 30px;
+            padding: 40px 60px;
+            transition: all 0.3s ease;
+        }
+
+        .center-content h1 {
+            color: #FF6600;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(255, 102, 0, 0.5);
+        }
+
+        .center-content .location {
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            margin-bottom: 20px;
         }
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 15px;
-            border: 1px solid #333;
-            padding: 25px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 20px 50px var(--shadow-color);
+
+        .center-content .location i {
+            color: #FF6600;
         }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .modal-header h3 {
-            color: var(--accent-green);
-            font-size: 1.2rem;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-        .modal-close:hover {
-            color: white;
-        }
-        .modal-body {
-            font-family: 'Arial', sans-serif;
-            font-size: 1rem;
+
+        .center-content .description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
             line-height: 1.6;
-            white-space: pre-wrap;
-            max-height: 300px;
-            overflow-y: auto;
+            max-width: 400px;
         }
 
+        .center-content .description span {
+            color: #FF6600;
+            font-weight: 600;
+        }
 
-        @media (max-width: 600px) {
-            .nav-grid { 
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            .code-window { height: 350px; }
+        .nz-flag {
+            font-size: 20px;
+        }
+
+        .glow-card {
+            transition: all 0.15s ease;
         }
     </style>
 </head>
 <body>
 
-    <div class="scanlines"></div>
+    <div id="grid-container"></div>
 
-    <div class="container">
-        
-        <div class="code-window">
-            <div class="window-header">
-                <div class="dot red"></div>
-                <div class="dot yellow"></div>
-                <div class="dot green"></div>
-                <div class="filename" id="filename">welcome_user.js</div>
-            </div>
-            <div class="editor-body">
-                <span id="code-display"></span><span class="cursor"></span>
-            </div>
-        </div>
-
-        <div class="nav-grid">
-            <a class="nav-card btn-0" onclick="runCommand('home')">
-                <h3>00. Home</h3>
-                <div class="nav-code">
-                    <span class="func">system</span>.<span class="var">init</span>();
-                </div>
+    <nav class="navbar">
+        <div class="nav-social glow-card">
+            <a href="https://github.com/lildanlid" target="_blank" class="social-link github" data-tooltip="GitHub">
+                <i class="fab fa-github"></i>
             </a>
-            
-            <a class="nav-card btn-1" onclick="runCommand('about')">
-                <h3>01. Profile</h3>
-                <div class="nav-code">
-                    <span class="kwd">import</span> <span class="var">AboutMe</span>;
-                </div>
+            <a href="https://x.com/lildanlid" target="_blank" class="social-link twitter" data-tooltip="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
             </a>
-
-            <a class="nav-card btn-2" onclick="runCommand('projects')">
-                <h3>02. Projects</h3>
-                <div class="nav-code">
-                    <span class="func">render</span>(<span class="str">'Projects'</span>);
-                </div>
+            <a href="https://twitch.tv/lildanlid" target="_blank" class="social-link twitch" data-tooltip="Twitch">
+                <i class="fab fa-twitch"></i>
             </a>
-            
-            <a class="nav-card btn-3" onclick="runCommand('apps')">
-                <h3>03. Apps</h3>
-                <div class="nav-code">
-                    <span class="func">launch</span>(<span class="str">'API'</span>);
-                </div>
+            <a href="https://youtube.com/@lildanlid" target="_blank" class="social-link youtube" data-tooltip="YouTube">
+                <i class="fab fa-youtube"></i>
             </a>
-
-            <a class="nav-card btn-4" onclick="runCommand('links')">
-                <h3>04. Connect</h3>
-                <div class="nav-code">
-                    <span class="func">open</span>(<span class="str">'Links'</span>);
-                </div>
+            <a href="https://www.xbox.com/play/user/lildanlid" target="_blank" class="social-link xbox" data-tooltip="Xbox">
+                <i class="fab fa-xbox"></i>
             </a>
-            
-            <a class="nav-card btn-5" onclick="runCommand('license')">
-                <h3>05. License</h3>
-                <div class="nav-code">
-                    <span class="func">view</span>(<span class="str">'MIT'</span>);
-                </div>
+            <a href="https://profile.playstation.com/lildanlid" target="_blank" class="social-link playstation" data-tooltip="PlayStation">
+                <i class="fab fa-playstation"></i>
             </a>
-            
-            <a id="skip-typing-btn" class="nav-card skip-btn" onclick="skipTyping()">
-                <h3>Skip Typing</h3>
-                <div class="nav-code">
-                    <span class="func">finish</span>();
-                </div>
+            <a href="https://lildanlid.github.io" target="_blank" class="social-link website" data-tooltip="Website">
+                <i class="fas fa-globe"></i>
+            </a>
+            <a href="https://mcpedl.com/user/llildanlid" target="_blank" class="social-link mcpedl" data-tooltip="MCPEDL">
+                <i class="fas fa-cube"></i>
+            </a>
+            <a href="https://www.curseforge.com/members/lildanlid/projects" target="_blank" class="social-link curseforge" data-tooltip="CurseForge">
+                <i class="fas fa-fire"></i>
             </a>
         </div>
 
+        <a href="https://github.com/lildanlid/lildanlid.github.io" target="_blank" class="nav-github glow-card" title="View Source Code">
+            <i class="fab fa-github"></i>
+        </a>
+    </nav>
+
+    <div class="center-content glow-card">
+        <h1>lildanlid</h1>
+        <div class="location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>New Zealand</span>
+            <span class="nz-flag">🇳🇿</span>
+        </div>
+        <p class="description">
+            I'm from <span>New Zealand</span> and I make content on <span>CurseForge</span> for <span>Minecraft Bedrock Edition</span>. Check out my projects and follow me on social media!
+        </p>
     </div>
 
-    <div id="license-modal" class="modal-overlay" onclick="hideLicense()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-file-contract"></i> License</h3>
-                <button class="modal-close" onclick="hideLicense()">&times;</button>
-            </div>
-            <div class="modal-body" id="modal-text">
-            </div>
-        </div>
-    </div>
+<script>
+    const container = document.getElementById('grid-container');
+    
+    const hexWidth = 104;
+    const hexHeight = 85;
+    
+    const cols = Math.ceil((window.innerWidth + 120) / hexWidth) + 1;
+    const rows = Math.ceil((window.innerHeight + 120) / hexHeight) + 1;
 
+    const hexList = [];
 
-    <script>
+    for (let r = 0; r < rows; r++) {
+        let rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
 
-        const commonLicenseText = "© lildanlid 2025\nYou may distribute this pack, but please give credit to lildanlid.\nDo not claim this pack as your own or remove this notice.";
-        
-        const licenseLines = [
-            "_kconst_ _vLicense_ = {",
-            "  _pname_: _s'Common Use License',",
-            "  _pversion_: _s'1.0',",
-            `  _ptext_: _s'${commonLicenseText.replace(/\n/g, '\\n')}'_`,
-            "};",
-            "",
-            `_c// Use command: showLicense()`,
-        ];
-
-        const welcomeLines = [
-            "_kconst_ _vUser_ = _s'Visitor';_",
-            "_kconst_ _vStatus_ = _s'Online';_",
-            "",
-            "_kasync function_ _fnavigate_() {",
-            "  _kawait_ _fuser_selection_();",
-            "}",
-            "",
-            "_fnavigate_();"
-        ];
-
-        const aboutLines = [
-            "_kconst_ _vProfile_ = {",
-            "  _pname_: _s'lildanlid',",
-            "  _ppassions_: [_s'Minecraft Modding'_, _s'App Development'_],",
-            "  _psummary_: _s'Hey, I'm a developer who loves building cool stuff. This portfolio is where I share my work with the world.'_",
-            "};",
-            "",
-            ""
-        ];
-        
-        const projectLines = [
-            "_kconst_ _vMinecraftProjects_ = [",
-            "  {",
-            "    _pname_: _s'Simple PvP Textures',",
-            "    _pdesc_: _s'Simple PvP Textures that dosent modify much.',",
-            "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1389/625/minecraft_title__1_-removebg-preview-png.png',",
-            "    _pstats_: {",
-            "      _pdownloads_: _s'16,096+'_,", 
-            "      _pcreated_: _s'October 25, 2025'_,",
-            "      _pupdated_: _s'December 3, 2025'_",
-            "    },",
-            "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/texture-packs/simple-pvp-textures',",
-            "    _plicense_: _s'( View 05 )'_",
-            "  },",
-
-            "  {",
-            "    _pname_: _s'Light Mode Ore UI',",
-            "    _pdesc_: _s'Adds a nice UI to your game.',",
-            "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1410/954/minecraft_title-png.png',",
-            "    _pstats_: {",
-            "      _pdownloads_: _s'70+'_,", 
-            "      _pcreated_: _s'December 2, 2025'_,",
-            "      _pupdated_: _s'December 2, 2025'_",
-            "    },",
-            "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/texture-packs/white-ore-ui',",
-            "    _plicense_: _s'( View 05 )'_",
-            "  },",
-
-            "  {",
-            "    _pname_: _s'Floating Text',",
-            "    _pdesc_: _s'A useful addon for text & leaderboards.',",
-            "    _pimage_url_: _s'https://media.forgecdn.net/attachments/1410/906/mcpedl-png.png',",
-            "    _pstats_: {",
-            "      _pdownloads_: _s'80+'_,", 
-            "      _pcreated_: _s'December 2, 2025'_,",
-            "      _pupdated_: _s'December 2, 2025'_",
-            "    },",
-            "    _pdownload_link_: _s'https://www.curseforge.com/minecraft-bedrock/addons/lildanlids-floating-text',",
-            "    _plicense_: _s'( View 05 )'_",
-            "  }",
-            "];",
-            "",
-        ];
-        
-        // --- NEW APP LINES ---
-        const appsLines = [
-            "_kconst_ _vRobloxAPIs_ = {",
-            "  _pStockAPI_ : _s'https://stockapis.onrender.com/',",
-            "  _pGames_ : [",
-            "    _s'Grow a Garden (Stock Data)'_,",
-            "    _s'Plants vs Brainrots (Stock Data)'_",
-            "  ],",
-            "  _pSource_ : _s'External Service'_",
-            "};",
-            "",
-        ];
-        // --- END NEW APP LINES ---
-
-        
-        const linkLines = [
-            "_kconst_ _vLinks_ = {",
-            "  _pGitHub_: _s'https://github.com/Lildanlid',",
-            "  _pX_: _s'https://x.com/lildanlid',",
-            "  _pTwitch_: _s'https://twitch.tv/lildanlid',",
-            "  _pYouTube_: _s'https://youtube.com/@lildanlid',",
-            "  _pXbox_: _s'https://www.xbox.com/play/user/lildanlid',",
-            "  _pPlayStation_: _s'https://profile.playstation.com/lildanlid',",
-            "  _pWebsite_: _s'https://lildanlid.github.io',",
-            "  _pMCPEDL_: _s'https://mcpedl.com/user/llildanlid',",
-            "  _pCurseForge_: _s'https://www.curseforge.com/members/lildanlid/projects',",
-            "};"
-        ];
-        
-        const contentMap = {
-            'home': { lines: welcomeLines, file: 'welcome_user.js' },
-            'about': { lines: aboutLines, file: 'about.js' },
-            'projects': { lines: projectLines, file: 'projects.js' },
-            'apps': { lines: appsLines, file: 'apps.js' }, // New command entry
-            'links': { lines: linkLines, file: 'links.js' },
-            'license': { lines: licenseLines, file: 'license.txt' }
+        for (let c = 0; c < cols; c++) {
+            let hex = document.createElement('div');
+            hex.className = 'hex';
+            rowDiv.appendChild(hex);
+            hexList.push(hex);
         }
-        
-        const display = document.getElementById('code-display');
-        const filenameDisplay = document.getElementById('filename');
-        const editorBody = document.querySelector('.editor-body');
-        const skipButton = document.getElementById('skip-typing-btn'); 
+        container.appendChild(rowDiv);
+    }
 
-        let currentLines = welcomeLines;
-        let lineIdx = 0;
-        let charIdx = 0;
-        let currentHTML = "";
-        let typewriterTimeout;
-        let skipButtonTimeout;
-        let typingInProgress = false;
-        let currentTotalRawLength = 0;
+    const glowCards = document.querySelectorAll('.glow-card');
 
-        const MIN_CHAR_DELAY = 10; 
-        const MAX_CHAR_DELAY = 40; 
-        const CHARS_FOR_MIN_DELAY = 500; 
+    document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
 
-        function formatLine(line) {
-            let formatted = line
-                .replace(/_k(.*?)_/g, '<span class="kwd">$1</span>')
-                .replace(/_v(.*?)_/g, '<span class="var">$1</span>')
-                .replace(/_s(.*?)_/g, '<span class="str">$1</span>')
-                .replace(/_f(.*?)_/g, '<span class="func">$1</span>')
-                .replace(/_p(.*?):/g, '<span class="prop">$1</span>:')
-                .replace(/_c(.*)/g, '<span class="com">$1</span>');
+        hexList.forEach(hex => {
+            const rect = hex.getBoundingClientRect();
+            const hexX = rect.left + rect.width / 2;
+            const hexY = rect.top + rect.height / 2;
 
-            const urlRegex = /(?<!href=")(https?:\/\/[^\s<"']+)/g;
+            const distX = mouseX - hexX;
+            const distY = mouseY - hexY;
+            const distance = Math.sqrt(distX * distX + distY * distY);
+
+            const maxDist = 200;
             
-            return formatted.replace(urlRegex, (url) => {
-                if (formatted.includes(`_s'${url}'`)) {
-                    return url; 
-                }
+            if (distance < maxDist) {
+                const intensity = 1 - (distance / maxDist);
+                const opacity = 0.3 + (intensity * 0.7);
+                const brightness = 0.3 + (intensity * 2.5);
                 
-                if (formatted.includes(`href="${url}"`)) {
-                    return url;
-                }
-
-                return `<a href="${url}" target="_blank" class="inline-link">${url}</a>`; 
-            });
-        }
-
-
-        function getRaw(line) {
-            return line
-                .replace(/_[kvsfcLp]/g, '')
-                .replace(/_/g, '')
-                .replace(/\[(.*?)\]/g, '$1') 
-                .replace(/data-license=".*?"/g, ''); 
-        }
-
-        function calculateCharDelay(totalLength) {
-            const scaleFactor = Math.min(totalLength, CHARS_FOR_MIN_DELAY) / CHARS_FOR_MIN_DELAY;
-            const delayRange = MAX_CHAR_DELAY - MIN_CHAR_DELAY;
-            
-            return Math.round(MAX_CHAR_DELAY - (delayRange * scaleFactor));
-        }
-
-        function typeWriter() {
-            clearTimeout(typewriterTimeout); 
-
-            const charDelay = calculateCharDelay(currentTotalRawLength);
-            const lineDelay = 100;
-
-            if (lineIdx < currentLines.length) {
-                const raw = getRaw(currentLines[lineIdx]);
-                if (charIdx < raw.length) {
-                    display.innerHTML = currentHTML + raw.substring(0, charIdx + 1);
-                    charIdx++;
-                    typewriterTimeout = setTimeout(typeWriter, charDelay);
-                } else {
-                    currentHTML += formatLine(currentLines[lineIdx]) + "<br>";
-                    display.innerHTML = currentHTML;
-                    lineIdx++;
-                    charIdx = 0;
-                    typewriterTimeout = setTimeout(typeWriter, lineDelay);
-                }
-                
+                hex.style.filter = `brightness(${brightness}) opacity(${opacity})`;
             } else {
-                typingInProgress = false;
-                clearTimeout(skipButtonTimeout);
-                skipButton.classList.remove('visible');
-                
-                if (filenameDisplay.textContent === 'license.txt') {
-                    showLicense(commonLicenseText);
-                }
+                hex.style.filter = `brightness(0.3) opacity(0.3)`;
             }
-        }
-
-        function skipTyping() {
-            if (!typingInProgress) return;
-            
-            clearTimeout(typewriterTimeout);
-            clearTimeout(skipButtonTimeout);
-            
-            let remainingHTML = "";
-            for (let i = lineIdx; i < currentLines.length; i++) {
-                remainingHTML += formatLine(currentLines[i]) + "<br>";
-            }
-            currentHTML += remainingHTML;
-            display.innerHTML = currentHTML;
-            lineIdx = currentLines.length; 
-
-            typingInProgress = false;
-            skipButton.classList.remove('visible');
-            
-            if (filenameDisplay.textContent === 'license.txt') {
-                showLicense(commonLicenseText);
-            }
-        }
-
-        function showSkipButton() {
-            if (typingInProgress) {
-                skipButton.classList.add('visible');
-            }
-        }
-
-        function runCommand(cmd) {
-            const content = contentMap[cmd];
-            if (!content) return;
-
-            clearTimeout(typewriterTimeout);
-            clearTimeout(skipButtonTimeout);
-            skipButton.classList.remove('visible');
-            hideLicense();
-
-            currentLines = content.lines;
-            filenameDisplay.textContent = content.file;
-            display.innerHTML = "";
-            lineIdx = 0;
-            charIdx = 0;
-            currentHTML = "";
-            typingInProgress = true;
-
-            currentTotalRawLength = content.lines.reduce((total, line) => total + getRaw(line).length, 0);
-
-            typeWriter();
-            
-            skipButtonTimeout = setTimeout(showSkipButton, 3000);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            currentTotalRawLength = welcomeLines.reduce((total, line) => total + getRaw(line).length, 0);
-            typewriterTimeout = setTimeout(typeWriter, 500);
-            typingInProgress = true;
-            skipButtonTimeout = setTimeout(showSkipButton, 3000);
         });
 
+        glowCards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const cardX = rect.left + rect.width / 2;
+            const cardY = rect.top + rect.height / 2;
 
-        const modal = document.getElementById('license-modal');
-        const modalText = document.getElementById('modal-text');
-        
-        function showLicense(text) {
-            modalText.textContent = text;
-            modal.style.display = 'flex';
-        }
+            const distX = mouseX - cardX;
+            const distY = mouseY - cardY;
+            const distance = Math.sqrt(distX * distX + distY * distY);
 
-        function hideLicense() {
-            modal.style.display = 'none';
-        }
-    </script>
+            const maxDist = 300;
+
+            if (distance < maxDist) {
+                const intensity = 1 - (distance / maxDist);
+                
+                const relX = mouseX - rect.left;
+                const relY = mouseY - rect.top;
+                
+                const borderOpacity = 0.3 + (intensity * 0.7);
+                const glowSize = intensity * 40;
+                const innerGlow = intensity * 20;
+                
+                card.style.borderColor = `rgba(255, 102, 0, ${borderOpacity})`;
+                card.style.boxShadow = `
+                    0 0 ${glowSize}px rgba(255, 102, 0, ${intensity * 0.5}),
+                    0 0 ${glowSize * 2}px rgba(255, 102, 0, ${intensity * 0.3}),
+                    inset 0 0 ${innerGlow}px rgba(255, 102, 0, ${intensity * 0.15})
+                `;
+                card.style.background = `
+                    radial-gradient(
+                        circle at ${relX}px ${relY}px,
+                        rgba(255, 102, 0, ${intensity * 0.15}) 0%,
+                        rgba(20, 20, 20, 0.5) 50%
+                    )
+                `;
+            } else {
+                card.style.borderColor = 'rgba(255, 102, 0, 0.3)';
+                card.style.boxShadow = 'none';
+                card.style.background = 'rgba(20, 20, 20, 0.5)';
+            }
+        });
+    });
+
+    document.addEventListener('mouseleave', () => {
+        hexList.forEach(hex => {
+            hex.style.filter = `brightness(0.3) opacity(0.3)`;
+        });
+
+        glowCards.forEach(card => {
+            card.style.borderColor = 'rgba(255, 102, 0, 0.3)';
+            card.style.boxShadow = 'none';
+            card.style.background = 'rgba(20, 20, 20, 0.5)';
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        location.reload();
+    });
+</script>
 </body>
 </html>
